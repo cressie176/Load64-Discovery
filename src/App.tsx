@@ -4,6 +4,7 @@ import { BinaryDiscoverScreen } from "./screens/admin/binary-discover/BinaryDisc
 import { BinaryEditScreen } from "./screens/admin/binary-edit/BinaryEditScreen";
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
+import { GameCarouselScreen } from "./screens/carousel/game-carousel/GameCarouselScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
@@ -21,6 +22,12 @@ import { StoreProvider } from "./store/StoreContext";
 
 function AppScreens() {
 	const { currentScreen, currentParams } = useRouter();
+	if (currentScreen === "carousel") {
+		return <GameCarouselScreen compilationId={currentParams.compilationId} />;
+	}
+	if (currentScreen === "game-details") {
+		return <Placeholder name="Game Details" />;
+	}
 	if (currentScreen === "admin-hub") {
 		return <AdminHubScreen />;
 	}
@@ -126,13 +133,13 @@ function AppScreens() {
 	if (currentScreen === "control-edit") {
 		return <Placeholder name="Control Edit" />;
 	}
-	return <Placeholder name="Game Carousel" />;
+	return <GameCarouselScreen />;
 }
 
 export function App() {
 	return (
 		<StoreProvider>
-			<RouterProvider initialScreen="admin-hub">
+			<RouterProvider initialScreen="carousel">
 				<AppScreens />
 			</RouterProvider>
 		</StoreProvider>

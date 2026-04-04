@@ -3,6 +3,8 @@ import { SEED_BINARIES } from "../screens/admin/binary-list/seed";
 import type { BinaryList } from "../screens/admin/binary-list/types";
 import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
 import type { GeneralSettings } from "../screens/admin/general-settings/types";
+import { SEED_CAROUSEL } from "../screens/carousel/game-carousel/seed";
+import type { CarouselState } from "../screens/carousel/game-carousel/types";
 import { SEED_COMPILATIONS } from "../screens/compilations/compilation-list/seed";
 import type { CompilationsState } from "../screens/compilations/compilation-list/types";
 import { SEED_CONTROLLER_FAMILIES } from "../screens/controller-families/controller-family-selection/seed";
@@ -23,6 +25,7 @@ import type { ViceArgumentsState } from "../screens/vice-arguments/vice-argument
 interface Store {
 	generalSettings: GeneralSettings;
 	binaries: BinaryList;
+	carousel: CarouselState;
 	controllers: ControllerList;
 	viceArguments: ViceArgumentsState;
 	profiles: ProfilesState;
@@ -48,6 +51,7 @@ interface StoreProviderProps {
 const INITIAL_STORE: Store = {
 	generalSettings: SEED_GENERAL_SETTINGS,
 	binaries: SEED_BINARIES,
+	carousel: SEED_CAROUSEL,
 	controllers: SEED_CONTROLLERS,
 	viceArguments: SEED_VICE_ARGUMENTS,
 	profiles: SEED_PROFILES,

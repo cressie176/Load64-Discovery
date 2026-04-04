@@ -1,5 +1,6 @@
 export type ScreenName =
 	| "carousel"
+	| "game-details"
 	| "admin-hub"
 	| "general-settings"
 	| "binary-list"
