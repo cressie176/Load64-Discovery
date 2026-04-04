@@ -15,6 +15,8 @@ import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
 import type { ProfilesState } from "../screens/profiles/profile-list/types";
+import { SEED_KEY_MAPPINGS } from "../screens/key-mappings/key-mapping-list/seed";
+import type { KeyMappingsState } from "../screens/key-mappings/key-mapping-list/types";
 import { SEED_VICE_ARGUMENTS } from "../screens/vice-arguments/vice-argument-list/seed";
 import type { ViceArgumentsState } from "../screens/vice-arguments/vice-argument-list/types";
 
@@ -28,6 +30,7 @@ interface Store {
 	compilations: CompilationsState;
 	controllerFamilies: ControllerFamiliesState;
 	controls: ControlsState;
+	keyMappings: KeyMappingsState;
 	discoveryMessage: string;
 }
 
@@ -52,6 +55,7 @@ const INITIAL_STORE: Store = {
 	compilations: SEED_COMPILATIONS,
 	controllerFamilies: SEED_CONTROLLER_FAMILIES,
 	controls: SEED_CONTROLS,
+	keyMappings: SEED_KEY_MAPPINGS,
 	discoveryMessage: "",
 };
 

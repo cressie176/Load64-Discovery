@@ -1,0 +1,35 @@
+/* ============================================================
+   Key Mapping List Screen
+   ============================================================ */
+
+.key-mapping-list__row-host-key {
+	flex: 0 0 180px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.key-mapping-list__row-machine-key {
+	flex: 0 0 180px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.key-mapping-list__row-source {
+	color: var(--colour-text-muted);
+	flex: 1;
+	font-style: italic;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.key-mapping-list__row--inherited {
+	color: var(--colour-text-muted);
+	font-style: italic;
+}
+
+.list__row--selected .key-mapping-list__row-source {
+	color: var(--colour-text);
+}

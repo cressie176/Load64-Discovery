@@ -14,6 +14,7 @@ export type ScreenName =
 	| "profile-edit"
 	| "controller-selection"
 	| "key-mapping-list"
+	| "key-mapping-edit"
 	| "environment-variable-list"
 	| "compilation-list"
 	| "compilation-detail"

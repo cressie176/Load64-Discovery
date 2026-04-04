@@ -9,6 +9,7 @@ import { ControllerFamilyListScreen } from "./screens/controller-families/contro
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
+import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
@@ -65,7 +66,15 @@ function AppScreens() {
 		return <Placeholder name="Controller Selection" />;
 	}
 	if (currentScreen === "key-mapping-list") {
-		return <Placeholder name="Key Mapping List" />;
+		return (
+			<KeyMappingListScreen
+				ownerId={currentParams.ownerId ?? currentParams.profileId ?? "profile-default"}
+				statusMessage={currentParams.statusMessage}
+			/>
+		);
+	}
+	if (currentScreen === "key-mapping-edit") {
+		return <Placeholder name="Key Mapping Edit" />;
 	}
 	if (currentScreen === "environment-variable-list") {
 		return <Placeholder name="Environment Variable List" />;
