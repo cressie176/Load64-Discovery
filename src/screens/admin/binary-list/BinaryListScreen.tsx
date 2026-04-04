@@ -33,12 +33,19 @@ function deriveBottomBarMessage(binary: Binary | undefined): string {
 
 export function BinaryListScreen() {
 	const { pop, push } = useRouter();
-	const { store } = useStore();
+	const { store, setStore } = useStore();
 	const binaries = store.binaries;
 
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
 	const [topbarCtaIndex, setTopbarCtaIndex] = useState(0);
+	const [discoveryMessage] = useState(() => {
+		const message = store.discoveryMessage;
+		if (message) {
+			setStore((prev) => ({ ...prev, discoveryMessage: "" }));
+		}
+		return message;
+	});
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const discoverButtonRef = useRef<HTMLButtonElement>(null);
@@ -129,7 +136,8 @@ export function BinaryListScreen() {
 	}
 
 	const focusedBinary = binaries[selectedIndex];
-	const bottomBarMessage = deriveBottomBarMessage(focusedBinary);
+	const bottomBarMessage =
+		discoveryMessage || deriveBottomBarMessage(focusedBinary);
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

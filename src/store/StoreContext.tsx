@@ -10,6 +10,7 @@ interface Store {
 	generalSettings: GeneralSettings;
 	binaries: BinaryList;
 	viceArguments: ViceArgumentsState;
+	discoveryMessage: string;
 }
 
 interface StoreContextValue {
@@ -27,6 +28,7 @@ const INITIAL_STORE: Store = {
 	generalSettings: SEED_GENERAL_SETTINGS,
 	binaries: SEED_BINARIES,
 	viceArguments: SEED_VICE_ARGUMENTS,
+	discoveryMessage: "",
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {
