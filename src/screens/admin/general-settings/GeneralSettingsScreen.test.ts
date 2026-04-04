@@ -1,7 +1,7 @@
 import { deepStrictEqual as deep, equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { SEED_GENERAL_SETTINGS } from "../../seed/admin/general-settings.ts";
-import type { GeneralSettings } from "../../types/admin/general-settings.ts";
+import { SEED_GENERAL_SETTINGS } from "./seed.ts";
+import type { GeneralSettings } from "./types.ts";
 
 function deriveBottomBarMessage(
 	settings: GeneralSettings,

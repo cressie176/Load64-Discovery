@@ -18,15 +18,22 @@ npx tsc -b        # type check
 
 ```
 src/
-  types/          # domain types — one file per feature area, e.g. types/games.ts
-  seed/           # seed data — one file per feature area, e.g. seed/games.ts
-  store/          # StoreContext: shared in-memory state and useStore hook
-  components/     # shared UI components used across multiple screens
-  screens/        # one sub-directory per feature area, e.g. screens/carousel/
-    <feature>/
-      <ScreenName>.tsx        # screen component
-      <ScreenName>.test.ts    # co-located tests
+  index.css                   # design tokens, base reset, and shared BEM blocks only
+  router/                     # RouterContext — navigation stack (shared)
+  store/                      # StoreContext — in-memory state and useStore hook (shared)
+  types/                      # shared types only (e.g. types/router.ts)
+  components/                 # shared UI components used across multiple screens
+  screens/
+    <feature>/                # one directory per wiki screen category
+      <screen-name>/          # one directory per screen
+        <ScreenName>.tsx      # screen component (imports ./index.css)
+        <ScreenName>.test.ts  # co-located tests
+        index.css             # BEM blocks owned by this screen
+        types.ts              # domain types for this screen
+        seed.ts               # seed data for this screen
 ```
+
+Everything specific to a screen lives inside its screen directory. Only code that is genuinely shared across multiple screens belongs outside the screen directories.
 
 Feature directories under `screens/` are created when their first screen is implemented, not upfront. The feature directory names mirror the wiki screen categories: `carousel`, `games`, `compilations`, `profiles`, `controllers`, `controller-families`, `controls`, `environment-variables`, `key-mappings`, `vice-arguments`, `snapshots`, `now-playing`, `import`, `admin`.
 
@@ -92,20 +99,17 @@ All screens read from and write to the shared `StoreContext`. The store is initi
 
 ## Adding a Screen
 
-1. Create only the screen I ask you to. Do not create other screens.
-2. Create only the things you need for the screen you are creating. Do not create other things.
-3. To the extent possible, use separate files (css, types, etc) to avoid merge conflicts.
-4. Read the wiki spec for the screen
-5. Add any new domain types to `src/types/<area>/<feature>.ts`, e.g. `src/types/admin/general-settings.ts`
-6. Add or extend seed data in `src/seed/<area>/<feature>.ts`, e.g. `src/seed/admin/general-settings.ts`
-7. Extend the `Store` type in `src/store/StoreContext.tsx` if needed
-8. Create `src/screens/<feature>/<ScreenName>.tsx`
-9. Co-locate tests in `src/screens/<feature>/<ScreenName>.test.ts`
-10. Wire the screen into the router
-11. Co-locate tests in `src/screens/<feature>/<ScreenName>.test.ts`
-12. The screens must be appropriately styled
-13. Just because the design is controller first, it still needs to work well on a desktop
-14. Add CSS for all new BEM blocks introduced by the screen to `src/<area>/<feature>/index.css`
+1. Create only the screen asked for. Do not create other screens or unneeded files.
+2. Read the wiki spec for the screen.
+3. Create `src/screens/<feature>/<screen-name>/` and place all screen-specific files inside it:
+   - `types.ts` — domain types for this screen
+   - `seed.ts` — seed data for this screen
+   - `index.css` — BEM blocks owned by this screen
+   - `<ScreenName>.tsx` — screen component (imports `./index.css`)
+   - `<ScreenName>.test.ts` — co-located tests
+4. Extend the `Store` type in `src/store/StoreContext.tsx` if needed, importing types and seed from the screen directory.
+5. Wire the screen into the router (`src/App.tsx` and `src/types/router.ts`).
+6. Screens must be appropriately styled and work well on desktop (not just controller).
 
 ## Inherited Items
 
@@ -117,7 +121,7 @@ All multi-column list rows must truncate overflowing text with a trailing ellips
 
 ## Seed Data
 
-The seed file at `src/seed/` must contain enough data to exercise every screen:
+Each screen's `seed.ts` file provides the initial data for that screen. Collectively, the seed data must contain enough to exercise every screen:
 
 - Multiple compilations including "All Games" and "Favourites"
 - Games with cover images, varied publishers, years, and ROM counts

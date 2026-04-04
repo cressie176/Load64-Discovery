@@ -1,4 +1,4 @@
-import type { GeneralSettings } from "../../types/admin/general-settings";
+import type { GeneralSettings } from "./types";
 
 export const SEED_GENERAL_SETTINGS: GeneralSettings = {
 	gamesDirectory: "/Users/steve/Games/C64",

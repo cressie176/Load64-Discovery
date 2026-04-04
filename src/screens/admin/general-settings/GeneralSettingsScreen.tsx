@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "../../router/RouterContext";
-import { useStore } from "../../store/StoreContext";
-import type { GeneralSettings } from "../../types/admin/general-settings";
+import { useRouter } from "../../../router/RouterContext";
+import { useStore } from "../../../store/StoreContext";
+import type { GeneralSettings } from "./types";
+import "./index.css";
 
 type FocusRegion = "form" | "topbar";
 type FormField =

@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "../../router/RouterContext";
+import { useRouter } from "../../../router/RouterContext";
 import {
 	ADMIN_HUB_ITEMS,
 	type AdminHubItem,
 	QUIT_OPTIONS,
 	wrapIndex,
-} from "./adminHubItems";
-
-export { ADMIN_HUB_ITEMS, QUIT_OPTIONS, wrapIndex };
+} from "./items";
 
 type FocusRegion = "list" | "topbar";
 

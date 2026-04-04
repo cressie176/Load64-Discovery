@@ -1,4 +1,4 @@
-import type { ScreenName } from "../../types/router";
+import type { ScreenName } from "../../../types/router";
 
 type ItemWithScreen = {
 	label: string;

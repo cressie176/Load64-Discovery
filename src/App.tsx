@@ -1,6 +1,6 @@
 import { RouterProvider, useRouter } from "./router/RouterContext";
-import { AdminHubScreen } from "./screens/admin/AdminHubScreen";
-import { GeneralSettingsScreen } from "./screens/admin/GeneralSettingsScreen";
+import { AdminHubScreen } from "./screens/admin/admin-hub/AdminHubScreen";
+import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { StoreProvider } from "./store/StoreContext";
 

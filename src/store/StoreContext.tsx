@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
-import { SEED_GENERAL_SETTINGS } from "../seed/admin/general-settings";
-import type { GeneralSettings } from "../types/admin/general-settings";
+import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
+import type { GeneralSettings } from "../screens/admin/general-settings/types";
 
 interface Store {
 	generalSettings: GeneralSettings;

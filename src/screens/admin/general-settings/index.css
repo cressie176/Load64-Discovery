@@ -1,0 +1,72 @@
+/* ============================================================
+   General Settings Screen
+   ============================================================ */
+
+.form {
+	max-width: 600px;
+}
+
+.form__field {
+	align-items: center;
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 180px 1fr;
+	margin-bottom: 16px;
+}
+
+.form__label {
+	color: var(--colour-text);
+	text-align: right;
+}
+
+.form__input {
+	background: var(--colour-surface);
+	border: 1px solid var(--colour-border);
+	color: var(--colour-text);
+	font-family: var(--font-mono);
+	font-size: var(--font-size-base);
+	outline: none;
+	padding: 4px 8px;
+	width: 100%;
+}
+
+.form__input--active {
+	border-color: var(--colour-accent);
+	color: var(--colour-text-bright);
+}
+
+.form__toggle {
+	color: var(--colour-text);
+	cursor: none;
+	font-family: var(--font-mono);
+	font-size: var(--font-size-base);
+	text-align: left;
+}
+
+.form__toggle--active {
+	color: var(--colour-text-bright);
+}
+
+.form__actions {
+	display: flex;
+	gap: 16px;
+	margin-top: 8px;
+	padding-left: 196px;
+}
+
+.form__action {
+	color: var(--colour-text);
+	cursor: none;
+	font-family: var(--font-mono);
+	font-size: var(--font-size-base);
+}
+
+.form__action--active {
+	color: var(--colour-accent);
+}
+
+.overlay__body {
+	color: var(--colour-text-muted);
+	font-size: 12px;
+	margin-bottom: 12px;
+}

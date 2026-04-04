@@ -1,6 +1,6 @@
 import { deepStrictEqual as deep, equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ADMIN_HUB_ITEMS, QUIT_OPTIONS, wrapIndex } from "./adminHubItems.ts";
+import { ADMIN_HUB_ITEMS, QUIT_OPTIONS, wrapIndex } from "./items.ts";
 
 describe("AdminHubScreen", () => {
 	describe("ADMIN_HUB_ITEMS", () => {
