@@ -10,6 +10,7 @@ import { ControllerListScreen } from "./screens/controllers/controller-list/Cont
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
+import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
 import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
 import { ViceArgumentEditScreen } from "./screens/vice-arguments/vice-argument-edit/ViceArgumentEditScreen";
 import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-list/ViceArgumentListScreen";
@@ -69,7 +70,7 @@ function AppScreens() {
 		return <Placeholder name="Environment Variable List" />;
 	}
 	if (currentScreen === "profile-edit") {
-		return <Placeholder name="Profile Edit" />;
+		return <ProfileEditScreen profileId={currentParams.profileId} />;
 	}
 	if (currentScreen === "compilation-list") {
 		const mode = currentParams.mode === "browse" ? "browse" : "admin";
