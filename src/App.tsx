@@ -1,6 +1,7 @@
 import { RouterProvider, useRouter } from "./router/RouterContext";
 import { AdminHubScreen } from "./screens/admin/admin-hub/AdminHubScreen";
 import { BinaryDiscoverScreen } from "./screens/admin/binary-discover/BinaryDiscoverScreen";
+import { BinaryEditScreen } from "./screens/admin/binary-edit/BinaryEditScreen";
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { Placeholder } from "./screens/Placeholder";
@@ -18,6 +19,9 @@ function AppScreens() {
 	}
 	if (currentScreen === "binary-list") {
 		return <BinaryListScreen />;
+	}
+	if (currentScreen === "binary-edit") {
+		return <BinaryEditScreen />;
 	}
 	if (currentScreen === "binary-discover") {
 		return <BinaryDiscoverScreen />;

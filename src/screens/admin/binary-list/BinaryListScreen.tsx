@@ -131,7 +131,8 @@ export function BinaryListScreen() {
 				(prev) => (prev - 1 + binaries.length) % binaries.length,
 			);
 		} else if (event.key === "Enter") {
-			push("binary-edit");
+			const binary = binaries[selectedIndex];
+			if (binary) push("binary-edit", { machineName: binary.machineName });
 		}
 	}
 
