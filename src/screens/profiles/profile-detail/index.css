@@ -1,0 +1,19 @@
+/* ============================================================
+   Profile Detail Screen
+   ============================================================ */
+
+.profile-detail__row-label {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.profile-detail__row-count {
+	color: var(--colour-text-muted);
+	flex-shrink: 0;
+}
+
+.list__row--selected .profile-detail__row-count {
+	color: var(--colour-text);
+}

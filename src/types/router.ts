@@ -9,4 +9,7 @@ export type ScreenName =
 	| "vice-argument-edit"
 	| "profile-list"
 	| "profile-detail"
-	| "profile-edit";
+	| "profile-edit"
+	| "controller-selection"
+	| "key-mapping-list"
+	| "environment-variable-list";
