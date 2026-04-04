@@ -19,5 +19,7 @@ export type ScreenName =
 	| "compilation-detail"
 	| "compilation-edit"
 	| "controller-family-selection"
+	| "controller-family-list"
+	| "controller-family-edit"
 	| "control-list"
 	| "control-edit";

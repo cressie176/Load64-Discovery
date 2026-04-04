@@ -5,6 +5,7 @@ import { BinaryEditScreen } from "./screens/admin/binary-edit/BinaryEditScreen";
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
+import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
@@ -86,6 +87,14 @@ function AppScreens() {
 	}
 	if (currentScreen === "compilation-edit") {
 		return <Placeholder name="Compilation Edit" />;
+	}
+	if (currentScreen === "controller-family-list") {
+		return (
+			<ControllerFamilyListScreen statusMessage={currentParams.statusMessage} />
+		);
+	}
+	if (currentScreen === "controller-family-edit") {
+		return <Placeholder name="Controller Family Edit" />;
 	}
 	if (currentScreen === "controller-family-selection") {
 		return (
