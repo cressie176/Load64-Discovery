@@ -5,6 +5,8 @@ import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
 import type { GeneralSettings } from "../screens/admin/general-settings/types";
 import { SEED_COMPILATIONS } from "../screens/compilations/compilation-list/seed";
 import type { CompilationsState } from "../screens/compilations/compilation-list/types";
+import { SEED_CONTROLLER_FAMILIES } from "../screens/controller-families/controller-family-selection/seed";
+import type { ControllerFamiliesState } from "../screens/controller-families/controller-family-selection/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
@@ -19,6 +21,7 @@ interface Store {
 	profiles: ProfilesState;
 	profileDetail: ProfileDetailState;
 	compilations: CompilationsState;
+	controllerFamilies: ControllerFamiliesState;
 	discoveryMessage: string;
 }
 
@@ -40,6 +43,7 @@ const INITIAL_STORE: Store = {
 	profiles: SEED_PROFILES,
 	profileDetail: SEED_PROFILE_DETAIL,
 	compilations: SEED_COMPILATIONS,
+	controllerFamilies: SEED_CONTROLLER_FAMILIES,
 	discoveryMessage: "",
 };
 
