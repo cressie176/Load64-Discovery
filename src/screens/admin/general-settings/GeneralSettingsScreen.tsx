@@ -133,6 +133,11 @@ export function GeneralSettingsScreen() {
 	});
 
 	function handleTextInputKey(event: KeyboardEvent) {
+		if (event.key === "Tab") {
+			blurActiveInput();
+			handleFormKey(event);
+			return;
+		}
 		if (event.key === "Escape") {
 			event.preventDefault();
 			setDraft((prev) => ({
