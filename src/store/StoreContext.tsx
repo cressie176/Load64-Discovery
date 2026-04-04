@@ -3,6 +3,8 @@ import { SEED_BINARIES } from "../screens/admin/binary-list/seed";
 import type { BinaryList } from "../screens/admin/binary-list/types";
 import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
 import type { GeneralSettings } from "../screens/admin/general-settings/types";
+import { SEED_COMPILATIONS } from "../screens/compilations/compilation-list/seed";
+import type { CompilationsState } from "../screens/compilations/compilation-list/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
@@ -16,6 +18,7 @@ interface Store {
 	viceArguments: ViceArgumentsState;
 	profiles: ProfilesState;
 	profileDetail: ProfileDetailState;
+	compilations: CompilationsState;
 	discoveryMessage: string;
 }
 
@@ -36,6 +39,7 @@ const INITIAL_STORE: Store = {
 	viceArguments: SEED_VICE_ARGUMENTS,
 	profiles: SEED_PROFILES,
 	profileDetail: SEED_PROFILE_DETAIL,
+	compilations: SEED_COMPILATIONS,
 	discoveryMessage: "",
 };
 

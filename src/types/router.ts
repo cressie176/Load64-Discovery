@@ -12,4 +12,7 @@ export type ScreenName =
 	| "profile-edit"
 	| "controller-selection"
 	| "key-mapping-list"
-	| "environment-variable-list";
+	| "environment-variable-list"
+	| "compilation-list"
+	| "compilation-detail"
+	| "compilation-edit";

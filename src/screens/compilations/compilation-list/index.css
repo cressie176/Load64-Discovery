@@ -1,0 +1,19 @@
+/* ============================================================
+   Compilation List Screen
+   ============================================================ */
+
+.compilation-list__row-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.compilation-list__row-count {
+	color: var(--colour-text-muted);
+	flex-shrink: 0;
+}
+
+.list__row--selected .compilation-list__row-count {
+	color: var(--colour-text);
+}
