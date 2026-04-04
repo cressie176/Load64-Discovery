@@ -92,13 +92,20 @@ All screens read from and write to the shared `StoreContext`. The store is initi
 
 ## Adding a Screen
 
-1. Read the wiki spec for the screen
-2. Add any new domain types to `src/types/<feature>.ts`
-3. Add or extend seed data in `src/seed/<feature>.ts`
-4. Extend the `Store` type in `src/store/StoreContext.tsx` if needed
-5. Create `src/screens/<feature>/<ScreenName>.tsx`
-6. Wire the screen into the router
-7. Co-locate tests in `src/screens/<feature>/<ScreenName>.test.ts`
+1. Create only the screen I ask you to. Do not create other screens.
+2. Create only the things you need for the screen you are creating. Do not create other things.
+3. To the extent possible, use separate files (css, types, etc) to avoid merge conflicts.
+4. Read the wiki spec for the screen
+5. Add any new domain types to `src/types/<area>/<feature>.ts`, e.g. `src/types/admin/general-settings.ts`
+6. Add or extend seed data in `src/seed/<area>/<feature>.ts`, e.g. `src/seed/admin/general-settings.ts`
+7. Extend the `Store` type in `src/store/StoreContext.tsx` if needed
+8. Create `src/screens/<feature>/<ScreenName>.tsx`
+9. Co-locate tests in `src/screens/<feature>/<ScreenName>.test.ts`
+10. Wire the screen into the router
+11. Co-locate tests in `src/screens/<feature>/<ScreenName>.test.ts`
+12. The screens must be appropriately styled
+13. Just because the design is controller first, it still needs to work well on a desktop
+14. Add CSS for all new BEM blocks introduced by the screen to `src/<area>/<feature>/index.css`
 
 ## Inherited Items
 
