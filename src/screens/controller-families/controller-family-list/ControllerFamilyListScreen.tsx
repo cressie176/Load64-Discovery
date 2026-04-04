@@ -77,19 +77,6 @@ export function ControllerFamilyListScreen({
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	});
 
-	useEffect(() => {
-		const handleContextMenuEvent = (event: MouseEvent) => {
-			if (overlay || showContextMenu) return;
-			if (focusRegion !== "list" || families.length === 0) return;
-			event.preventDefault();
-			openContextMenu();
-		};
-
-		window.addEventListener("contextmenu", handleContextMenuEvent);
-		return () =>
-			window.removeEventListener("contextmenu", handleContextMenuEvent);
-	});
-
 	function handleDeleteOverlayKey(event: KeyboardEvent) {
 		if (event.key === "ArrowDown") {
 			setOverlayIndex((prev) => wrapIndex(prev, 1, DELETE_OPTIONS.length));
@@ -138,9 +125,6 @@ export function ControllerFamilyListScreen({
 			pop();
 			return;
 		}
-		if (event.altKey && event.key === "Alt") {
-			return;
-		}
 		if (focusRegion === "topbar") {
 			handleTopBarKey(event);
 			return;
@@ -161,6 +145,7 @@ export function ControllerFamilyListScreen({
 				push("control-list", { ownerId: focusedFamily.id });
 			}
 		} else if (event.key === "Alt") {
+			event.preventDefault();
 			openContextMenu();
 		}
 	}
@@ -268,7 +253,16 @@ export function ControllerFamilyListScreen({
 	const warningMessage = deleteWarningMessage(focusedFamily);
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenu();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">Controller Families</span>
 				<div className="screen__topbar-ctas">
