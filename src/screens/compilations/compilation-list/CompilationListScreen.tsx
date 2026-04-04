@@ -183,6 +183,9 @@ export function CompilationListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateCompilation();
+		} else if (event.key === "Alt") {
+			event.preventDefault();
+			openContextMenu();
 		}
 	}
 
@@ -237,6 +240,12 @@ export function CompilationListScreen({
 		setOverlayIndex(0);
 	}
 
+	function openContextMenu() {
+		if (!canShowContextMenu) return;
+		setContextMenuIndex(0);
+		setShowContextMenu(true);
+	}
+
 	function confirmDelete() {
 		if (!focusedCompilation) return;
 		const deletedName = focusedCompilation.name;
@@ -281,7 +290,16 @@ export function CompilationListScreen({
 	const warningMessage = deleteWarningMessage(focusedCompilation);
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenu();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">Compilations</span>
 				<div className="screen__topbar-ctas">

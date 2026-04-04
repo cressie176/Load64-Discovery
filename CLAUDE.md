@@ -60,7 +60,7 @@ Screens are rendered by a central router component that maintains the navigation
 | Move in list        | D-Pad Up/Down | Arrow Up/Down    |
 | Confirm / activate  | A / Select    | Enter            |
 | Back / cancel       | Back          | Escape           |
-| Context menu        | Button West   | —                |
+| Context menu        | Button West   | Option / Right-click |
 | Cycle focus regions | Button North  | Tab / Shift+Tab  |
 
 Tab moves between focus regions and top-bar CTAs — never through list items.

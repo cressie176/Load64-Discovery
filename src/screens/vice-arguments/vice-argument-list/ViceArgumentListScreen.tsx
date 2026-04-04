@@ -202,6 +202,9 @@ export function ViceArgumentListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateRow(focusedRow);
+		} else if (event.key === "Alt") {
+			event.preventDefault();
+			openContextMenu();
 		}
 	}
 
@@ -244,6 +247,12 @@ export function ViceArgumentListScreen({
 		push("vice-argument-edit");
 	}
 
+	function openContextMenu() {
+		if (focusedRow?.isInherited) return;
+		setContextMenuIndex(0);
+		setShowContextMenu(true);
+	}
+
 	function openDeleteOverlay() {
 		setOverlay("delete");
 		setOverlayIndex(0);
@@ -275,7 +284,16 @@ export function ViceArgumentListScreen({
 	const ownerLabel = owner?.name ?? ownerId;
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenu();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">
 					{ownerLabel} VICE Arguments

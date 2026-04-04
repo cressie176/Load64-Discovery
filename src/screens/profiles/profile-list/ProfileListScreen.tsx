@@ -159,6 +159,9 @@ export function ProfileListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			navigateToDetail();
+		} else if (event.key === "Alt") {
+			event.preventDefault();
+			openContextMenu();
 		}
 	}
 
@@ -203,6 +206,11 @@ export function ProfileListScreen({
 	function navigateToRename() {
 		if (!focusedProfile) return;
 		push("profile-edit", { profileId: focusedProfile.id });
+	}
+
+	function openContextMenu() {
+		setContextMenuIndex(0);
+		setShowContextMenu(true);
 	}
 
 	function openDeleteOverlay() {
@@ -260,7 +268,16 @@ export function ProfileListScreen({
 	const warningMessage = deleteWarningMessage(focusedProfile);
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenu();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">Profiles</span>
 				<div className="screen__topbar-ctas">
