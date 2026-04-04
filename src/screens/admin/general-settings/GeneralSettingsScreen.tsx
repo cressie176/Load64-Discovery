@@ -140,14 +140,8 @@ export function GeneralSettingsScreen() {
 		}
 		if (event.key === "Escape") {
 			event.preventDefault();
-			setDraft((prev) => ({
-				...prev,
-				[activeField]:
-					activeField === "gamesDirectory"
-						? savedSettings.gamesDirectory
-						: savedSettings.catalogueUrl,
-			}));
 			blurActiveInput();
+			pop();
 		}
 	}
 
@@ -176,9 +170,7 @@ export function GeneralSettingsScreen() {
 			return;
 		}
 		if (event.key === "Escape") {
-			if (hasSavedDirectory) {
-				pop();
-			}
+			pop();
 			return;
 		}
 		if (focusRegion === "topbar") {
