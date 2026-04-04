@@ -103,6 +103,9 @@ export function GeneralSettingsScreen() {
 	const backButtonRef = useRef<HTMLButtonElement>(null);
 	const gamesDirectoryRef = useRef<HTMLInputElement>(null);
 	const catalogueUrlRef = useRef<HTMLInputElement>(null);
+	const showSplashscreenButtonRef = useRef<HTMLButtonElement>(null);
+	const saveButtonRef = useRef<HTMLButtonElement>(null);
+	const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
 	const formFields = hasSavedDirectory
 		? FORM_FIELDS_WITH_CANCEL
@@ -146,14 +149,24 @@ export function GeneralSettingsScreen() {
 	function handleFormKey(event: KeyboardEvent) {
 		if (event.key === "Tab") {
 			event.preventDefault();
-			if (hasSavedDirectory) {
-				if (focusRegion === "form") {
-					setFocusRegion("topbar");
-					backButtonRef.current?.focus();
-				} else {
-					setFocusRegion("form");
-					containerRef.current?.focus();
-				}
+			if (focusRegion === "topbar") {
+				setFocusRegion("form");
+				focusField(formFields[0] as FormField);
+				return;
+			}
+			const delta = event.shiftKey ? -1 : 1;
+			const currentIndex = formFields.indexOf(activeField);
+			const nextIndex = currentIndex + delta;
+			if (nextIndex >= formFields.length && hasSavedDirectory) {
+				setFocusRegion("topbar");
+				backButtonRef.current?.focus();
+			} else if (nextIndex < 0 && hasSavedDirectory) {
+				setFocusRegion("topbar");
+				backButtonRef.current?.focus();
+			} else {
+				const wrappedIndex =
+					(nextIndex + formFields.length) % formFields.length;
+				focusField(formFields[wrappedIndex] as FormField);
 			}
 			return;
 		}
@@ -194,11 +207,27 @@ export function GeneralSettingsScreen() {
 		}
 	}
 
+	function focusField(field: FormField) {
+		setActiveField(field);
+		setFocusRegion("form");
+		if (field === "gamesDirectory") {
+			gamesDirectoryRef.current?.focus();
+		} else if (field === "catalogueUrl") {
+			catalogueUrlRef.current?.focus();
+		} else if (field === "showSplashscreen") {
+			showSplashscreenButtonRef.current?.focus();
+		} else if (field === "save") {
+			saveButtonRef.current?.focus();
+		} else if (field === "cancel") {
+			cancelButtonRef.current?.focus();
+		}
+	}
+
 	function moveField(delta: number) {
 		const currentIndex = formFields.indexOf(activeField);
 		const nextIndex =
 			(currentIndex + delta + formFields.length) % formFields.length;
-		setActiveField(formFields[nextIndex] as FormField);
+		focusField(formFields[nextIndex] as FormField);
 	}
 
 	function activateField() {
@@ -329,6 +358,7 @@ export function GeneralSettingsScreen() {
 							Show Splashscreen
 						</label>
 						<button
+							ref={showSplashscreenButtonRef}
 							id="show-splashscreen"
 							className={`form__toggle${activeField === "showSplashscreen" && focusRegion === "form" ? " form__toggle--active" : ""}`}
 							onClick={() =>
@@ -337,6 +367,10 @@ export function GeneralSettingsScreen() {
 									showSplashscreen: !prev.showSplashscreen,
 								}))
 							}
+							onFocus={() => {
+								setActiveField("showSplashscreen");
+								setFocusRegion("form");
+							}}
 							type="button"
 						>
 							{draft.showSplashscreen ? "[On]" : "[Off]"}
@@ -344,16 +378,26 @@ export function GeneralSettingsScreen() {
 					</div>
 					<div className="form__actions">
 						<button
+							ref={saveButtonRef}
 							className={`form__action${activeField === "save" && focusRegion === "form" ? " form__action--active" : ""}`}
 							onClick={handleSave}
+							onFocus={() => {
+								setActiveField("save");
+								setFocusRegion("form");
+							}}
 							type="button"
 						>
 							[Save]
 						</button>
 						{hasSavedDirectory && (
 							<button
+								ref={cancelButtonRef}
 								className={`form__action${activeField === "cancel" && focusRegion === "form" ? " form__action--active" : ""}`}
 								onClick={pop}
+								onFocus={() => {
+									setActiveField("cancel");
+									setFocusRegion("form");
+								}}
 								type="button"
 							>
 								[Cancel]
