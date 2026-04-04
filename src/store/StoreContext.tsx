@@ -1,9 +1,12 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { SEED_BINARIES } from "../screens/admin/binary-list/seed";
+import type { BinaryList } from "../screens/admin/binary-list/types";
 import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
 import type { GeneralSettings } from "../screens/admin/general-settings/types";
 
 interface Store {
 	generalSettings: GeneralSettings;
+	binaries: BinaryList;
 }
 
 interface StoreContextValue {
@@ -19,6 +22,7 @@ interface StoreProviderProps {
 
 const INITIAL_STORE: Store = {
 	generalSettings: SEED_GENERAL_SETTINGS,
+	binaries: SEED_BINARIES,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {

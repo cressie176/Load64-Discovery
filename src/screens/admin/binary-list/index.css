@@ -1,0 +1,43 @@
+/* ============================================================
+   Binary List Screen
+   ============================================================ */
+
+.binary-list__row {
+	display: grid;
+	grid-template-columns: 180px 1fr 24px;
+	gap: 16px;
+	min-width: 0;
+}
+
+.binary-list__machine {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.binary-list__path {
+	color: var(--colour-text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.binary-list__path--configured {
+	color: var(--colour-text);
+}
+
+.list__row--selected .binary-list__path--configured {
+	color: var(--colour-text-bright);
+}
+
+.binary-list__status {
+	text-align: center;
+}
+
+.binary-list__status--valid {
+	color: #44cc44;
+}
+
+.binary-list__status--invalid {
+	color: #cc4444;
+}
