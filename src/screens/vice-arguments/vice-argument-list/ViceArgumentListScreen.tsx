@@ -210,7 +210,10 @@ export function ViceArgumentListScreen({
 
 	function activateRow(row: ViceArgumentRow | undefined) {
 		if (!row) return;
-		push("vice-argument-edit");
+		push("vice-argument-edit", {
+			ownerId: row.isInherited ? row.ownerId : ownerId,
+			argumentId: row.id,
+		});
 	}
 
 	function toggleFocusRegion(reverse = false) {
@@ -244,7 +247,7 @@ export function ViceArgumentListScreen({
 	}
 
 	function navigateToAdd() {
-		push("vice-argument-edit");
+		push("vice-argument-edit", { ownerId });
 	}
 
 	function openContextMenu() {

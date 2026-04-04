@@ -11,6 +11,7 @@ import { ControlListScreen } from "./screens/controls/control-list/ControlListSc
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
+import { ViceArgumentEditScreen } from "./screens/vice-arguments/vice-argument-edit/ViceArgumentEditScreen";
 import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-list/ViceArgumentListScreen";
 import { StoreProvider } from "./store/StoreContext";
 
@@ -46,7 +47,7 @@ function AppScreens() {
 		);
 	}
 	if (currentScreen === "vice-argument-edit") {
-		return <Placeholder name="Vice Argument Edit" />;
+		return <ViceArgumentEditScreen />;
 	}
 	if (currentScreen === "profile-list") {
 		return <ProfileListScreen statusMessage={currentParams.statusMessage} />;
