@@ -142,7 +142,7 @@ export function CompilationListScreen({
 	function handleMainKey(event: KeyboardEvent) {
 		if (event.key === "Tab") {
 			event.preventDefault();
-			toggleFocusRegion();
+			toggleFocusRegion(event.shiftKey);
 			return;
 		}
 		if (event.key === "Escape") {
@@ -195,15 +195,23 @@ export function CompilationListScreen({
 		}
 	}
 
-	function toggleFocusRegion() {
+	function toggleFocusRegion(reverse = false) {
 		if (focusRegion === "list") {
+			const cta = reverse ? topBarCtas[topBarCtas.length - 1] : topBarCtas[0];
 			setFocusRegion("topbar");
-			const firstCta = topBarCtas[0] as TopBarCta;
-			setFocusedCta(firstCta);
-			focusCtaButton(firstCta);
+			setFocusedCta(cta as TopBarCta);
+			focusCtaButton(cta as TopBarCta);
 		} else {
-			setFocusRegion("list");
-			containerRef.current?.focus();
+			const currentIndex = topBarCtas.indexOf(focusedCta);
+			const nextIndex = currentIndex + (reverse ? -1 : 1);
+			if (nextIndex >= 0 && nextIndex < topBarCtas.length) {
+				const nextCta = topBarCtas[nextIndex] as TopBarCta;
+				setFocusedCta(nextCta);
+				focusCtaButton(nextCta);
+			} else {
+				setFocusRegion("list");
+				containerRef.current?.focus();
+			}
 		}
 	}
 

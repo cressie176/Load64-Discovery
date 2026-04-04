@@ -67,6 +67,47 @@ Tab moves between focus regions and top-bar CTAs — never through list items.
 
 On entering any screen, focus lands on the primary content region, not the top-bar CTAs.
 
+**Tab cycling implementation:** When Tab is pressed in the topbar, step through each CTA individually before returning to the content region. A common bug is toggling directly between `"list"` and `"topbar"` as a binary flip — this skips CTAs after the first. The correct pattern:
+- Tab from content → topbar, focus first CTA (or last if Shift+Tab)
+- Tab within topbar → move to next CTA; if no next CTA, return to content
+- Always pass `event.shiftKey` to the toggle function to support reverse traversal
+
+The correct implementation of `toggleFocusRegion` and its call site:
+
+```ts
+// In handleMainKey:
+if (event.key === "Tab") {
+  event.preventDefault();
+  toggleFocusRegion(event.shiftKey);
+  return;
+}
+
+// toggleFocusRegion:
+function toggleFocusRegion(reverse = false) {
+  if (focusRegion === "list") {
+    const cta = reverse
+      ? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
+      : TOP_BAR_CTAS[0];
+    setFocusRegion("topbar");
+    setFocusedCta(cta as TopBarCta);
+    focusCtaButton(cta as TopBarCta);
+  } else {
+    const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+    const nextIndex = currentIndex + (reverse ? -1 : 1);
+    if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+      const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
+      setFocusedCta(nextCta);
+      focusCtaButton(nextCta);
+    } else {
+      setFocusRegion("list");
+      containerRef.current?.focus();
+    }
+  }
+}
+```
+
+Use the screen-specific CTA array (e.g. `topBarCtas` when it varies by mode) in place of `TOP_BAR_CTAS` where appropriate.
+
 ## Screen Anatomy
 
 Every screen except the Carousel has a `[Back]` CTA in the top bar. The general layout is:
