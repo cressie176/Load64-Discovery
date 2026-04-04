@@ -1,1 +1,1 @@
-export type ScreenName = "carousel" | "admin-hub";
+export type ScreenName = "carousel" | "admin-hub" | "general-settings";

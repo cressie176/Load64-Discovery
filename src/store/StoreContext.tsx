@@ -1,8 +1,10 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
+import { SEED_GENERAL_SETTINGS } from "../seed/admin/general-settings";
+import type { GeneralSettings } from "../types/admin/general-settings";
 
-// Store shape grows as screens are implemented
-// biome-ignore lint/complexity/noBannedTypes: intentional empty placeholder, expanded per screen
-type Store = {};
+interface Store {
+	generalSettings: GeneralSettings;
+}
 
 interface StoreContextValue {
 	store: Store;
@@ -15,8 +17,12 @@ interface StoreProviderProps {
 	children: ReactNode;
 }
 
+const INITIAL_STORE: Store = {
+	generalSettings: SEED_GENERAL_SETTINGS,
+};
+
 export function StoreProvider({ children }: StoreProviderProps) {
-	const [store, setStore] = useState<Store>({});
+	const [store, setStore] = useState<Store>(INITIAL_STORE);
 
 	return (
 		<StoreContext.Provider value={{ store, setStore }}>
