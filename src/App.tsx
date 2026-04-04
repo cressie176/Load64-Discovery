@@ -3,10 +3,11 @@ import { AdminHubScreen } from "./screens/admin/admin-hub/AdminHubScreen";
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { Placeholder } from "./screens/Placeholder";
+import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-list/ViceArgumentListScreen";
 import { StoreProvider } from "./store/StoreContext";
 
 function AppScreens() {
-	const { currentScreen } = useRouter();
+	const { currentScreen, currentParams } = useRouter();
 	if (currentScreen === "admin-hub") {
 		return <AdminHubScreen />;
 	}
@@ -16,13 +17,27 @@ function AppScreens() {
 	if (currentScreen === "binary-list") {
 		return <BinaryListScreen />;
 	}
+	if (currentScreen === "vice-argument-list") {
+		return (
+			<ViceArgumentListScreen
+				ownerId={currentParams.ownerId ?? "profile-default"}
+				statusMessage={currentParams.statusMessage}
+			/>
+		);
+	}
+	if (currentScreen === "vice-argument-edit") {
+		return <Placeholder name="Vice Argument Edit" />;
+	}
 	return <Placeholder name="Game Carousel" />;
 }
 
 export function App() {
 	return (
 		<StoreProvider>
-			<RouterProvider initialScreen="admin-hub">
+			<RouterProvider
+				initialScreen="vice-argument-list"
+				initialParams={{ ownerId: "launch-config-monty" }}
+			>
 				<AppScreens />
 			</RouterProvider>
 		</StoreProvider>

@@ -4,4 +4,6 @@ export type ScreenName =
 	| "general-settings"
 	| "binary-list"
 	| "binary-edit"
-	| "binary-discover";
+	| "binary-discover"
+	| "vice-argument-list"
+	| "vice-argument-edit";
