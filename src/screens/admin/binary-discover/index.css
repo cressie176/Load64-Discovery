@@ -23,3 +23,7 @@
 .binary-discover__browse:hover {
 	color: var(--colour-text);
 }
+
+.binary-discover__browse--active {
+	color: var(--colour-accent);
+}

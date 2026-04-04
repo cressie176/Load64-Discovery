@@ -118,7 +118,7 @@ export function ProfileListScreen({
 	function handleMainKey(event: KeyboardEvent) {
 		if (event.key === "Tab") {
 			event.preventDefault();
-			toggleFocusRegion();
+			toggleFocusRegion(event.shiftKey);
 			return;
 		}
 		if (event.key === "Escape") {
@@ -167,14 +167,24 @@ export function ProfileListScreen({
 		push("profile-detail", { profileId: focusedProfile.id });
 	}
 
-	function toggleFocusRegion() {
+	function toggleFocusRegion(reverse: boolean) {
 		if (focusRegion === "list") {
 			setFocusRegion("topbar");
-			setFocusedCta("add");
-			addButtonRef.current?.focus();
+			const ctaIndex = reverse ? TOP_BAR_CTAS.length - 1 : 0;
+			const cta = TOP_BAR_CTAS[ctaIndex] as TopBarCta;
+			setFocusedCta(cta);
+			focusCtaButton(cta);
 		} else {
-			setFocusRegion("list");
-			containerRef.current?.focus();
+			const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+			const next = reverse ? currentIndex - 1 : currentIndex + 1;
+			if (next >= 0 && next < TOP_BAR_CTAS.length) {
+				const nextCta = TOP_BAR_CTAS[next] as TopBarCta;
+				setFocusedCta(nextCta);
+				focusCtaButton(nextCta);
+			} else {
+				setFocusRegion("list");
+				containerRef.current?.focus();
+			}
 		}
 	}
 

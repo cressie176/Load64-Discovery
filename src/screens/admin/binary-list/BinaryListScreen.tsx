@@ -87,8 +87,14 @@ export function BinaryListScreen() {
 			setTopbarCtaIndex(ctaIndex);
 			focusTopbarCta(TOPBAR_CTAS[ctaIndex] as TopbarCta);
 		} else {
-			setFocusRegion("list");
-			containerRef.current?.focus();
+			const next = reverse ? topbarCtaIndex - 1 : topbarCtaIndex + 1;
+			if (next >= 0 && next < TOPBAR_CTAS.length) {
+				setTopbarCtaIndex(next);
+				focusTopbarCta(TOPBAR_CTAS[next] as TopbarCta);
+			} else {
+				setFocusRegion("list");
+				containerRef.current?.focus();
+			}
 		}
 	}
 

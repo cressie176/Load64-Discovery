@@ -4,9 +4,9 @@ import { useStore } from "../../../store/StoreContext";
 import "./index.css";
 
 type FocusRegion = "form" | "topbar";
-type FormField = "vicePath" | "discover" | "cancel";
+type FormField = "vicePath" | "browse" | "discover" | "cancel";
 
-const FORM_FIELDS: FormField[] = ["vicePath", "discover", "cancel"];
+const FORM_FIELDS: FormField[] = ["vicePath", "browse", "discover", "cancel"];
 
 const MACHINE_BINARIES: Record<string, string> = {
 	"Commodore 64": "x64sc",
@@ -54,6 +54,7 @@ export function BinaryDiscoverScreen() {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const backButtonRef = useRef<HTMLButtonElement>(null);
 	const vicePathRef = useRef<HTMLInputElement>(null);
+	const browseButtonRef = useRef<HTMLButtonElement>(null);
 	const discoverButtonRef = useRef<HTMLButtonElement>(null);
 	const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -128,6 +129,8 @@ export function BinaryDiscoverScreen() {
 		setFocusRegion("form");
 		if (field === "vicePath") {
 			vicePathRef.current?.focus();
+		} else if (field === "browse") {
+			browseButtonRef.current?.focus();
 		} else if (field === "discover") {
 			discoverButtonRef.current?.focus();
 		} else if (field === "cancel") {
@@ -144,6 +147,8 @@ export function BinaryDiscoverScreen() {
 
 	function activateField() {
 		if (activeField === "vicePath") {
+			vicePathRef.current?.focus();
+		} else if (activeField === "browse") {
 			vicePathRef.current?.focus();
 		} else if (activeField === "discover") {
 			handleDiscover();
@@ -221,9 +226,14 @@ export function BinaryDiscoverScreen() {
 								}}
 							/>
 							<button
-								className="binary-discover__browse"
+								ref={browseButtonRef}
+								className={`binary-discover__browse${activeField === "browse" && focusRegion === "form" ? " binary-discover__browse--active" : ""}`}
 								type="button"
 								onClick={() => vicePathRef.current?.focus()}
+								onFocus={() => {
+									setActiveField("browse");
+									setFocusRegion("form");
+								}}
 							>
 								[Browse]
 							</button>
