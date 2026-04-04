@@ -17,6 +17,7 @@ export type ScreenName =
 	| "key-mapping-list"
 	| "key-mapping-edit"
 	| "environment-variable-list"
+	| "environment-variable-edit"
 	| "compilation-list"
 	| "compilation-detail"
 	| "compilation-edit"

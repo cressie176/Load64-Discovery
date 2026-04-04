@@ -13,6 +13,8 @@ import { SEED_CONTROLLERS } from "../screens/controllers/controller-list/seed";
 import type { ControllerList } from "../screens/controllers/controller-list/types";
 import { SEED_CONTROLS } from "../screens/controls/control-list/seed";
 import type { ControlsState } from "../screens/controls/control-list/types";
+import { SEED_ENV_VARS } from "../screens/environment-variables/environment-variable-list/seed";
+import type { EnvVarsState } from "../screens/environment-variables/environment-variable-list/types";
 import { SEED_KEY_MAPPINGS } from "../screens/key-mappings/key-mapping-list/seed";
 import type { KeyMappingsState } from "../screens/key-mappings/key-mapping-list/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
@@ -34,6 +36,7 @@ interface Store {
 	controllerFamilies: ControllerFamiliesState;
 	controls: ControlsState;
 	keyMappings: KeyMappingsState;
+	environmentVariables: EnvVarsState;
 	discoveryMessage: string;
 }
 
@@ -60,6 +63,7 @@ const INITIAL_STORE: Store = {
 	controllerFamilies: SEED_CONTROLLER_FAMILIES,
 	controls: SEED_CONTROLS,
 	keyMappings: SEED_KEY_MAPPINGS,
+	environmentVariables: SEED_ENV_VARS,
 	discoveryMessage: "",
 };
 
