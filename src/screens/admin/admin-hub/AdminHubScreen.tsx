@@ -16,6 +16,7 @@ export function AdminHubScreen() {
 	const [showQuitOverlay, setShowQuitOverlay] = useState(false);
 	const [quitSelectedIndex, setQuitSelectedIndex] = useState(0);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const backButtonRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
 		containerRef.current?.focus();
@@ -53,7 +54,13 @@ export function AdminHubScreen() {
 	function handleMainKey(event: KeyboardEvent) {
 		if (event.key === "Tab") {
 			event.preventDefault();
-			setFocusRegion((prev) => (prev === "list" ? "topbar" : "list"));
+			if (focusRegion === "list") {
+				setFocusRegion("topbar");
+				backButtonRef.current?.focus();
+			} else {
+				setFocusRegion("list");
+				containerRef.current?.focus();
+			}
 			return;
 		}
 		if (event.key === "Escape") {
@@ -91,6 +98,7 @@ export function AdminHubScreen() {
 				<span className="screen__topbar-title">Administration</span>
 				<div className="screen__topbar-ctas">
 					<button
+						ref={backButtonRef}
 						className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
 						onClick={pop}
 						type="button"

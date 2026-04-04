@@ -37,7 +37,7 @@
 
 .form__toggle {
 	color: var(--colour-text);
-	cursor: none;
+	cursor: pointer;
 	font-family: var(--font-mono);
 	font-size: var(--font-size-base);
 	text-align: left;
@@ -56,7 +56,7 @@
 
 .form__action {
 	color: var(--colour-text);
-	cursor: none;
+	cursor: pointer;
 	font-family: var(--font-mono);
 	font-size: var(--font-size-base);
 }

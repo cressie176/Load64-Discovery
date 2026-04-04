@@ -47,7 +47,7 @@ button {
 	background: none;
 	border: none;
 	color: inherit;
-	cursor: none;
+	cursor: pointer;
 	font-family: inherit;
 	font-size: inherit;
 	padding: 0;
@@ -103,7 +103,7 @@ button {
 
 .topbar-cta {
 	color: var(--colour-text-muted);
-	cursor: none;
+	cursor: pointer;
 	padding: 2px 8px;
 	border: 1px solid transparent;
 }

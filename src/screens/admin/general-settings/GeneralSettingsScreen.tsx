@@ -100,6 +100,7 @@ export function GeneralSettingsScreen() {
 	const [overlayIndex, setOverlayIndex] = useState(0);
 
 	const containerRef = useRef<HTMLDivElement>(null);
+	const backButtonRef = useRef<HTMLButtonElement>(null);
 	const gamesDirectoryRef = useRef<HTMLInputElement>(null);
 	const catalogueUrlRef = useRef<HTMLInputElement>(null);
 
@@ -146,7 +147,13 @@ export function GeneralSettingsScreen() {
 		if (event.key === "Tab") {
 			event.preventDefault();
 			if (hasSavedDirectory) {
-				setFocusRegion((prev) => (prev === "form" ? "topbar" : "form"));
+				if (focusRegion === "form") {
+					setFocusRegion("topbar");
+					backButtonRef.current?.focus();
+				} else {
+					setFocusRegion("form");
+					containerRef.current?.focus();
+				}
 			}
 			return;
 		}
@@ -268,6 +275,7 @@ export function GeneralSettingsScreen() {
 				{hasSavedDirectory && (
 					<div className="screen__topbar-ctas">
 						<button
+							ref={backButtonRef}
 							className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
 							onClick={pop}
 							type="button"
