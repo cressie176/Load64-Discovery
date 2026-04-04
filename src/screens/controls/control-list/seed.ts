@@ -1,0 +1,161 @@
+import type { ControlsState } from "./types";
+
+export const SEED_CONTROLS: ControlsState = {
+	owners: [
+		{
+			id: "family-logitech",
+			name: "Logitech",
+			type: "family",
+		},
+		{
+			id: "family-playstation",
+			name: "PlayStation",
+			type: "family",
+		},
+		{
+			id: "controller-logitech-dual-action",
+			name: "Logitech Dual Action",
+			type: "controller",
+			familyId: "family-logitech",
+			familyName: "Logitech",
+		},
+		{
+			id: "controller-dualsense",
+			name: "DualSense Edge",
+			type: "controller",
+			familyId: undefined,
+			familyName: undefined,
+		},
+	],
+	controls: [
+		// Logitech family controls
+		{
+			id: "ctrl-logitech-1",
+			ownerId: "family-logitech",
+			controlName: "A",
+			canonicalName: "button_south",
+			event: "button_1",
+		},
+		{
+			id: "ctrl-logitech-2",
+			ownerId: "family-logitech",
+			controlName: "B",
+			canonicalName: "button_east",
+			event: "button_0",
+		},
+		{
+			id: "ctrl-logitech-3",
+			ownerId: "family-logitech",
+			controlName: "X",
+			canonicalName: "button_west",
+			event: "button_2",
+		},
+		{
+			id: "ctrl-logitech-4",
+			ownerId: "family-logitech",
+			controlName: "Y",
+			canonicalName: "button_north",
+			event: "button_3",
+		},
+		{
+			id: "ctrl-logitech-5",
+			ownerId: "family-logitech",
+			controlName: "Start",
+			canonicalName: "start",
+			event: "button_7",
+		},
+		{
+			id: "ctrl-logitech-6",
+			ownerId: "family-logitech",
+			controlName: "Back",
+			canonicalName: "back",
+			event: "button_8",
+		},
+		// PlayStation family controls
+		{
+			id: "ctrl-ps-1",
+			ownerId: "family-playstation",
+			controlName: "Cross",
+			canonicalName: "button_south",
+			event: "button_0",
+		},
+		{
+			id: "ctrl-ps-2",
+			ownerId: "family-playstation",
+			controlName: "Circle",
+			canonicalName: "button_east",
+			event: "button_1",
+		},
+		{
+			id: "ctrl-ps-3",
+			ownerId: "family-playstation",
+			controlName: "Square",
+			canonicalName: "button_west",
+			event: "button_3",
+		},
+		{
+			id: "ctrl-ps-4",
+			ownerId: "family-playstation",
+			controlName: "Triangle",
+			canonicalName: "button_north",
+			event: "button_2",
+		},
+		{
+			id: "ctrl-ps-5",
+			ownerId: "family-playstation",
+			controlName: "Up",
+			canonicalName: "dpad_up",
+			event: "button_11",
+		},
+		{
+			id: "ctrl-ps-6",
+			ownerId: "family-playstation",
+			controlName: "Down",
+			canonicalName: "dpad_down",
+			event: "button_12",
+		},
+		{
+			id: "ctrl-ps-7",
+			ownerId: "family-playstation",
+			controlName: "Left",
+			canonicalName: "dpad_left",
+			event: "button_13",
+		},
+		{
+			id: "ctrl-ps-8",
+			ownerId: "family-playstation",
+			controlName: "Right",
+			canonicalName: "dpad_right",
+			event: "button_14",
+		},
+		{
+			id: "ctrl-ps-9",
+			ownerId: "family-playstation",
+			controlName: "Options",
+			canonicalName: "start",
+			event: "button_6",
+		},
+		{
+			id: "ctrl-ps-10",
+			ownerId: "family-playstation",
+			controlName: "Create",
+			canonicalName: "back",
+			event: "button_4",
+		},
+		// Logitech Dual Action controller overrides (just A and B are different)
+		{
+			id: "ctrl-lda-1",
+			ownerId: "controller-logitech-dual-action",
+			controlName: "A",
+			canonicalName: "button_south",
+			event: "button_1",
+		},
+		{
+			id: "ctrl-lda-2",
+			ownerId: "controller-logitech-dual-action",
+			controlName: "B",
+			canonicalName: "button_east",
+			event: "button_0",
+		},
+	],
+};

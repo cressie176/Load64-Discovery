@@ -6,6 +6,7 @@ import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
+import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
@@ -83,6 +84,17 @@ function AppScreens() {
 				controllerId={currentParams.controllerId ?? "controller-logitech-f310"}
 			/>
 		);
+	}
+	if (currentScreen === "control-list") {
+		return (
+			<ControlListScreen
+				ownerId={currentParams.ownerId ?? "family-logitech"}
+				statusMessage={currentParams.statusMessage}
+			/>
+		);
+	}
+	if (currentScreen === "control-edit") {
+		return <Placeholder name="Control Edit" />;
 	}
 	return <Placeholder name="Game Carousel" />;
 }

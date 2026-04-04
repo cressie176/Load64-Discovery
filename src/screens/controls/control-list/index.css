@@ -1,0 +1,43 @@
+/* ============================================================
+   Control List Screen
+   ============================================================ */
+
+.control-list__row-control-name {
+	flex: 0 0 80px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.control-list__row-canonical-name {
+	flex: 0 0 160px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.control-list__row-event {
+	flex: 0 0 120px;
+	font-family: var(--font-mono);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.control-list__row-source {
+	color: var(--colour-text-muted);
+	flex: 1;
+	font-style: italic;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.control-list__row--inherited {
+	color: var(--colour-text-muted);
+	font-style: italic;
+}
+
+.list__row--selected .control-list__row-source {
+	color: var(--colour-text);
+}
