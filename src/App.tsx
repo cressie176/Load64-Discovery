@@ -4,6 +4,7 @@ import { BinaryDiscoverScreen } from "./screens/admin/binary-discover/BinaryDisc
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { Placeholder } from "./screens/Placeholder";
+import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
 import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-list/ViceArgumentListScreen";
 import { StoreProvider } from "./store/StoreContext";
 
@@ -31,6 +32,15 @@ function AppScreens() {
 	}
 	if (currentScreen === "vice-argument-edit") {
 		return <Placeholder name="Vice Argument Edit" />;
+	}
+	if (currentScreen === "profile-list") {
+		return <ProfileListScreen statusMessage={currentParams.statusMessage} />;
+	}
+	if (currentScreen === "profile-detail") {
+		return <Placeholder name="Profile Detail" />;
+	}
+	if (currentScreen === "profile-edit") {
+		return <Placeholder name="Profile Edit" />;
 	}
 	return <Placeholder name="Game Carousel" />;
 }

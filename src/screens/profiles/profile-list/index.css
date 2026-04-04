@@ -1,0 +1,20 @@
+/* ============================================================
+   Profile List Screen
+   ============================================================ */
+
+.profile-list__row-name {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.profile-list__row-badge {
+	color: var(--colour-text-muted);
+	flex-shrink: 0;
+	font-size: 12px;
+}
+
+.list__row--selected .profile-list__row-badge {
+	color: var(--colour-text);
+}

@@ -6,4 +6,7 @@ export type ScreenName =
 	| "binary-edit"
 	| "binary-discover"
 	| "vice-argument-list"
-	| "vice-argument-edit";
+	| "vice-argument-edit"
+	| "profile-list"
+	| "profile-detail"
+	| "profile-edit";

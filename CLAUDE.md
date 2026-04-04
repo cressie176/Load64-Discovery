@@ -11,7 +11,7 @@ npm run dev       # start dev server
 npm run check     # Biome lint + format check
 npm run format    # Biome auto-format
 npm test          # node:test suite (3s timeout, no concurrency)
-npx tsc -b        # type check
+./node_modules/.bin/tsc -b        # type check
 ```
 
 ## Source Structure
