@@ -34,10 +34,7 @@ function AppScreens() {
 export function App() {
 	return (
 		<StoreProvider>
-			<RouterProvider
-				initialScreen="vice-argument-list"
-				initialParams={{ ownerId: "launch-config-monty" }}
-			>
+			<RouterProvider initialScreen="admin-hub">
 				<AppScreens />
 			</RouterProvider>
 		</StoreProvider>
