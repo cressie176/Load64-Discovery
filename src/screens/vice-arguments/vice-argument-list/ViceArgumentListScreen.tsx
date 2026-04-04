@@ -161,7 +161,7 @@ export function ViceArgumentListScreen({
 	function handleMainKey(event: KeyboardEvent) {
 		if (event.key === "Tab") {
 			event.preventDefault();
-			toggleFocusRegion();
+			toggleFocusRegion(event.shiftKey);
 			return;
 		}
 		if (event.key === "Escape") {
@@ -210,14 +210,25 @@ export function ViceArgumentListScreen({
 		push("vice-argument-edit");
 	}
 
-	function toggleFocusRegion() {
+	function toggleFocusRegion(reverse = false) {
 		if (focusRegion === "list") {
+			const cta = reverse
+				? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
+				: TOP_BAR_CTAS[0];
 			setFocusRegion("topbar");
-			setFocusedCta("add");
-			addButtonRef.current?.focus();
+			setFocusedCta(cta as TopBarCta);
+			focusCtaButton(cta as TopBarCta);
 		} else {
-			setFocusRegion("list");
-			containerRef.current?.focus();
+			const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+			const nextIndex = currentIndex + (reverse ? -1 : 1);
+			if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+				const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
+				setFocusedCta(nextCta);
+				focusCtaButton(nextCta);
+			} else {
+				setFocusRegion("list");
+				containerRef.current?.focus();
+			}
 		}
 	}
 
