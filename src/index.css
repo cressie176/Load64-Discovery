@@ -1,0 +1,212 @@
+/* ============================================================
+   Design Tokens
+   ============================================================ */
+
+:root {
+	--colour-bg: #0d0d0d;
+	--colour-surface: #1a1a2e;
+	--colour-surface-2: #16213e;
+	--colour-border: #333366;
+	--colour-accent: #4040ff;
+	--colour-text: #aaaaaa;
+	--colour-text-bright: #ffffff;
+	--colour-text-muted: #666699;
+	--font-mono: "Courier New", Courier, monospace;
+	--font-size-base: 14px;
+}
+
+/* ============================================================
+   Base Reset
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+	width: 100%;
+}
+
+body {
+	background: var(--colour-bg);
+	color: var(--colour-text);
+	font-family: var(--font-mono);
+	font-size: var(--font-size-base);
+	line-height: 1.5;
+	overflow: hidden;
+}
+
+button {
+	background: none;
+	border: none;
+	color: inherit;
+	cursor: none;
+	font-family: inherit;
+	font-size: inherit;
+	padding: 0;
+}
+
+/* ============================================================
+   Screen Layout
+   ============================================================ */
+
+.screen {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
+.screen__topbar {
+	align-items: center;
+	border-bottom: 1px solid var(--colour-border);
+	display: flex;
+	flex-shrink: 0;
+	justify-content: space-between;
+	padding: 8px 16px;
+}
+
+.screen__topbar-title {
+	color: var(--colour-text-bright);
+	font-size: 16px;
+}
+
+.screen__topbar-ctas {
+	display: flex;
+	gap: 8px;
+}
+
+.screen__content {
+	flex-grow: 1;
+	overflow-y: auto;
+	padding: 16px;
+}
+
+.screen__bottombar {
+	border-top: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	flex-shrink: 0;
+	font-size: 12px;
+	padding: 6px 16px;
+}
+
+/* ============================================================
+   Top Bar CTA
+   ============================================================ */
+
+.topbar-cta {
+	color: var(--colour-text-muted);
+	cursor: none;
+	padding: 2px 8px;
+	border: 1px solid transparent;
+}
+
+.topbar-cta--focused {
+	border-color: var(--colour-accent);
+	color: var(--colour-text-bright);
+}
+
+/* ============================================================
+   List
+   ============================================================ */
+
+.list {
+	list-style: none;
+}
+
+.list__row {
+	color: var(--colour-text);
+	padding: 6px 8px 6px 24px;
+	position: relative;
+}
+
+.list__row--selected {
+	background: var(--colour-surface-2);
+	color: var(--colour-text-bright);
+}
+
+.list__row--selected::before {
+	color: var(--colour-accent);
+	content: "›";
+	left: 8px;
+	position: absolute;
+}
+
+/* ============================================================
+   Overlay
+   ============================================================ */
+
+.overlay-backdrop {
+	align-items: center;
+	background: rgba(0, 0, 0, 0.75);
+	bottom: 0;
+	display: flex;
+	justify-content: center;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 100;
+}
+
+.overlay {
+	background: var(--colour-surface);
+	border: 1px solid var(--colour-border);
+	min-width: 260px;
+	padding: 20px 24px;
+}
+
+.overlay__title {
+	color: var(--colour-text-bright);
+	margin-bottom: 16px;
+}
+
+.overlay__list {
+	list-style: none;
+}
+
+.overlay__row {
+	color: var(--colour-text);
+	padding: 4px 8px 4px 24px;
+	position: relative;
+}
+
+.overlay__row--selected {
+	color: var(--colour-text-bright);
+}
+
+.overlay__row--selected::before {
+	color: var(--colour-accent);
+	content: "›";
+	left: 8px;
+	position: absolute;
+}
+
+/* ============================================================
+   Form Inputs
+   ============================================================ */
+
+input,
+select,
+textarea {
+	background: var(--colour-surface);
+	border: 1px solid var(--colour-border);
+	color: var(--colour-text);
+	font-family: var(--font-mono);
+	font-size: var(--font-size-base);
+	outline: none;
+	padding: 4px 8px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	border-color: var(--colour-accent);
+}

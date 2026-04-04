@@ -1,0 +1,136 @@
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "../../router/RouterContext";
+import {
+	ADMIN_HUB_ITEMS,
+	type AdminHubItem,
+	QUIT_OPTIONS,
+	wrapIndex,
+} from "./adminHubItems";
+
+export { ADMIN_HUB_ITEMS, QUIT_OPTIONS, wrapIndex };
+
+type FocusRegion = "list" | "topbar";
+
+export function AdminHubScreen() {
+	const { pop, push } = useRouter();
+	const [selectedIndex, setSelectedIndex] = useState(0);
+	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
+	const [showQuitOverlay, setShowQuitOverlay] = useState(false);
+	const [quitSelectedIndex, setQuitSelectedIndex] = useState(0);
+	const containerRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		containerRef.current?.focus();
+	}, []);
+
+	useEffect(() => {
+		const handleKeyDown = (event: KeyboardEvent) => {
+			if (showQuitOverlay) {
+				handleQuitOverlayKey(event);
+				return;
+			}
+			handleMainKey(event);
+		};
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	});
+
+	function handleQuitOverlayKey(event: KeyboardEvent) {
+		if (event.key === "ArrowDown") {
+			setQuitSelectedIndex((prev) => wrapIndex(prev, 1, QUIT_OPTIONS.length));
+		} else if (event.key === "ArrowUp") {
+			setQuitSelectedIndex((prev) => wrapIndex(prev, -1, QUIT_OPTIONS.length));
+		} else if (event.key === "Enter") {
+			if (quitSelectedIndex === 0) {
+				pop();
+			} else {
+				setShowQuitOverlay(false);
+			}
+		} else if (event.key === "Escape") {
+			setShowQuitOverlay(false);
+		}
+	}
+
+	function handleMainKey(event: KeyboardEvent) {
+		if (event.key === "Tab") {
+			event.preventDefault();
+			setFocusRegion((prev) => (prev === "list" ? "topbar" : "list"));
+			return;
+		}
+		if (event.key === "Escape") {
+			pop();
+			return;
+		}
+		if (focusRegion === "topbar") {
+			if (event.key === "Enter") {
+				pop();
+			}
+			return;
+		}
+		if (event.key === "ArrowDown") {
+			setSelectedIndex((prev) => wrapIndex(prev, 1, ADMIN_HUB_ITEMS.length));
+		} else if (event.key === "ArrowUp") {
+			setSelectedIndex((prev) => wrapIndex(prev, -1, ADMIN_HUB_ITEMS.length));
+		} else if (event.key === "Enter") {
+			activateItem(ADMIN_HUB_ITEMS[selectedIndex]);
+		}
+	}
+
+	function activateItem(item: AdminHubItem | undefined) {
+		if (!item) return;
+		if (item.action === "quit") {
+			setShowQuitOverlay(true);
+			setQuitSelectedIndex(0);
+			return;
+		}
+		push(item.screen);
+	}
+
+	return (
+		<div className="screen" ref={containerRef} tabIndex={-1}>
+			<div className="screen__topbar">
+				<span className="screen__topbar-title">Administration</span>
+				<div className="screen__topbar-ctas">
+					<button
+						className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+						onClick={pop}
+						type="button"
+					>
+						[Back]
+					</button>
+				</div>
+			</div>
+			<div className="screen__content">
+				<ul className="list">
+					{ADMIN_HUB_ITEMS.map((item, index) => (
+						<li
+							className={`list__row${index === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+							key={item.label}
+						>
+							{item.label}
+						</li>
+					))}
+				</ul>
+			</div>
+			<div className="screen__bottombar" />
+			{showQuitOverlay && (
+				<div className="overlay-backdrop">
+					<div className="overlay">
+						<div className="overlay__title">Quit Load!64?</div>
+						<ul className="overlay__list">
+							{QUIT_OPTIONS.map((option, index) => (
+								<li
+									className={`overlay__row${index === quitSelectedIndex ? " overlay__row--selected" : ""}`}
+									key={option}
+								>
+									{option}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}
