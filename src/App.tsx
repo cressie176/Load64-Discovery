@@ -7,6 +7,7 @@ import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralS
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
+import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
@@ -29,6 +30,12 @@ function AppScreens() {
 	}
 	if (currentScreen === "binary-discover") {
 		return <BinaryDiscoverScreen />;
+	}
+	if (currentScreen === "controller-list") {
+		return <ControllerListScreen />;
+	}
+	if (currentScreen === "controller-detail") {
+		return <Placeholder name="Controller Detail" />;
 	}
 	if (currentScreen === "vice-argument-list") {
 		return (

@@ -1,0 +1,43 @@
+/* ============================================================
+   Controller List Screen
+   ============================================================ */
+
+.controller-list__row {
+	display: grid;
+	grid-template-columns: 1fr 140px;
+	gap: 16px;
+	min-width: 0;
+}
+
+.controller-list__name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.controller-list__status {
+	color: var(--colour-text-muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.controller-list__status--connected {
+	color: #44cc44;
+}
+
+.controller-list__status--disconnected {
+	color: var(--colour-text-muted);
+}
+
+.list__row--selected .controller-list__name {
+	color: var(--colour-text-bright);
+}
+
+.list__row--disabled {
+	color: var(--colour-text-muted);
+}
+
+.list__row--disabled .controller-list__name {
+	color: var(--colour-text-muted);
+}

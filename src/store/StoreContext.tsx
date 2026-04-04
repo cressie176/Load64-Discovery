@@ -9,6 +9,8 @@ import { SEED_CONTROLLER_FAMILIES } from "../screens/controller-families/control
 import type { ControllerFamiliesState } from "../screens/controller-families/controller-family-selection/types";
 import { SEED_CONTROLS } from "../screens/controls/control-list/seed";
 import type { ControlsState } from "../screens/controls/control-list/types";
+import { SEED_CONTROLLERS } from "../screens/controllers/controller-list/seed";
+import type { ControllerList } from "../screens/controllers/controller-list/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
@@ -19,6 +21,7 @@ import type { ViceArgumentsState } from "../screens/vice-arguments/vice-argument
 interface Store {
 	generalSettings: GeneralSettings;
 	binaries: BinaryList;
+	controllers: ControllerList;
 	viceArguments: ViceArgumentsState;
 	profiles: ProfilesState;
 	profileDetail: ProfileDetailState;
@@ -42,6 +45,7 @@ interface StoreProviderProps {
 const INITIAL_STORE: Store = {
 	generalSettings: SEED_GENERAL_SETTINGS,
 	binaries: SEED_BINARIES,
+	controllers: SEED_CONTROLLERS,
 	viceArguments: SEED_VICE_ARGUMENTS,
 	profiles: SEED_PROFILES,
 	profileDetail: SEED_PROFILE_DETAIL,

@@ -5,6 +5,8 @@ export type ScreenName =
 	| "binary-list"
 	| "binary-edit"
 	| "binary-discover"
+	| "controller-list"
+	| "controller-detail"
 	| "vice-argument-list"
 	| "vice-argument-edit"
 	| "profile-list"

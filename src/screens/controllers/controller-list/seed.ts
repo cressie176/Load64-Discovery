@@ -1,0 +1,32 @@
+import type { ControllerList } from "./types";
+
+export const SEED_CONTROLLERS: ControllerList = [
+	{
+		id: "ctrl-usb-gamepad",
+		guid: "030000005e040000ea02000000007803",
+		name: "USB Gamepad",
+		connectedCount: 1,
+		status: "not-configured",
+	},
+	{
+		id: "ctrl-dualshock4",
+		guid: "030000004c050000cc09000000006803",
+		name: "DualShock 4",
+		connectedCount: 0,
+		status: "disconnected",
+	},
+	{
+		id: "ctrl-logitech-dual-action",
+		guid: "030000006d04000016c2000000006803",
+		name: "Logitech Dual Action",
+		connectedCount: 2,
+		status: "connected",
+	},
+	{
+		id: "ctrl-xbox-wireless",
+		guid: "030000005e040000ea02000000008803",
+		name: "Xbox Wireless Controller",
+		connectedCount: 1,
+		status: "connected",
+	},
+];
