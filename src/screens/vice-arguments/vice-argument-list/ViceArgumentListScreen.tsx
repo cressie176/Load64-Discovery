@@ -285,6 +285,7 @@ export function ViceArgumentListScreen({
 	);
 
 	const ownerLabel = owner?.name ?? ownerId;
+	const showSourceColumn = owner?.type !== "profile";
 
 	return (
 		<div
@@ -338,9 +339,11 @@ export function ViceArgumentListScreen({
 								<span className="vice-argument-list__row-value">
 									{row.value || "—"}
 								</span>
-								<span className="vice-argument-list__row-source">
-									{row.sourceLabel}
-								</span>
+								{showSourceColumn && (
+									<span className="vice-argument-list__row-source">
+										{row.sourceLabel}
+									</span>
+								)}
 							</li>
 						))}
 					</ul>
