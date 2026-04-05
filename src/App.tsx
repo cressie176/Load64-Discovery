@@ -19,6 +19,7 @@ import { ControlEditScreen } from "./screens/controls/control-edit/ControlEditSc
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
+import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
@@ -36,7 +37,13 @@ function AppScreens() {
 		return <GameCarouselScreen compilationId={currentParams.compilationId} />;
 	}
 	if (currentScreen === "game-details") {
-		return <Placeholder name="Game Details" />;
+		return <GameDetailsScreen gameId={currentParams.gameId ?? "game-bubble"} />;
+	}
+	if (currentScreen === "game-management") {
+		return <Placeholder name="Game Management" />;
+	}
+	if (currentScreen === "snapshot-list") {
+		return <Placeholder name="Snapshot List" />;
 	}
 	if (currentScreen === "admin-hub") {
 		return <AdminHubScreen />;

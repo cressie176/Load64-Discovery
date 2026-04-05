@@ -1,0 +1,122 @@
+/* ============================================================
+   Game Details Screen
+   ============================================================ */
+
+.game-details {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+	height: 100%;
+}
+
+.game-details__info {
+	display: flex;
+	flex-direction: row;
+	gap: 24px;
+}
+
+.game-details__cover {
+	flex-shrink: 0;
+	height: 200px;
+	object-fit: cover;
+	width: 160px;
+}
+
+.game-details__cover-placeholder {
+	align-items: center;
+	background: var(--colour-surface);
+	border: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	display: flex;
+	flex-shrink: 0;
+	font-size: 11px;
+	height: 200px;
+	justify-content: center;
+	padding: 8px;
+	text-align: center;
+	width: 160px;
+}
+
+.game-details__meta {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 4px;
+	min-width: 0;
+}
+
+.game-details__title {
+	color: var(--colour-text-bright);
+	font-size: 18px;
+}
+
+.game-details__publisher {
+	color: var(--colour-text-muted);
+}
+
+.game-details__year {
+	color: var(--colour-text-muted);
+}
+
+.game-details__notes {
+	color: var(--colour-text);
+	margin-top: 8px;
+}
+
+.game-details__screenshots {
+	flex-shrink: 0;
+	height: 200px;
+	width: 320px;
+}
+
+.game-details__screenshot {
+	height: 100%;
+	object-fit: cover;
+	width: 100%;
+}
+
+.game-details__screenshot-placeholder {
+	align-items: center;
+	background: var(--colour-surface);
+	border: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	display: flex;
+	font-size: 11px;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+/* ============================================================
+   Game Details Launch Bar
+   ============================================================ */
+
+.launch-bar {
+	border: 1px solid var(--colour-border);
+	display: flex;
+	flex-direction: row;
+	flex-shrink: 0;
+	gap: 8px;
+	padding: 12px 16px;
+}
+
+.launch-bar__action {
+	border: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	cursor: none;
+	padding: 6px 14px;
+}
+
+.launch-bar__action--available {
+	color: var(--colour-text);
+}
+
+.launch-bar__action--focused {
+	border-color: var(--colour-accent);
+	color: var(--colour-text-bright);
+}
+
+.launch-bar__action--disabled {
+	color: var(--colour-text-muted);
+	opacity: 0.5;
+}

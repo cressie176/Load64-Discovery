@@ -28,4 +28,6 @@ export type ScreenName =
 	| "control-list"
 	| "control-edit"
 	| "import-games"
-	| "import-discovery";
+	| "import-discovery"
+	| "game-management"
+	| "snapshot-list";

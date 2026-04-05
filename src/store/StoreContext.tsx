@@ -15,6 +15,8 @@ import { SEED_CONTROLS } from "../screens/controls/control-list/seed";
 import type { ControlsState } from "../screens/controls/control-list/types";
 import { SEED_ENV_VARS } from "../screens/environment-variables/environment-variable-list/seed";
 import type { EnvVarsState } from "../screens/environment-variables/environment-variable-list/types";
+import { SEED_GAME_DETAILS } from "../screens/games/game-details/seed";
+import type { GameDetailsState } from "../screens/games/game-details/types";
 import { SEED_KEY_MAPPINGS } from "../screens/key-mappings/key-mapping-list/seed";
 import type { KeyMappingsState } from "../screens/key-mappings/key-mapping-list/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
@@ -28,6 +30,7 @@ interface Store {
 	generalSettings: GeneralSettings;
 	binaries: BinaryList;
 	carousel: CarouselState;
+	gameDetails: GameDetailsState;
 	controllers: ControllerList;
 	viceArguments: ViceArgumentsState;
 	profiles: ProfilesState;
@@ -55,6 +58,7 @@ const INITIAL_STORE: Store = {
 	generalSettings: SEED_GENERAL_SETTINGS,
 	binaries: SEED_BINARIES,
 	carousel: SEED_CAROUSEL,
+	gameDetails: SEED_GAME_DETAILS,
 	controllers: SEED_CONTROLLERS,
 	viceArguments: SEED_VICE_ARGUMENTS,
 	profiles: SEED_PROFILES,
