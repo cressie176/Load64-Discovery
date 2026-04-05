@@ -24,7 +24,7 @@ export const SEED_CONTROLLERS: ControllerList = [
 		name: "Logitech Dual Action",
 		familyName: "Logitech",
 		deviceCount: 2,
-		connectedCount: 2,
+		connectedCount: 1,
 		status: "connected",
 	},
 	{

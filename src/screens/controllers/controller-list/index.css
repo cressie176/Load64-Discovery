@@ -6,7 +6,7 @@
 .controller-list__header {
 	display: grid;
 	gap: 16px;
-	grid-template-columns: 1fr 120px 160px 100px 100px;
+	grid-template-columns: 1fr 160px 60px 80px 90px;
 	min-width: 0;
 	width: 100%;
 }

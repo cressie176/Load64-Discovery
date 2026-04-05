@@ -5,24 +5,12 @@ import type { Controller } from "./types";
 import "./index.css";
 
 type FocusRegion = "list" | "topbar";
-type Overlay = "context-menu" | "delete";
+type Overlay = "context-menu" | "clear" | "delete";
 
-const DELETE_OPTIONS = ["Yes", "No"] as const;
-
-function buildDisplayName(controller: Controller): string {
-	return controller.name;
-}
-
-function isConnected(controller: Controller): boolean {
-	return (
-		controller.status === "not-configured" || controller.status === "connected"
-	);
-}
+const CONFIRM_OPTIONS = ["Yes", "No"] as const;
 
 function isSelectable(controller: Controller): boolean {
-	return (
-		controller.status === "not-configured" || controller.status === "connected"
-	);
+	return controller.connectedCount > 0;
 }
 
 function isConfigured(controller: Controller): boolean {
@@ -96,8 +84,12 @@ export function ControllerListScreen() {
 				handleContextMenuKey(event);
 				return;
 			}
+			if (overlay === "clear") {
+				handleConfirmOverlayKey(event, confirmClear, () => setOverlay(null));
+				return;
+			}
 			if (overlay === "delete") {
-				handleDeleteOverlayKey(event);
+				handleConfirmOverlayKey(event, confirmDelete, () => setOverlay(null));
 				return;
 			}
 			handleMainKey(event);
@@ -113,9 +105,9 @@ export function ControllerListScreen() {
 			setOverlayIndex((prev) => wrapIndex(prev, -1, contextMenuItems.length));
 		} else if (event.key === "Enter") {
 			const action = contextMenuItems[overlayIndex];
-			setOverlay(null);
 			if (action === "Clear") {
-				confirmClear();
+				setOverlay("clear");
+				setOverlayIndex(0);
 			} else if (action === "Delete") {
 				setOverlay("delete");
 				setOverlayIndex(0);
@@ -125,19 +117,23 @@ export function ControllerListScreen() {
 		}
 	}
 
-	function handleDeleteOverlayKey(event: KeyboardEvent) {
+	function handleConfirmOverlayKey(
+		event: KeyboardEvent,
+		onConfirm: () => void,
+		onCancel: () => void,
+	) {
 		if (event.key === "ArrowDown") {
-			setOverlayIndex((prev) => wrapIndex(prev, 1, DELETE_OPTIONS.length));
+			setOverlayIndex((prev) => wrapIndex(prev, 1, CONFIRM_OPTIONS.length));
 		} else if (event.key === "ArrowUp") {
-			setOverlayIndex((prev) => wrapIndex(prev, -1, DELETE_OPTIONS.length));
+			setOverlayIndex((prev) => wrapIndex(prev, -1, CONFIRM_OPTIONS.length));
 		} else if (event.key === "Enter") {
 			if (overlayIndex === 0) {
-				confirmDelete();
+				onConfirm();
 			} else {
-				closeDeleteOverlay();
+				onCancel();
 			}
 		} else if (event.key === "Escape") {
-			closeDeleteOverlay();
+			onCancel();
 		}
 	}
 
@@ -180,14 +176,10 @@ export function ControllerListScreen() {
 		}
 	}
 
-	function toggleFocusRegion(reverse: boolean) {
+	function toggleFocusRegion(_reverse: boolean) {
 		if (focusRegion === "list") {
 			setFocusRegion("topbar");
-			if (!reverse) {
-				backButtonRef.current?.focus();
-			} else {
-				backButtonRef.current?.focus();
-			}
+			backButtonRef.current?.focus();
 		} else {
 			setFocusRegion("list");
 			containerRef.current?.focus();
@@ -206,21 +198,21 @@ export function ControllerListScreen() {
 		if (canClear(focusedController)) items.push("Clear");
 		if (canDelete(focusedController)) items.push("Delete");
 		if (items.length === 0) return;
+		if (items.length === 1) {
+			setOverlayIndex(0);
+			setOverlay(items[0] === "Clear" ? "clear" : "delete");
+			return;
+		}
 		setContextMenuItems(items);
 		setOverlay("context-menu");
 		setOverlayIndex(0);
 	}
 
-	function closeDeleteOverlay() {
-		setOverlay(null);
-		containerRef.current?.focus();
-	}
-
 	function confirmClear() {
 		if (!focusedController) return;
-		const clearedName = buildDisplayName(focusedController);
+		const { name, deviceCount, status } = focusedController;
 		const clearedStatus =
-			focusedController.status === "disconnected"
+			status === "disconnected"
 				? ("disconnected-unconfigured" as const)
 				: ("not-configured" as const);
 		setStore((prev) => ({
@@ -238,12 +230,17 @@ export function ControllerListScreen() {
 				),
 			},
 		}));
-		setStatusMessage(`${clearedName} cleared`);
+		setOverlay(null);
+		setStatusMessage(
+			deviceCount > 1
+				? `${name} cleared (${deviceCount} devices affected)`
+				: `${name} cleared`,
+		);
 	}
 
 	function confirmDelete() {
 		if (!focusedController) return;
-		const deletedName = buildDisplayName(focusedController);
+		const { name } = focusedController;
 		setStore((prev) => ({
 			...prev,
 			controllers: deleteController(prev.controllers, focusedController.id),
@@ -258,7 +255,7 @@ export function ControllerListScreen() {
 			},
 		}));
 		setOverlay(null);
-		setStatusMessage(`${deletedName} deleted`);
+		setStatusMessage(`${name} deleted`);
 		setSelectedIndex((prev) => Math.max(0, prev - 1));
 	}
 
@@ -294,11 +291,9 @@ export function ControllerListScreen() {
 						<div className="list__header">
 							<div className="controller-list__header">
 								<span>Device</span>
-								<span className="controller-list__count">
-									Number of Devices
-								</span>
 								<span>Family</span>
-								<span>Connected</span>
+								<span className="controller-list__count">Count</span>
+								<span className="controller-list__count">Connected</span>
 								<span>Configured</span>
 							</div>
 						</div>
@@ -320,16 +315,16 @@ export function ControllerListScreen() {
 										<span className="controller-list__name">
 											{controller.name}
 										</span>
-										<span className="controller-list__count">
-											{controller.deviceCount}
-										</span>
 										<span className="controller-list__family">
 											{controller.familyName ?? "—"}
 										</span>
+										<span className="controller-list__count">
+											{controller.deviceCount}
+										</span>
 										<span
-											className={`controller-list__connected${isConnected(controller) ? " controller-list__connected--yes" : " controller-list__connected--no"}`}
+											className={`controller-list__count${controller.connectedCount > 0 ? " controller-list__connected--yes" : " controller-list__connected--no"}`}
 										>
-											{isConnected(controller) ? "Yes" : "No"}
+											{controller.connectedCount}
 										</span>
 										<span
 											className={`controller-list__configured${isConfigured(controller) ? "" : " controller-list__configured--no"}`}
@@ -363,14 +358,55 @@ export function ControllerListScreen() {
 					</div>
 				</div>
 			)}
+			{overlay === "clear" && focusedController && (
+				<div className="overlay-backdrop">
+					<div className="overlay">
+						<div className="overlay__title">
+							Clear {focusedController.name}?
+						</div>
+						{focusedController.deviceCount > 1 && (
+							<p
+								style={{
+									color: "var(--colour-text-muted)",
+									fontSize: "12px",
+									marginBottom: "12px",
+								}}
+							>
+								{focusedController.deviceCount} devices will be affected.
+							</p>
+						)}
+						<ul className="overlay__list">
+							{CONFIRM_OPTIONS.map((option, index) => (
+								<li
+									key={option}
+									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+								>
+									{option}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			)}
 			{overlay === "delete" && focusedController && (
 				<div className="overlay-backdrop">
 					<div className="overlay">
 						<div className="overlay__title">
-							Delete {buildDisplayName(focusedController)}?
+							Delete {focusedController.name}?
 						</div>
+						{focusedController.deviceCount > 1 && (
+							<p
+								style={{
+									color: "var(--colour-text-muted)",
+									fontSize: "12px",
+									marginBottom: "12px",
+								}}
+							>
+								1 of {focusedController.deviceCount} devices will be affected.
+							</p>
+						)}
 						<ul className="overlay__list">
-							{DELETE_OPTIONS.map((option, index) => (
+							{CONFIRM_OPTIONS.map((option, index) => (
 								<li
 									key={option}
 									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
