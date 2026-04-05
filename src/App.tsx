@@ -30,6 +30,7 @@ import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/Ke
 import { NowPlayingScreen } from "./screens/now-playing/now-playing/NowPlayingScreen";
 import { NowPlayingSwapDisksScreen } from "./screens/now-playing/now-playing-swap-disks/NowPlayingSwapDisksScreen";
 import { NowPlayingTakeScreenshotScreen } from "./screens/now-playing/now-playing-take-screenshot/NowPlayingTakeScreenshotScreen";
+import { NowPlayingTakeSnapshotScreen } from "./screens/now-playing/now-playing-take-snapshot/NowPlayingTakeSnapshotScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
@@ -250,7 +251,11 @@ function AppScreens() {
     );
   }
   if (currentScreen === "now-playing-take-snapshot") {
-    return <Placeholder name="Now Playing – Take Snapshot" />;
+    return (
+      <NowPlayingTakeSnapshotScreen
+        gameId={currentParams.gameId ?? "game-turrican"}
+      />
+    );
   }
   return <GameCarouselScreen />;
 }
