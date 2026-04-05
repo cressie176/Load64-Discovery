@@ -96,5 +96,6 @@ export interface ControlRow {
 	event: string;
 	sourceLabel: string | null;
 	isInherited: boolean;
+	hasFamilyFallback: boolean;
 	entryId: string | null;
 }

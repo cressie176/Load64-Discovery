@@ -54,6 +54,7 @@ function buildFamilyRow(
 		event: owned?.event || "—",
 		sourceLabel: null,
 		isInherited: false,
+		hasFamilyFallback: false,
 		entryId: owned?.id ?? null,
 	};
 }
@@ -72,6 +73,7 @@ function buildControllerRow(
 			event: owned.event || "—",
 			sourceLabel: "—",
 			isInherited: false,
+			hasFamilyFallback: inherited !== null,
 			entryId: owned.id,
 		};
 	}
@@ -83,6 +85,7 @@ function buildControllerRow(
 			event: inherited.event || "—",
 			sourceLabel: familyName ?? "Family",
 			isInherited: true,
+			hasFamilyFallback: true,
 			entryId: inherited.id,
 		};
 	}
@@ -93,6 +96,7 @@ function buildControllerRow(
 		event: "—",
 		sourceLabel: "—",
 		isInherited: false,
+		hasFamilyFallback: false,
 		entryId: null,
 	};
 }
@@ -245,10 +249,12 @@ export function ControlListScreen({
 	function openContextMenuIfEligible() {
 		if (!focusedRow) return;
 		if (focusedRow.isInherited || focusedRow.controlName === "—") return;
-		const items = isControllerContext ? ["Clear", "Delete"] : ["Clear"];
+		const items: string[] = ["Clear"];
+		if (isControllerContext && focusedRow.hasFamilyFallback)
+			items.push("Delete");
 		if (items.length === 1) {
 			setOverlayIndex(0);
-			setOverlay(items[0] === "Clear" ? "clear" : "delete");
+			setOverlay("clear");
 			return;
 		}
 		setContextMenuItems(items);

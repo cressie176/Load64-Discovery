@@ -48,6 +48,7 @@ function buildFamilyRow(
 		event: owned?.event ?? "—",
 		sourceLabel: null,
 		isInherited: false,
+		hasFamilyFallback: false,
 		entryId: owned?.id ?? null,
 	};
 }
@@ -66,6 +67,7 @@ function buildControllerRow(
 			event: owned.event,
 			sourceLabel: "—",
 			isInherited: false,
+			hasFamilyFallback: false,
 			entryId: owned.id,
 		};
 	}
@@ -77,6 +79,7 @@ function buildControllerRow(
 			event: inherited.event,
 			sourceLabel: familyName ?? "Family",
 			isInherited: true,
+			hasFamilyFallback: false,
 			entryId: inherited.id,
 		};
 	}
@@ -87,6 +90,7 @@ function buildControllerRow(
 		event: "—",
 		sourceLabel: "—",
 		isInherited: false,
+		hasFamilyFallback: false,
 		entryId: null,
 	};
 }
