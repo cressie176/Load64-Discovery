@@ -8,49 +8,24 @@ type FormField = "hostKey" | "machineKey" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["hostKey", "machineKey", "save", "cancel"];
 
-const HOST_KEYS = [
+const HOST_KEYS: string[] = [
+	// Special keys
+	"Space",
+	"Enter",
 	"Esc",
-	"F1",
-	"F2",
-	"F3",
-	"F4",
-	"F5",
-	"F6",
-	"F7",
-	"F8",
 	"Tab",
-	"Caps Lock",
-	"Left Shift",
-	"Right Shift",
-	"Left Ctrl",
 	"Backspace",
 	"Home",
 	"Page Up",
-	"Delete",
 	"Up Arrow",
 	"Down Arrow",
 	"Left Arrow",
 	"Right Arrow",
-	"Space",
-	"Enter",
-];
-
-const MACHINE_KEYS = [
-	"RUN/STOP",
-	"RESTORE",
-	"CTRL",
-	"C=",
-	"SPACE",
-	"RETURN",
-	"DEL",
-	"CLR/HOME",
 	"Left Shift",
 	"Right Shift",
-	"Shift Lock",
-	"CRSR UP",
-	"CRSR DOWN",
-	"CRSR LEFT",
-	"CRSR RIGHT",
+	"Left Ctrl",
+	"Caps Lock",
+	// Function keys
 	"F1",
 	"F2",
 	"F3",
@@ -59,6 +34,42 @@ const MACHINE_KEYS = [
 	"F6",
 	"F7",
 	"F8",
+	// Letters
+	..."abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
+	// Digits
+	..."0123456789".split(""),
+];
+
+const MACHINE_KEYS: string[] = [
+	// Special keys
+	"SPACE",
+	"RETURN",
+	"RUN/STOP",
+	"RESTORE",
+	"CTRL",
+	"C=",
+	"LEFT SHIFT",
+	"RIGHT SHIFT",
+	"SHIFT LOCK",
+	"DEL",
+	"CLR/HOME",
+	"CRSR UP",
+	"CRSR DOWN",
+	"CRSR LEFT",
+	"CRSR RIGHT",
+	// Function keys
+	"F1",
+	"F2",
+	"F3",
+	"F4",
+	"F5",
+	"F6",
+	"F7",
+	"F8",
+	// Letters
+	..."abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
+	// Digits
+	..."0123456789".split(""),
 ];
 
 function generateId(): string {
