@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
+import { deriveUnrecognisedTitle } from "./title";
 import type { ImportSuggestion } from "./types";
 import "./index.css";
 
@@ -19,29 +20,9 @@ function formatPublisher(publisher: string | null): string {
   return publisher ?? "—";
 }
 
-function stripExtension(filename: string): string {
-  return filename.replace(/\.[^.]+$/, "");
-}
-
-function commonPrefix(filenames: string[]): string {
-  const first = filenames[0];
-  let prefix = "";
-  for (let i = 0; i < first.length; i++) {
-    if (filenames.every((f) => f[i] === first[i])) {
-      prefix += first[i];
-    } else {
-      break;
-    }
-  }
-  return prefix.replace(/[-_\s]+$/, "");
-}
-
 function formatTitle(suggestion: ImportSuggestion): string {
   if (suggestion.title !== null) return suggestion.title;
-  if (suggestion.filenames.length === 1) {
-    return stripExtension(suggestion.filenames[0]);
-  }
-  return commonPrefix(suggestion.filenames.map(stripExtension));
+  return deriveUnrecognisedTitle(suggestion.roms);
 }
 
 export function ImportDiscoveryScreen() {
