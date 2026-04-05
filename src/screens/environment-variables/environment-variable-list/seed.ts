@@ -9,7 +9,7 @@ export const SEED_ENV_VARS: EnvVarsState = {
 			parentIds: [],
 		},
 		{
-			id: "ctrl-logitech-dual-action",
+			id: "controller-logitech-dual-action",
 			name: "Logitech Dual Action",
 			type: "controller",
 			parentIds: ["family-logitech"],
@@ -62,7 +62,7 @@ export const SEED_ENV_VARS: EnvVarsState = {
 		// Logitech Dual Action controller variable (overrides family + adds own)
 		{
 			id: "ev-3",
-			ownerId: "ctrl-logitech-dual-action",
+			ownerId: "controller-logitech-dual-action",
 			name: "SDL_JOYSTICK_BLACKLIST_DEVICES",
 			value: "0xAAAA/0xBBBB",
 		},
