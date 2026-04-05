@@ -8,69 +8,82 @@ type FormField = "hostKey" | "machineKey" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["hostKey", "machineKey", "save", "cancel"];
 
-const HOST_KEYS: string[] = [
-	// Special keys
-	"Space",
-	"Enter",
-	"Esc",
-	"Tab",
-	"Backspace",
-	"Home",
-	"Page Up",
-	"Up Arrow",
-	"Down Arrow",
-	"Left Arrow",
-	"Right Arrow",
-	"Left Shift",
-	"Right Shift",
-	"Left Ctrl",
-	"Caps Lock",
-	// Function keys
-	"F1",
-	"F2",
-	"F3",
-	"F4",
-	"F5",
-	"F6",
-	"F7",
-	"F8",
-	// Letters
-	..."abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
-	// Digits
-	..."0123456789".split(""),
+interface KeyGroup {
+	label: string;
+	keys: string[];
+}
+
+const HOST_KEY_GROUPS: KeyGroup[] = [
+	{
+		label: "Special Keys",
+		keys: [
+			"Space",
+			"Enter",
+			"Esc",
+			"Tab",
+			"Backspace",
+			"Home",
+			"Page Up",
+			"Up Arrow",
+			"Down Arrow",
+			"Left Arrow",
+			"Right Arrow",
+			"Left Shift",
+			"Right Shift",
+			"Left Ctrl",
+			"Caps Lock",
+		],
+	},
+	{
+		label: "Function Keys",
+		keys: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"],
+	},
+	{
+		label: "Letters",
+		keys: "abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
+	},
+	{
+		label: "Digits",
+		keys: "0123456789".split(""),
+	},
 ];
 
-const MACHINE_KEYS: string[] = [
-	// Special keys
-	"SPACE",
-	"RETURN",
-	"RUN/STOP",
-	"RESTORE",
-	"CTRL",
-	"C=",
-	"LEFT SHIFT",
-	"RIGHT SHIFT",
-	"SHIFT LOCK",
-	"DEL",
-	"CLR/HOME",
-	"CRSR UP",
-	"CRSR DOWN",
-	"CRSR LEFT",
-	"CRSR RIGHT",
-	// Function keys
-	"F1",
-	"F2",
-	"F3",
-	"F4",
-	"F5",
-	"F6",
-	"F7",
-	"F8",
-	// Letters
-	..."abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
-	// Digits
-	..."0123456789".split(""),
+const MACHINE_KEY_GROUPS: KeyGroup[] = [
+	{
+		label: "Special Keys",
+		keys: [
+			"SPACE",
+			"RETURN",
+			"RUN/STOP",
+			"RESTORE",
+			"CTRL",
+			"C=",
+			"LEFT SHIFT",
+			"RIGHT SHIFT",
+			"SHIFT LOCK",
+			"DEL",
+			"CLR/HOME",
+			"CRSR UP",
+			"CRSR DOWN",
+			"CRSR LEFT",
+			"CRSR RIGHT",
+		],
+	},
+	{
+		label: "Function Keys",
+		keys: ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"],
+	},
+	{
+		label: "Letters",
+		keys: "abcdefghijklmnopqrstuvwxyz".split("").map((c) => c.toUpperCase()),
+	},
+	{
+		label: "Digits",
+		keys: "0123456789".split(""),
+	},
 ];
+
+const HOST_KEYS: string[] = HOST_KEY_GROUPS.flatMap((g) => g.keys);
 
 function generateId(): string {
 	return `km-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -306,11 +319,21 @@ export function KeyMappingEditScreen() {
 								!availableHostKeys.includes(existing.hostKey) && (
 									<option value={existing.hostKey}>{existing.hostKey}</option>
 								)}
-							{availableHostKeys.map((key) => (
-								<option key={key} value={key}>
-									{key}
-								</option>
-							))}
+							{HOST_KEY_GROUPS.map((group) => {
+								const keys = group.keys.filter((k) =>
+									availableHostKeys.includes(k),
+								);
+								if (keys.length === 0) return null;
+								return (
+									<optgroup key={group.label} label={group.label}>
+										{keys.map((key) => (
+											<option key={key} value={key}>
+												{key}
+											</option>
+										))}
+									</optgroup>
+								);
+							})}
 						</select>
 					</div>
 					<div className="form__field">
@@ -329,10 +352,14 @@ export function KeyMappingEditScreen() {
 							}}
 						>
 							<option value="">—</option>
-							{MACHINE_KEYS.map((key) => (
-								<option key={key} value={key}>
-									{key}
-								</option>
+							{MACHINE_KEY_GROUPS.map((group) => (
+								<optgroup key={group.label} label={group.label}>
+									{group.keys.map((key) => (
+										<option key={key} value={key}>
+											{key}
+										</option>
+									))}
+								</optgroup>
 							))}
 						</select>
 					</div>
