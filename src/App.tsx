@@ -19,6 +19,7 @@ import { ControlEditScreen } from "./screens/controls/control-edit/ControlEditSc
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
+import { GameCatalogueSourcesListScreen } from "./screens/games/game-catalogue-sources-list/GameCatalogueSourcesListScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
@@ -211,7 +212,16 @@ function AppScreens() {
     return <Placeholder name="Game Media Edit" />;
   }
   if (currentScreen === "game-catalogue-sources-list") {
-    return <Placeholder name="Game Catalogue Sources List" />;
+    return (
+      <GameCatalogueSourcesListScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+      />
+    );
+  }
+  if (currentScreen === "game-add-catalogue-source") {
+    return <Placeholder name="Game Add Catalogue Source" />;
   }
   if (currentScreen === "game-control-list") {
     return <Placeholder name="Game Control List" />;

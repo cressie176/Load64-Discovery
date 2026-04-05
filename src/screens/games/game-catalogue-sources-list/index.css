@@ -1,0 +1,8 @@
+/* ============================================================
+   Game Catalogue Sources List Screen
+   ============================================================ */
+
+.catalogue-sources-list__empty {
+  color: var(--colour-text-muted);
+  padding: 8px;
+}
