@@ -194,11 +194,6 @@ export function ControllerListScreen() {
 		if (canClear(focusedController)) items.push("Clear");
 		if (canDelete(focusedController)) items.push("Delete");
 		if (items.length === 0) return;
-		if (items.length === 1) {
-			setOverlayIndex(0);
-			setOverlay(items[0] === "Clear" ? "clear" : "delete");
-			return;
-		}
 		setContextMenuItems(items);
 		setOverlay("context-menu");
 		setOverlayIndex(0);
