@@ -1,0 +1,88 @@
+/* ============================================================
+   Now Playing Take Screenshot Screen
+   ============================================================ */
+
+.take-screenshot {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  height: 100%;
+}
+
+.take-screenshot__capturing {
+  align-items: center;
+  color: var(--colour-text-muted);
+  display: flex;
+  height: 100%;
+  justify-content: center;
+}
+
+.take-screenshot__form-panel {
+  flex-shrink: 0;
+  min-width: 280px;
+}
+
+.take-screenshot__preview-panel {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.take-screenshot__preview-image {
+  aspect-ratio: 4 / 3;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 320px;
+}
+
+.take-screenshot__conflict-filename {
+  color: var(--colour-text);
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+/* ============================================================
+   Form (shared block — overrides scoped to this screen)
+   ============================================================ */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form__label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.form__input {
+  width: 240px;
+}
+
+.form__input--active {
+  border-color: var(--colour-accent);
+}
+
+.form__actions {
+  display: flex;
+  gap: 16px;
+}
+
+.form__action {
+  color: var(--colour-text-muted);
+  cursor: none;
+}
+
+.form__action--active {
+  color: var(--colour-text-bright);
+}
