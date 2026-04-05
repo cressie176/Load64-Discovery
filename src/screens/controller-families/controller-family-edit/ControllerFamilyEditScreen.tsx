@@ -32,7 +32,7 @@ interface ControllerFamilyEditScreenProps {
 export function ControllerFamilyEditScreen({
 	familyId,
 }: ControllerFamilyEditScreenProps) {
-	const { pop, push } = useRouter();
+	const { pop, replace } = useRouter();
 	const { store, setStore } = useStore();
 
 	const isRename = familyId !== undefined;
@@ -201,7 +201,7 @@ export function ControllerFamilyEditScreen({
 					],
 				},
 			}));
-			push("control-list", { ownerId: newId });
+			replace("control-list", { ownerId: newId });
 		}
 	}
 
