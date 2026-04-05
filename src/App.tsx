@@ -33,176 +33,176 @@ import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-l
 import { StoreProvider } from "./store/StoreContext";
 
 function AppScreens() {
-	const { currentScreen, currentParams } = useRouter();
-	if (currentScreen === "carousel") {
-		return <GameCarouselScreen compilationId={currentParams.compilationId} />;
-	}
-	if (currentScreen === "game-details") {
-		return <GameDetailsScreen gameId={currentParams.gameId ?? "game-bubble"} />;
-	}
-	if (currentScreen === "game-management") {
-		return <Placeholder name="Game Management" />;
-	}
-	if (currentScreen === "snapshot-list") {
-		return <Placeholder name="Snapshot List" />;
-	}
-	if (currentScreen === "admin-hub") {
-		return <AdminHubScreen />;
-	}
-	if (currentScreen === "general-settings") {
-		return <GeneralSettingsScreen />;
-	}
-	if (currentScreen === "binary-list") {
-		return <BinaryListScreen />;
-	}
-	if (currentScreen === "binary-edit") {
-		return <BinaryEditScreen />;
-	}
-	if (currentScreen === "binary-discover") {
-		return <BinaryDiscoverScreen />;
-	}
-	if (currentScreen === "controller-list") {
-		return <ControllerListScreen />;
-	}
-	if (currentScreen === "controller-detail") {
-		return (
-			<ControllerDetailScreen
-				controllerId={currentParams.controllerId ?? "ctrl-logitech-dual-action"}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "vice-argument-list") {
-		return (
-			<ViceArgumentListScreen
-				ownerId={currentParams.ownerId ?? "profile-default"}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "vice-argument-edit") {
-		return <ViceArgumentEditScreen />;
-	}
-	if (currentScreen === "profile-list") {
-		return <ProfileListScreen statusMessage={currentParams.statusMessage} />;
-	}
-	if (currentScreen === "profile-detail") {
-		return (
-			<ProfileDetailScreen
-				profileId={currentParams.profileId ?? "profile-default"}
-			/>
-		);
-	}
-	if (currentScreen === "controller-selection") {
-		return (
-			<ControllerSelectionScreen
-				profileId={currentParams.profileId ?? "profile-default"}
-				ownerName={currentParams.ownerName}
-			/>
-		);
-	}
-	if (currentScreen === "key-mapping-list") {
-		return (
-			<KeyMappingListScreen
-				ownerId={
-					currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
-				}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "key-mapping-edit") {
-		return <KeyMappingEditScreen />;
-	}
-	if (currentScreen === "environment-variable-list") {
-		return (
-			<EnvironmentVariableListScreen
-				ownerId={
-					currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
-				}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "environment-variable-edit") {
-		return <EnvironmentVariableEditScreen />;
-	}
-	if (currentScreen === "profile-edit") {
-		return <ProfileEditScreen profileId={currentParams.profileId} />;
-	}
-	if (currentScreen === "compilation-list") {
-		const mode = currentParams.mode === "browse" ? "browse" : "admin";
-		return (
-			<CompilationListScreen
-				mode={mode}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "compilation-detail") {
-		return (
-			<CompilationDetailScreen
-				compilationId={currentParams.compilationId ?? "compilation-all-games"}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "compilation-edit") {
-		return (
-			<CompilationEditScreen compilationId={currentParams.compilationId} />
-		);
-	}
-	if (currentScreen === "compilation-membership") {
-		return (
-			<CompilationMembershipScreen
-				compilationId={currentParams.compilationId ?? "compilation-all-games"}
-			/>
-		);
-	}
-	if (currentScreen === "controller-family-list") {
-		return (
-			<ControllerFamilyListScreen statusMessage={currentParams.statusMessage} />
-		);
-	}
-	if (currentScreen === "controller-family-edit") {
-		return <ControllerFamilyEditScreen familyId={currentParams.familyId} />;
-	}
-	if (currentScreen === "controller-family-selection") {
-		return (
-			<ControllerFamilySelectionScreen
-				controllerId={currentParams.controllerId ?? "controller-logitech-f310"}
-			/>
-		);
-	}
-	if (currentScreen === "control-list") {
-		return (
-			<ControlListScreen
-				ownerId={currentParams.ownerId ?? "family-logitech"}
-				statusMessage={currentParams.statusMessage}
-			/>
-		);
-	}
-	if (currentScreen === "control-edit") {
-		return <ControlEditScreen />;
-	}
-	if (currentScreen === "import-games") {
-		return <ImportGamesScreen />;
-	}
-	if (currentScreen === "import-discovery") {
-		return <ImportDiscoveryScreen />;
-	}
-	if (currentScreen === "import-candidate") {
-		return <Placeholder name="Import Candidate" />;
-	}
-	return <GameCarouselScreen />;
+  const { currentScreen, currentParams } = useRouter();
+  if (currentScreen === "carousel") {
+    return <GameCarouselScreen compilationId={currentParams.compilationId} />;
+  }
+  if (currentScreen === "game-details") {
+    return <GameDetailsScreen gameId={currentParams.gameId ?? "game-bubble"} />;
+  }
+  if (currentScreen === "game-management") {
+    return <Placeholder name="Game Management" />;
+  }
+  if (currentScreen === "snapshot-list") {
+    return <Placeholder name="Snapshot List" />;
+  }
+  if (currentScreen === "admin-hub") {
+    return <AdminHubScreen />;
+  }
+  if (currentScreen === "general-settings") {
+    return <GeneralSettingsScreen />;
+  }
+  if (currentScreen === "binary-list") {
+    return <BinaryListScreen />;
+  }
+  if (currentScreen === "binary-edit") {
+    return <BinaryEditScreen />;
+  }
+  if (currentScreen === "binary-discover") {
+    return <BinaryDiscoverScreen />;
+  }
+  if (currentScreen === "controller-list") {
+    return <ControllerListScreen />;
+  }
+  if (currentScreen === "controller-detail") {
+    return (
+      <ControllerDetailScreen
+        controllerId={currentParams.controllerId ?? "ctrl-logitech-dual-action"}
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "vice-argument-list") {
+    return (
+      <ViceArgumentListScreen
+        ownerId={currentParams.ownerId ?? "profile-default"}
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "vice-argument-edit") {
+    return <ViceArgumentEditScreen />;
+  }
+  if (currentScreen === "profile-list") {
+    return <ProfileListScreen statusMessage={currentParams.statusMessage} />;
+  }
+  if (currentScreen === "profile-detail") {
+    return (
+      <ProfileDetailScreen
+        profileId={currentParams.profileId ?? "profile-default"}
+      />
+    );
+  }
+  if (currentScreen === "controller-selection") {
+    return (
+      <ControllerSelectionScreen
+        profileId={currentParams.profileId ?? "profile-default"}
+        ownerName={currentParams.ownerName}
+      />
+    );
+  }
+  if (currentScreen === "key-mapping-list") {
+    return (
+      <KeyMappingListScreen
+        ownerId={
+          currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
+        }
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "key-mapping-edit") {
+    return <KeyMappingEditScreen />;
+  }
+  if (currentScreen === "environment-variable-list") {
+    return (
+      <EnvironmentVariableListScreen
+        ownerId={
+          currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
+        }
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "environment-variable-edit") {
+    return <EnvironmentVariableEditScreen />;
+  }
+  if (currentScreen === "profile-edit") {
+    return <ProfileEditScreen profileId={currentParams.profileId} />;
+  }
+  if (currentScreen === "compilation-list") {
+    const mode = currentParams.mode === "browse" ? "browse" : "admin";
+    return (
+      <CompilationListScreen
+        mode={mode}
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "compilation-detail") {
+    return (
+      <CompilationDetailScreen
+        compilationId={currentParams.compilationId ?? "compilation-all-games"}
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "compilation-edit") {
+    return (
+      <CompilationEditScreen compilationId={currentParams.compilationId} />
+    );
+  }
+  if (currentScreen === "compilation-membership") {
+    return (
+      <CompilationMembershipScreen
+        compilationId={currentParams.compilationId ?? "compilation-all-games"}
+      />
+    );
+  }
+  if (currentScreen === "controller-family-list") {
+    return (
+      <ControllerFamilyListScreen statusMessage={currentParams.statusMessage} />
+    );
+  }
+  if (currentScreen === "controller-family-edit") {
+    return <ControllerFamilyEditScreen familyId={currentParams.familyId} />;
+  }
+  if (currentScreen === "controller-family-selection") {
+    return (
+      <ControllerFamilySelectionScreen
+        controllerId={currentParams.controllerId ?? "controller-logitech-f310"}
+      />
+    );
+  }
+  if (currentScreen === "control-list") {
+    return (
+      <ControlListScreen
+        ownerId={currentParams.ownerId ?? "family-logitech"}
+        statusMessage={currentParams.statusMessage}
+      />
+    );
+  }
+  if (currentScreen === "control-edit") {
+    return <ControlEditScreen />;
+  }
+  if (currentScreen === "import-games") {
+    return <ImportGamesScreen />;
+  }
+  if (currentScreen === "import-discovery") {
+    return <ImportDiscoveryScreen />;
+  }
+  if (currentScreen === "import-candidate") {
+    return <Placeholder name="Import Candidate" />;
+  }
+  return <GameCarouselScreen />;
 }
 
 export function App() {
-	return (
-		<StoreProvider>
-			<RouterProvider initialScreen="carousel">
-				<AppScreens />
-			</RouterProvider>
-		</StoreProvider>
-	);
+  return (
+    <StoreProvider>
+      <RouterProvider initialScreen="carousel">
+        <AppScreens />
+      </RouterProvider>
+    </StoreProvider>
+  );
 }

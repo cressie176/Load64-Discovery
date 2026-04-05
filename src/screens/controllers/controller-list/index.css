@@ -4,52 +4,52 @@
 
 .controller-list__row,
 .controller-list__header {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: 1fr 160px 60px 80px 90px;
-	min-width: 0;
-	width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 160px 60px 80px 90px;
+  min-width: 0;
+  width: 100%;
 }
 
 .controller-list__name {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .controller-list__family,
 .controller-list__connected,
 .controller-list__configured {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .controller-list__count {
-	text-align: right;
+  text-align: right;
 }
 
 .controller-list__family {
-	color: var(--colour-text-muted);
+  color: var(--colour-text-muted);
 }
 
 .controller-list__connected--yes {
-	color: #44cc44;
+  color: #44cc44;
 }
 
 .controller-list__connected--no,
 .controller-list__configured--no {
-	color: var(--colour-text-muted);
+  color: var(--colour-text-muted);
 }
 
 .list__row--selected .controller-list__name {
-	color: var(--colour-text-bright);
+  color: var(--colour-text-bright);
 }
 
 .list__row--disabled {
-	color: var(--colour-text-muted);
+  color: var(--colour-text-muted);
 }
 
 .list__row--disabled .controller-list__name {
-	color: var(--colour-text-muted);
+  color: var(--colour-text-muted);
 }

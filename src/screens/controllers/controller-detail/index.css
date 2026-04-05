@@ -3,12 +3,12 @@
    ============================================================ */
 
 .controller-detail__title {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .list__row--disabled {
-	color: var(--colour-text-muted);
-	cursor: default;
+  color: var(--colour-text-muted);
+  cursor: default;
 }

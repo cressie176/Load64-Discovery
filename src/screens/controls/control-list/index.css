@@ -3,15 +3,15 @@
    ============================================================ */
 
 .control-list__columns {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: 80px 160px 120px 1fr;
-	min-width: 0;
-	width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 80px 160px 120px 1fr;
+  min-width: 0;
+  width: 100%;
 }
 
 .control-list__columns--no-source {
-	grid-template-columns: 80px 160px 1fr;
+  grid-template-columns: 80px 160px 1fr;
 }
 
 .control-list__row-control-name,
@@ -20,28 +20,28 @@
 .control-list__header-control-name,
 .control-list__header-canonical-name,
 .control-list__header-event {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .control-list__row-event {
-	font-family: var(--font-mono);
+  font-family: var(--font-mono);
 }
 
 .control-list__row-source {
-	color: var(--colour-text-muted);
-	font-style: italic;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .control-list__row--inherited {
-	color: var(--colour-text-muted);
-	font-style: italic;
+  color: var(--colour-text-muted);
+  font-style: italic;
 }
 
 .list__row--selected .control-list__row-source {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

@@ -1,3 +1,3 @@
 export interface BinaryDiscoverForm {
-	vicePath: string;
+  vicePath: string;
 }

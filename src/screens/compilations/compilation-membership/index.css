@@ -3,33 +3,33 @@
    ============================================================ */
 
 .compilation-membership__row-checkbox {
-	color: var(--colour-accent);
-	flex: 0 0 32px;
+  color: var(--colour-accent);
+  flex: 0 0 32px;
 }
 
 .compilation-membership__row-title {
-	flex: 1 1 0;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compilation-membership__row-publisher {
-	color: var(--colour-text-muted);
-	flex: 0 0 180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  flex: 0 0 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compilation-membership__row-year {
-	color: var(--colour-text-muted);
-	flex: 0 0 40px;
-	text-align: right;
+  color: var(--colour-text-muted);
+  flex: 0 0 40px;
+  text-align: right;
 }
 
 .list__row--selected .compilation-membership__row-publisher,
 .list__row--selected .compilation-membership__row-year {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

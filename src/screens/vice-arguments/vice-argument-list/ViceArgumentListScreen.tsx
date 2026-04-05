@@ -13,424 +13,424 @@ const DELETE_OPTIONS = ["Yes", "No"] as const;
 const CONTEXT_MENU_ITEMS = ["Delete"] as const;
 
 function buildViceArgTitle(
-	type: string | undefined,
-	name: string,
-	section: string,
+  type: string | undefined,
+  name: string,
+  section: string,
 ): string {
-	if (type === "profile") return `Profiles > ${name} > ${section}`;
-	return `${name} > ${section}`;
+  if (type === "profile") return `Profiles > ${name} > ${section}`;
+  return `${name} > ${section}`;
 }
 
 function stripPrefix(name: string): string {
-	return name.replace(/^[-+]/, "");
+  return name.replace(/^[-+]/, "");
 }
 
 function compareArgumentNames(a: string, b: string): number {
-	const aBase = stripPrefix(a).toLowerCase();
-	const bBase = stripPrefix(b).toLowerCase();
-	if (aBase !== bBase) return aBase < bBase ? -1 : 1;
-	const aPrefix = a.startsWith("-") ? 0 : 1;
-	const bPrefix = b.startsWith("-") ? 0 : 1;
-	return aPrefix - bPrefix;
+  const aBase = stripPrefix(a).toLowerCase();
+  const bBase = stripPrefix(b).toLowerCase();
+  if (aBase !== bBase) return aBase < bBase ? -1 : 1;
+  const aPrefix = a.startsWith("-") ? 0 : 1;
+  const bPrefix = b.startsWith("-") ? 0 : 1;
+  return aPrefix - bPrefix;
 }
 
 function buildRows(
-	ownerId: string,
-	viceArgumentsState: import("./types").ViceArgumentsState,
+  ownerId: string,
+  viceArgumentsState: import("./types").ViceArgumentsState,
 ): ViceArgumentRow[] {
-	const owner = viceArgumentsState.owners.find((o) => o.id === ownerId);
-	if (!owner) return [];
+  const owner = viceArgumentsState.owners.find((o) => o.id === ownerId);
+  if (!owner) return [];
 
-	const ownedArgs = viceArgumentsState.arguments.filter(
-		(a) => a.ownerId === ownerId,
-	);
+  const ownedArgs = viceArgumentsState.arguments.filter(
+    (a) => a.ownerId === ownerId,
+  );
 
-	const inheritedArgs: ViceArgumentRow[] = owner.profileIds.flatMap(
-		(profileId) => {
-			const profile = viceArgumentsState.owners.find((o) => o.id === profileId);
-			return viceArgumentsState.arguments
-				.filter((a) => a.ownerId === profileId)
-				.map((a) => ({
-					id: a.id,
-					name: a.name,
-					value: a.value,
-					sourceLabel: profile
-						? `${profile.name} (${profile.type === "profile" ? "Profile" : "Launch Config"})`
-						: profileId,
-					isInherited: true,
-					ownerId: a.ownerId,
-				}));
-		},
-	);
+  const inheritedArgs: ViceArgumentRow[] = owner.profileIds.flatMap(
+    (profileId) => {
+      const profile = viceArgumentsState.owners.find((o) => o.id === profileId);
+      return viceArgumentsState.arguments
+        .filter((a) => a.ownerId === profileId)
+        .map((a) => ({
+          id: a.id,
+          name: a.name,
+          value: a.value,
+          sourceLabel: profile
+            ? `${profile.name} (${profile.type === "profile" ? "Profile" : "Launch Config"})`
+            : profileId,
+          isInherited: true,
+          ownerId: a.ownerId,
+        }));
+    },
+  );
 
-	const ownedRows: ViceArgumentRow[] = ownedArgs.map((a) => ({
-		id: a.id,
-		name: a.name,
-		value: a.value,
-		sourceLabel: "—",
-		isInherited: false,
-		ownerId: a.ownerId,
-	}));
+  const ownedRows: ViceArgumentRow[] = ownedArgs.map((a) => ({
+    id: a.id,
+    name: a.name,
+    value: a.value,
+    sourceLabel: "—",
+    isInherited: false,
+    ownerId: a.ownerId,
+  }));
 
-	return [...ownedRows, ...inheritedArgs].sort((a, b) =>
-		compareArgumentNames(a.name, b.name),
-	);
+  return [...ownedRows, ...inheritedArgs].sort((a, b) =>
+    compareArgumentNames(a.name, b.name),
+  );
 }
 
 function wrapIndex(index: number, delta: number, length: number): number {
-	return (index + delta + length) % length;
+  return (index + delta + length) % length;
 }
 
 interface ViceArgumentListScreenProps {
-	ownerId: string;
-	statusMessage?: string;
+  ownerId: string;
+  statusMessage?: string;
 }
 
 export function ViceArgumentListScreen({
-	ownerId,
-	statusMessage: initialStatusMessage = "",
+  ownerId,
+  statusMessage: initialStatusMessage = "",
 }: ViceArgumentListScreenProps) {
-	const { pop, push } = useRouter();
-	const { store, setStore } = useStore();
+  const { pop, push } = useRouter();
+  const { store, setStore } = useStore();
 
-	const rows = buildRows(ownerId, store.viceArguments);
-	const owner = store.viceArguments.owners.find((o) => o.id === ownerId);
+  const rows = buildRows(ownerId, store.viceArguments);
+  const owner = store.viceArguments.owners.find((o) => o.id === ownerId);
 
-	const [selectedIndex, setSelectedIndex] = useState(0);
-	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
-	const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
-	const [overlay, setOverlay] = useState<Overlay | null>(null);
-	const [overlayIndex, setOverlayIndex] = useState(0);
-	const [showContextMenu, setShowContextMenu] = useState(false);
-	const [contextMenuIndex, setContextMenuIndex] = useState(0);
-	const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
+  const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
+  const [overlay, setOverlay] = useState<Overlay | null>(null);
+  const [overlayIndex, setOverlayIndex] = useState(0);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuIndex, setContextMenuIndex] = useState(0);
+  const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
-	const containerRef = useRef<HTMLDivElement>(null);
-	const addButtonRef = useRef<HTMLButtonElement>(null);
-	const backButtonRef = useRef<HTMLButtonElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
 
-	const safeSelectedIndex =
-		rows.length > 0 ? Math.min(selectedIndex, rows.length - 1) : 0;
-	const focusedRow = rows[safeSelectedIndex];
+  const safeSelectedIndex =
+    rows.length > 0 ? Math.min(selectedIndex, rows.length - 1) : 0;
+  const focusedRow = rows[safeSelectedIndex];
 
-	useEffect(() => {
-		containerRef.current?.focus();
-	}, []);
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
 
-	useEffect(() => {
-		const handleKeyDown = (event: KeyboardEvent) => {
-			if (overlay === "delete") {
-				handleDeleteOverlayKey(event);
-				return;
-			}
-			if (showContextMenu) {
-				handleContextMenuKey(event);
-				return;
-			}
-			handleMainKey(event);
-		};
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (overlay === "delete") {
+        handleDeleteOverlayKey(event);
+        return;
+      }
+      if (showContextMenu) {
+        handleContextMenuKey(event);
+        return;
+      }
+      handleMainKey(event);
+    };
 
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	});
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  });
 
-	function handleDeleteOverlayKey(event: KeyboardEvent) {
-		if (event.key === "ArrowDown") {
-			setOverlayIndex((prev) => wrapIndex(prev, 1, DELETE_OPTIONS.length));
-		} else if (event.key === "ArrowUp") {
-			setOverlayIndex((prev) => wrapIndex(prev, -1, DELETE_OPTIONS.length));
-		} else if (event.key === "Enter") {
-			if (overlayIndex === 0) {
-				confirmDelete();
-			} else {
-				setOverlay(null);
-			}
-		} else if (event.key === "Escape") {
-			setOverlay(null);
-		}
-	}
+  function handleDeleteOverlayKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      setOverlayIndex((prev) => wrapIndex(prev, 1, DELETE_OPTIONS.length));
+    } else if (event.key === "ArrowUp") {
+      setOverlayIndex((prev) => wrapIndex(prev, -1, DELETE_OPTIONS.length));
+    } else if (event.key === "Enter") {
+      if (overlayIndex === 0) {
+        confirmDelete();
+      } else {
+        setOverlay(null);
+      }
+    } else if (event.key === "Escape") {
+      setOverlay(null);
+    }
+  }
 
-	function handleContextMenuKey(event: KeyboardEvent) {
-		if (event.key === "ArrowDown") {
-			setContextMenuIndex((prev) =>
-				wrapIndex(prev, 1, CONTEXT_MENU_ITEMS.length),
-			);
-		} else if (event.key === "ArrowUp") {
-			setContextMenuIndex((prev) =>
-				wrapIndex(prev, -1, CONTEXT_MENU_ITEMS.length),
-			);
-		} else if (event.key === "Enter") {
-			if (CONTEXT_MENU_ITEMS[contextMenuIndex] === "Delete") {
-				setShowContextMenu(false);
-				openDeleteOverlay();
-			}
-		} else if (event.key === "Escape") {
-			setShowContextMenu(false);
-		}
-	}
+  function handleContextMenuKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      setContextMenuIndex((prev) =>
+        wrapIndex(prev, 1, CONTEXT_MENU_ITEMS.length),
+      );
+    } else if (event.key === "ArrowUp") {
+      setContextMenuIndex((prev) =>
+        wrapIndex(prev, -1, CONTEXT_MENU_ITEMS.length),
+      );
+    } else if (event.key === "Enter") {
+      if (CONTEXT_MENU_ITEMS[contextMenuIndex] === "Delete") {
+        setShowContextMenu(false);
+        openDeleteOverlay();
+      }
+    } else if (event.key === "Escape") {
+      setShowContextMenu(false);
+    }
+  }
 
-	function handleMainKey(event: KeyboardEvent) {
-		if (event.key === "Tab") {
-			event.preventDefault();
-			toggleFocusRegion(event.shiftKey);
-			return;
-		}
-		if (event.key === "Escape") {
-			pop();
-			return;
-		}
-		if (focusRegion === "topbar") {
-			handleTopBarKey(event);
-			return;
-		}
-		handleListKey(event);
-	}
+  function handleMainKey(event: KeyboardEvent) {
+    if (event.key === "Tab") {
+      event.preventDefault();
+      toggleFocusRegion(event.shiftKey);
+      return;
+    }
+    if (event.key === "Escape") {
+      pop();
+      return;
+    }
+    if (focusRegion === "topbar") {
+      handleTopBarKey(event);
+      return;
+    }
+    handleListKey(event);
+  }
 
-	function handleTopBarKey(event: KeyboardEvent) {
-		if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-			const delta = event.key === "ArrowLeft" ? -1 : 1;
-			const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
-			const nextIndex = wrapIndex(currentIndex, delta, TOP_BAR_CTAS.length);
-			const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-			setFocusedCta(nextCta);
-			focusCtaButton(nextCta);
-		} else if (event.key === "Enter") {
-			if (focusedCta === "add") {
-				navigateToAdd();
-			} else {
-				pop();
-			}
-		}
-	}
+  function handleTopBarKey(event: KeyboardEvent) {
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      const delta = event.key === "ArrowLeft" ? -1 : 1;
+      const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+      const nextIndex = wrapIndex(currentIndex, delta, TOP_BAR_CTAS.length);
+      const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
+      setFocusedCta(nextCta);
+      focusCtaButton(nextCta);
+    } else if (event.key === "Enter") {
+      if (focusedCta === "add") {
+        navigateToAdd();
+      } else {
+        pop();
+      }
+    }
+  }
 
-	function handleListKey(event: KeyboardEvent) {
-		if (rows.length === 0) return;
-		if (event.key === "ArrowDown") {
-			setSelectedIndex((prev) => wrapIndex(prev, 1, rows.length));
-			setStatusMessage("");
-		} else if (event.key === "ArrowUp") {
-			setSelectedIndex((prev) => wrapIndex(prev, -1, rows.length));
-			setStatusMessage("");
-		} else if (event.key === "Enter") {
-			activateRow(focusedRow);
-		} else if (event.code === "AltLeft") {
-			event.preventDefault();
-			openContextMenu();
-		}
-	}
+  function handleListKey(event: KeyboardEvent) {
+    if (rows.length === 0) return;
+    if (event.key === "ArrowDown") {
+      setSelectedIndex((prev) => wrapIndex(prev, 1, rows.length));
+      setStatusMessage("");
+    } else if (event.key === "ArrowUp") {
+      setSelectedIndex((prev) => wrapIndex(prev, -1, rows.length));
+      setStatusMessage("");
+    } else if (event.key === "Enter") {
+      activateRow(focusedRow);
+    } else if (event.code === "AltLeft") {
+      event.preventDefault();
+      openContextMenu();
+    }
+  }
 
-	function activateRow(row: ViceArgumentRow | undefined) {
-		if (!row) return;
-		push("vice-argument-edit", {
-			ownerId: row.isInherited ? row.ownerId : ownerId,
-			argumentId: row.id,
-		});
-	}
+  function activateRow(row: ViceArgumentRow | undefined) {
+    if (!row) return;
+    push("vice-argument-edit", {
+      ownerId: row.isInherited ? row.ownerId : ownerId,
+      argumentId: row.id,
+    });
+  }
 
-	function toggleFocusRegion(reverse = false) {
-		if (focusRegion === "list") {
-			const cta = reverse
-				? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
-				: TOP_BAR_CTAS[0];
-			setFocusRegion("topbar");
-			setFocusedCta(cta as TopBarCta);
-			focusCtaButton(cta as TopBarCta);
-		} else {
-			const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
-			const nextIndex = currentIndex + (reverse ? -1 : 1);
-			if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-				const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-				setFocusedCta(nextCta);
-				focusCtaButton(nextCta);
-			} else {
-				setFocusRegion("list");
-				containerRef.current?.focus();
-			}
-		}
-	}
+  function toggleFocusRegion(reverse = false) {
+    if (focusRegion === "list") {
+      const cta = reverse
+        ? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
+        : TOP_BAR_CTAS[0];
+      setFocusRegion("topbar");
+      setFocusedCta(cta as TopBarCta);
+      focusCtaButton(cta as TopBarCta);
+    } else {
+      const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+        const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
+        setFocusedCta(nextCta);
+        focusCtaButton(nextCta);
+      } else {
+        setFocusRegion("list");
+        containerRef.current?.focus();
+      }
+    }
+  }
 
-	function focusCtaButton(cta: TopBarCta) {
-		if (cta === "add") {
-			addButtonRef.current?.focus();
-		} else {
-			backButtonRef.current?.focus();
-		}
-	}
+  function focusCtaButton(cta: TopBarCta) {
+    if (cta === "add") {
+      addButtonRef.current?.focus();
+    } else {
+      backButtonRef.current?.focus();
+    }
+  }
 
-	function navigateToAdd() {
-		push("vice-argument-edit", { ownerId });
-	}
+  function navigateToAdd() {
+    push("vice-argument-edit", { ownerId });
+  }
 
-	function openContextMenu() {
-		if (focusedRow?.isInherited) return;
-		setContextMenuIndex(0);
-		setShowContextMenu(true);
-	}
+  function openContextMenu() {
+    if (focusedRow?.isInherited) return;
+    setContextMenuIndex(0);
+    setShowContextMenu(true);
+  }
 
-	function openDeleteOverlay() {
-		setOverlay("delete");
-		setOverlayIndex(0);
-	}
+  function openDeleteOverlay() {
+    setOverlay("delete");
+    setOverlayIndex(0);
+  }
 
-	function confirmDelete() {
-		if (!focusedRow) return;
-		const deletedName = focusedRow.name;
-		setStore((prev) => ({
-			...prev,
-			viceArguments: {
-				...prev.viceArguments,
-				arguments: prev.viceArguments.arguments.filter(
-					(a) => a.id !== focusedRow.id,
-				),
-			},
-		}));
-		setOverlay(null);
-		setStatusMessage(`${deletedName} deleted`);
-		setSelectedIndex((prev) => Math.max(0, prev - 1));
-	}
+  function confirmDelete() {
+    if (!focusedRow) return;
+    const deletedName = focusedRow.name;
+    setStore((prev) => ({
+      ...prev,
+      viceArguments: {
+        ...prev.viceArguments,
+        arguments: prev.viceArguments.arguments.filter(
+          (a) => a.id !== focusedRow.id,
+        ),
+      },
+    }));
+    setOverlay(null);
+    setStatusMessage(`${deletedName} deleted`);
+    setSelectedIndex((prev) => Math.max(0, prev - 1));
+  }
 
-	const derivedStatusMessage = deriveStatusMessage(
-		focusedRow,
-		statusMessage,
-		rows.length,
-	);
+  const derivedStatusMessage = deriveStatusMessage(
+    focusedRow,
+    statusMessage,
+    rows.length,
+  );
 
-	const ownerLabel = buildViceArgTitle(
-		owner?.type,
-		owner?.name ?? ownerId,
-		"VICE Arguments",
-	);
-	const showSourceColumn = owner?.type !== "profile";
+  const ownerLabel = buildViceArgTitle(
+    owner?.type,
+    owner?.name ?? ownerId,
+    "VICE Arguments",
+  );
+  const showSourceColumn = owner?.type !== "profile";
 
-	return (
-		<div
-			role="application"
-			className="screen"
-			ref={containerRef}
-			tabIndex={-1}
-			onContextMenu={(e) => {
-				e.preventDefault();
-				openContextMenu();
-			}}
-		>
-			<div className="screen__topbar">
-				<span className="screen__topbar-title">{ownerLabel}</span>
-				<div className="screen__topbar-ctas">
-					<button
-						ref={addButtonRef}
-						className={`topbar-cta${focusRegion === "topbar" && focusedCta === "add" ? " topbar-cta--focused" : ""}`}
-						onClick={navigateToAdd}
-						type="button"
-					>
-						[Add]
-					</button>
-					<button
-						ref={backButtonRef}
-						className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-						onClick={pop}
-						type="button"
-					>
-						[Back]
-					</button>
-				</div>
-			</div>
-			<div className="screen__content">
-				{rows.length === 0 ? (
-					<p>Select Add to add a VICE argument.</p>
-				) : (
-					<>
-						<div className="list__header">
-							<span className="vice-argument-list__header-name">Argument</span>
-							<span className="vice-argument-list__header-value">Value</span>
-							{showSourceColumn && (
-								<span className="vice-argument-list__header-source">
-									Source
-								</span>
-							)}
-						</div>
-						<ul className="list">
-							{rows.map((row, index) => (
-								<li
-									key={row.id}
-									className={buildRowClassName(
-										index === safeSelectedIndex && focusRegion === "list",
-										row.isInherited,
-									)}
-									style={{ display: "flex", gap: "16px" }}
-								>
-									<span className="vice-argument-list__row-name">
-										{row.name}
-									</span>
-									<span className="vice-argument-list__row-value">
-										{row.value || "—"}
-									</span>
-									{showSourceColumn && (
-										<span className="vice-argument-list__row-source">
-											{row.sourceLabel}
-										</span>
-									)}
-								</li>
-							))}
-						</ul>
-					</>
-				)}
-			</div>
-			<div className="screen__bottombar">{derivedStatusMessage}</div>
-			{overlay === "delete" && focusedRow && (
-				<div className="overlay-backdrop">
-					<div className="overlay">
-						<div className="overlay__title">Delete {focusedRow.name}?</div>
-						<ul className="overlay__list">
-							{DELETE_OPTIONS.map((option, index) => (
-								<li
-									key={option}
-									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
-								>
-									{option}
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
-			)}
-			{showContextMenu && focusedRow && !focusedRow.isInherited && (
-				<div
-					className="overlay-backdrop"
-					style={{ alignItems: "flex-start", paddingTop: "80px" }}
-				>
-					<div className="overlay">
-						<ul className="overlay__list">
-							{CONTEXT_MENU_ITEMS.map((item, index) => (
-								<li
-									key={item}
-									className={`overlay__row${index === contextMenuIndex ? " overlay__row--selected" : ""}`}
-								>
-									{item}
-								</li>
-							))}
-						</ul>
-					</div>
-				</div>
-			)}
-		</div>
-	);
+  return (
+    <div
+      role="application"
+      className="screen"
+      ref={containerRef}
+      tabIndex={-1}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        openContextMenu();
+      }}
+    >
+      <div className="screen__topbar">
+        <span className="screen__topbar-title">{ownerLabel}</span>
+        <div className="screen__topbar-ctas">
+          <button
+            ref={addButtonRef}
+            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "add" ? " topbar-cta--focused" : ""}`}
+            onClick={navigateToAdd}
+            type="button"
+          >
+            [Add]
+          </button>
+          <button
+            ref={backButtonRef}
+            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={pop}
+            type="button"
+          >
+            [Back]
+          </button>
+        </div>
+      </div>
+      <div className="screen__content">
+        {rows.length === 0 ? (
+          <p>Select Add to add a VICE argument.</p>
+        ) : (
+          <>
+            <div className="list__header">
+              <span className="vice-argument-list__header-name">Argument</span>
+              <span className="vice-argument-list__header-value">Value</span>
+              {showSourceColumn && (
+                <span className="vice-argument-list__header-source">
+                  Source
+                </span>
+              )}
+            </div>
+            <ul className="list">
+              {rows.map((row, index) => (
+                <li
+                  key={row.id}
+                  className={buildRowClassName(
+                    index === safeSelectedIndex && focusRegion === "list",
+                    row.isInherited,
+                  )}
+                  style={{ display: "flex", gap: "16px" }}
+                >
+                  <span className="vice-argument-list__row-name">
+                    {row.name}
+                  </span>
+                  <span className="vice-argument-list__row-value">
+                    {row.value || "—"}
+                  </span>
+                  {showSourceColumn && (
+                    <span className="vice-argument-list__row-source">
+                      {row.sourceLabel}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+      <div className="screen__bottombar">{derivedStatusMessage}</div>
+      {overlay === "delete" && focusedRow && (
+        <div className="overlay-backdrop">
+          <div className="overlay">
+            <div className="overlay__title">Delete {focusedRow.name}?</div>
+            <ul className="overlay__list">
+              {DELETE_OPTIONS.map((option, index) => (
+                <li
+                  key={option}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {showContextMenu && focusedRow && !focusedRow.isInherited && (
+        <div
+          className="overlay-backdrop"
+          style={{ alignItems: "flex-start", paddingTop: "80px" }}
+        >
+          <div className="overlay">
+            <ul className="overlay__list">
+              {CONTEXT_MENU_ITEMS.map((item, index) => (
+                <li
+                  key={item}
+                  className={`overlay__row${index === contextMenuIndex ? " overlay__row--selected" : ""}`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function buildRowClassName(isSelected: boolean, isInherited: boolean): string {
-	const parts = ["list__row"];
-	if (isSelected) parts.push("list__row--selected");
-	if (isInherited) parts.push("vice-argument-list__row--inherited");
-	return parts.join(" ");
+  const parts = ["list__row"];
+  if (isSelected) parts.push("list__row--selected");
+  if (isInherited) parts.push("vice-argument-list__row--inherited");
+  return parts.join(" ");
 }
 
 function deriveStatusMessage(
-	focusedRow: ViceArgumentRow | undefined,
-	statusMessage: string,
-	rowCount: number,
+  focusedRow: ViceArgumentRow | undefined,
+  statusMessage: string,
+  rowCount: number,
 ): string {
-	if (statusMessage) return statusMessage;
-	if (rowCount > 0 && focusedRow?.isInherited) {
-		return `Inherited from Profile: ${focusedRow.sourceLabel.replace("Profile: ", "")}. Select to add a copy to this owner.`;
-	}
-	return "";
+  if (statusMessage) return statusMessage;
+  if (rowCount > 0 && focusedRow?.isInherited) {
+    return `Inherited from Profile: ${focusedRow.sourceLabel.replace("Profile: ", "")}. Select to add a copy to this owner.`;
+  }
+  return "";
 }

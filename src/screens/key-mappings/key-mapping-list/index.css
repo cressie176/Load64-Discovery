@@ -3,45 +3,45 @@
    ============================================================ */
 
 .key-mapping-list__row-host-key {
-	flex: 0 0 180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .key-mapping-list__row-machine-key {
-	flex: 0 0 180px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .key-mapping-list__row-source {
-	color: var(--colour-text-muted);
-	flex: 1;
-	font-style: italic;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  flex: 1;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .key-mapping-list__header-host-key {
-	flex: 0 0 180px;
+  flex: 0 0 180px;
 }
 
 .key-mapping-list__header-machine-key {
-	flex: 0 0 180px;
+  flex: 0 0 180px;
 }
 
 .key-mapping-list__header-source {
-	flex: 1;
+  flex: 1;
 }
 
 .key-mapping-list__row--inherited {
-	color: var(--colour-text-muted);
-	font-style: italic;
+  color: var(--colour-text-muted);
+  font-style: italic;
 }
 
 .list__row--selected .key-mapping-list__row-source {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

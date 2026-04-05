@@ -3,111 +3,111 @@
    ============================================================ */
 
 .carousel {
-	align-items: center;
-	display: flex;
-	flex: 1;
-	justify-content: center;
-	overflow: hidden;
-	padding: 24px 0;
-	position: relative;
+  align-items: center;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  overflow: hidden;
+  padding: 24px 0;
+  position: relative;
 }
 
 .carousel__track {
-	align-items: center;
-	display: flex;
-	gap: 16px;
-	position: relative;
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  position: relative;
 }
 
 .carousel__item {
-	align-items: center;
-	cursor: none;
-	display: flex;
-	flex-direction: column;
-	flex-shrink: 0;
-	gap: 0;
-	transition:
-		transform 0.2s ease,
-		opacity 0.2s ease;
+  align-items: center;
+  cursor: none;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 0;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 
 .carousel__item--selected {
-	transform: scale(1.2);
-	z-index: 1;
+  transform: scale(1.2);
+  z-index: 1;
 }
 
 .carousel__item--adjacent {
-	opacity: 0.75;
+  opacity: 0.75;
 }
 
 .carousel__item--far {
-	opacity: 0.4;
+  opacity: 0.4;
 }
 
 .carousel__cover {
-	background: var(--colour-surface);
-	border: 2px solid var(--colour-border);
-	display: block;
-	height: 200px;
-	object-fit: cover;
-	width: 160px;
+  background: var(--colour-surface);
+  border: 2px solid var(--colour-border);
+  display: block;
+  height: 200px;
+  object-fit: cover;
+  width: 160px;
 }
 
 .carousel__item--selected .carousel__cover {
-	border-color: var(--colour-accent);
+  border-color: var(--colour-accent);
 }
 
 .carousel__cover-placeholder {
-	align-items: center;
-	background: var(--colour-surface);
-	border: 2px solid var(--colour-border);
-	color: var(--colour-text-muted);
-	display: flex;
-	font-size: 11px;
-	height: 200px;
-	justify-content: center;
-	overflow: hidden;
-	padding: 8px;
-	text-align: center;
-	width: 160px;
+  align-items: center;
+  background: var(--colour-surface);
+  border: 2px solid var(--colour-border);
+  color: var(--colour-text-muted);
+  display: flex;
+  font-size: 11px;
+  height: 200px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+  text-align: center;
+  width: 160px;
 }
 
 .carousel__item--selected .carousel__cover-placeholder {
-	border-color: var(--colour-accent);
+  border-color: var(--colour-accent);
 }
 
 /* Out of Order overlay for unlaunchable games */
 
 .carousel__out-of-order {
-	bottom: 0;
-	left: 0;
-	pointer-events: none;
-	position: absolute;
-	right: 0;
-	top: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .carousel__item--unlaunchable .carousel__cover,
 .carousel__item--unlaunchable .carousel__cover-placeholder {
-	filter: blur(1px) brightness(0.4);
-	opacity: 0.5;
+  filter: blur(1px) brightness(0.4);
+  opacity: 0.5;
 }
 
 .carousel__out-of-order-label {
-	background: rgba(0, 0, 0, 0.7);
-	border: 1px solid var(--colour-accent);
-	color: var(--colour-accent);
-	font-size: 10px;
-	left: 50%;
-	letter-spacing: 1px;
-	padding: 4px 8px;
-	position: absolute;
-	text-transform: uppercase;
-	top: 50%;
-	transform: translate(-50%, -50%) rotate(-15deg);
-	white-space: nowrap;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--colour-accent);
+  color: var(--colour-accent);
+  font-size: 10px;
+  left: 50%;
+  letter-spacing: 1px;
+  padding: 4px 8px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  white-space: nowrap;
 }
 
 .carousel__item-wrapper {
-	position: relative;
+  position: relative;
 }

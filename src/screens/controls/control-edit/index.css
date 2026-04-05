@@ -3,11 +3,11 @@
    ============================================================ */
 
 .control-edit__event-row {
-	align-items: center;
-	display: flex;
-	gap: 12px;
+  align-items: center;
+  display: flex;
+  gap: 12px;
 }
 
 .control-edit__event-row .form__input {
-	flex: 1;
+  flex: 1;
 }

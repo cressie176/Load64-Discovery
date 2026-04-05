@@ -3,46 +3,46 @@
    ============================================================ */
 
 .vice-argument-list__row-name {
-	flex: 0 0 220px;
-	font-family: var(--font-mono);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 220px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vice-argument-list__row-value {
-	flex: 0 0 120px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vice-argument-list__row-source {
-	color: var(--colour-text-muted);
-	flex: 1;
-	font-style: italic;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  flex: 1;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .vice-argument-list__header-name {
-	flex: 0 0 220px;
+  flex: 0 0 220px;
 }
 
 .vice-argument-list__header-value {
-	flex: 0 0 120px;
+  flex: 0 0 120px;
 }
 
 .vice-argument-list__header-source {
-	flex: 1;
+  flex: 1;
 }
 
 .vice-argument-list__row--inherited {
-	color: var(--colour-text-muted);
-	font-style: italic;
+  color: var(--colour-text-muted);
+  font-style: italic;
 }
 
 .list__row--selected .vice-argument-list__row-source {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

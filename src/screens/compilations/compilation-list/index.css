@@ -3,24 +3,24 @@
    ============================================================ */
 
 .compilation-list__columns {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: 1fr 140px;
-	min-width: 0;
-	width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 140px;
+  min-width: 0;
+  width: 100%;
 }
 
 .compilation-list__row-name {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compilation-list__row-count {
-	color: var(--colour-text-muted);
-	text-align: right;
+  color: var(--colour-text-muted);
+  text-align: right;
 }
 
 .list__row--selected .compilation-list__row-count {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

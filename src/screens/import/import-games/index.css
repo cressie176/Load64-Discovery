@@ -3,27 +3,27 @@
    ============================================================ */
 
 .import-games__input-row {
-	align-items: center;
-	display: flex;
-	gap: 8px;
+  align-items: center;
+  display: flex;
+  gap: 8px;
 }
 
 .import-games__input-row .form__input {
-	flex: 1;
+  flex: 1;
 }
 
 .import-games__browse {
-	color: var(--colour-text-muted);
-	cursor: none;
-	flex-shrink: 0;
-	font-family: var(--font-mono);
-	font-size: var(--font-size-base);
+  color: var(--colour-text-muted);
+  cursor: none;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
 }
 
 .import-games__browse:hover {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }
 
 .import-games__browse--active {
-	color: var(--colour-accent);
+  color: var(--colour-accent);
 }

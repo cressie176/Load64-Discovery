@@ -3,47 +3,47 @@
    ============================================================ */
 
 .env-var-list__row-name {
-	flex: 0 0 280px;
-	font-family: var(--font-mono);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 280px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .env-var-list__row-value {
-	flex: 0 0 160px;
-	font-family: var(--font-mono);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  flex: 0 0 160px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .env-var-list__row-source {
-	color: var(--colour-text-muted);
-	flex: 1;
-	font-style: italic;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  flex: 1;
+  font-style: italic;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .env-var-list__header-name {
-	flex: 0 0 280px;
+  flex: 0 0 280px;
 }
 
 .env-var-list__header-value {
-	flex: 0 0 160px;
+  flex: 0 0 160px;
 }
 
 .env-var-list__header-source {
-	flex: 1;
+  flex: 1;
 }
 
 .env-var-list__row--inherited {
-	color: var(--colour-text-muted);
-	font-style: italic;
+  color: var(--colour-text-muted);
+  font-style: italic;
 }
 
 .list__row--selected .env-var-list__row-source {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

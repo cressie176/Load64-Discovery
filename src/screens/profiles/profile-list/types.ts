@@ -1,15 +1,15 @@
 export interface Profile {
-	id: string;
-	name: string;
-	isDefault: boolean;
+  id: string;
+  name: string;
+  isDefault: boolean;
 }
 
 export interface GameProfileRef {
-	gameId: string;
-	profileId: string;
+  gameId: string;
+  profileId: string;
 }
 
 export interface ProfilesState {
-	profiles: Profile[];
-	gameProfileRefs: GameProfileRef[];
+  profiles: Profile[];
+  gameProfileRefs: GameProfileRef[];
 }

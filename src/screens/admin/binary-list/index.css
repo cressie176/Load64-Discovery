@@ -4,42 +4,42 @@
 
 .binary-list__row,
 .binary-list__header {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: 180px 1fr 24px;
-	min-width: 0;
-	width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 180px 1fr 24px;
+  min-width: 0;
+  width: 100%;
 }
 
 .binary-list__machine {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .binary-list__path {
-	color: var(--colour-text-muted);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .binary-list__path--configured {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }
 
 .list__row--selected .binary-list__path--configured {
-	color: var(--colour-text-bright);
+  color: var(--colour-text-bright);
 }
 
 .binary-list__status {
-	text-align: center;
+  text-align: center;
 }
 
 .binary-list__status--valid {
-	color: #44cc44;
+  color: #44cc44;
 }
 
 .binary-list__status--invalid {
-	color: #cc4444;
+  color: #cc4444;
 }

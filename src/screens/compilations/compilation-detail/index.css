@@ -3,33 +3,33 @@
    ============================================================ */
 
 .compilation-detail__columns {
-	display: grid;
-	gap: 16px;
-	grid-template-columns: 1fr 180px 60px;
-	min-width: 0;
-	width: 100%;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 180px 60px;
+  min-width: 0;
+  width: 100%;
 }
 
 .compilation-detail__row-title {
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compilation-detail__row-publisher {
-	color: var(--colour-text-muted);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+  color: var(--colour-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .compilation-detail__row-year {
-	color: var(--colour-text-muted);
-	text-align: right;
+  color: var(--colour-text-muted);
+  text-align: right;
 }
 
 .list__row--selected .compilation-detail__row-publisher,
 .list__row--selected .compilation-detail__row-year {
-	color: var(--colour-text);
+  color: var(--colour-text);
 }

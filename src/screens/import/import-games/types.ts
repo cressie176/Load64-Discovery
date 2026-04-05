@@ -1,3 +1,3 @@
 export type ImportGamesState = {
-	path: string;
+  path: string;
 };

@@ -1,4 +1,4 @@
 export type ControllerDetailItem =
-	| "family"
-	| "controls"
-	| "environment-variables";
+  | "family"
+  | "controls"
+  | "environment-variables";

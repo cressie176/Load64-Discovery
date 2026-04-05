@@ -29,64 +29,64 @@ import { SEED_VICE_ARGUMENTS } from "../screens/vice-arguments/vice-argument-lis
 import type { ViceArgumentsState } from "../screens/vice-arguments/vice-argument-list/types";
 
 interface Store {
-	generalSettings: GeneralSettings;
-	binaries: BinaryList;
-	carousel: CarouselState;
-	gameDetails: GameDetailsState;
-	controllers: ControllerList;
-	viceArguments: ViceArgumentsState;
-	profiles: ProfilesState;
-	profileDetail: ProfileDetailState;
-	compilations: CompilationsState;
-	controllerFamilies: ControllerFamiliesState;
-	controls: ControlsState;
-	keyMappings: KeyMappingsState;
-	environmentVariables: EnvVarsState;
-	discoveryMessage: string;
-	importDiscovery: ImportDiscoveryState;
+  generalSettings: GeneralSettings;
+  binaries: BinaryList;
+  carousel: CarouselState;
+  gameDetails: GameDetailsState;
+  controllers: ControllerList;
+  viceArguments: ViceArgumentsState;
+  profiles: ProfilesState;
+  profileDetail: ProfileDetailState;
+  compilations: CompilationsState;
+  controllerFamilies: ControllerFamiliesState;
+  controls: ControlsState;
+  keyMappings: KeyMappingsState;
+  environmentVariables: EnvVarsState;
+  discoveryMessage: string;
+  importDiscovery: ImportDiscoveryState;
 }
 
 interface StoreContextValue {
-	store: Store;
-	setStore: (updater: (prev: Store) => Store) => void;
+  store: Store;
+  setStore: (updater: (prev: Store) => Store) => void;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
 
 interface StoreProviderProps {
-	children: ReactNode;
+  children: ReactNode;
 }
 
 const INITIAL_STORE: Store = {
-	generalSettings: SEED_GENERAL_SETTINGS,
-	binaries: SEED_BINARIES,
-	carousel: SEED_CAROUSEL,
-	gameDetails: SEED_GAME_DETAILS,
-	controllers: SEED_CONTROLLERS,
-	viceArguments: SEED_VICE_ARGUMENTS,
-	profiles: SEED_PROFILES,
-	profileDetail: SEED_PROFILE_DETAIL,
-	compilations: SEED_COMPILATIONS,
-	controllerFamilies: SEED_CONTROLLER_FAMILIES,
-	controls: SEED_CONTROLS,
-	keyMappings: SEED_KEY_MAPPINGS,
-	environmentVariables: SEED_ENV_VARS,
-	discoveryMessage: "",
-	importDiscovery: SEED_IMPORT_DISCOVERY,
+  generalSettings: SEED_GENERAL_SETTINGS,
+  binaries: SEED_BINARIES,
+  carousel: SEED_CAROUSEL,
+  gameDetails: SEED_GAME_DETAILS,
+  controllers: SEED_CONTROLLERS,
+  viceArguments: SEED_VICE_ARGUMENTS,
+  profiles: SEED_PROFILES,
+  profileDetail: SEED_PROFILE_DETAIL,
+  compilations: SEED_COMPILATIONS,
+  controllerFamilies: SEED_CONTROLLER_FAMILIES,
+  controls: SEED_CONTROLS,
+  keyMappings: SEED_KEY_MAPPINGS,
+  environmentVariables: SEED_ENV_VARS,
+  discoveryMessage: "",
+  importDiscovery: SEED_IMPORT_DISCOVERY,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {
-	const [store, setStore] = useState<Store>(INITIAL_STORE);
+  const [store, setStore] = useState<Store>(INITIAL_STORE);
 
-	return (
-		<StoreContext.Provider value={{ store, setStore }}>
-			{children}
-		</StoreContext.Provider>
-	);
+  return (
+    <StoreContext.Provider value={{ store, setStore }}>
+      {children}
+    </StoreContext.Provider>
+  );
 }
 
 export function useStore(): StoreContextValue {
-	const context = useContext(StoreContext);
-	if (!context) throw new Error("useStore must be used within StoreProvider");
-	return context;
+  const context = useContext(StoreContext);
+  if (!context) throw new Error("useStore must be used within StoreProvider");
+  return context;
 }

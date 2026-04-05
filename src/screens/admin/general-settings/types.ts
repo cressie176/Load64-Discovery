@@ -1,5 +1,5 @@
 export interface GeneralSettings {
-	gamesDirectory: string;
-	catalogueUrl: string;
-	showSplashscreen: boolean;
+  gamesDirectory: string;
+  catalogueUrl: string;
+  showSplashscreen: boolean;
 }
