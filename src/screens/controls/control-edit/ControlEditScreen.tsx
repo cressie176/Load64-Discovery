@@ -264,6 +264,7 @@ export function ControlEditScreen() {
 	function startCapture() {
 		setIsCapturing(true);
 		setErrorMessage("");
+		containerRef.current?.focus();
 	}
 
 	function handleSave() {
