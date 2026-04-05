@@ -144,7 +144,7 @@ export function ControllerFamilyListScreen({
 			if (focusedFamily) {
 				push("control-list", { ownerId: focusedFamily.id });
 			}
-		} else if (event.key === "Alt") {
+		} else if (event.code === "AltLeft") {
 			event.preventDefault();
 			openContextMenu();
 		}

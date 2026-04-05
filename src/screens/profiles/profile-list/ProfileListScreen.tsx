@@ -159,7 +159,7 @@ export function ProfileListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			navigateToDetail();
-		} else if (event.key === "Alt") {
+		} else if (event.code === "AltLeft") {
 			event.preventDefault();
 			openContextMenu();
 		}

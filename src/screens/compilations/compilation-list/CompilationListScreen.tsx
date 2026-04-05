@@ -183,7 +183,7 @@ export function CompilationListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateCompilation();
-		} else if (event.key === "Alt") {
+		} else if (event.code === "AltLeft") {
 			event.preventDefault();
 			openContextMenu();
 		}

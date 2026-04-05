@@ -184,7 +184,7 @@ export function KeyMappingListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateRow(focusedRow);
-		} else if (event.key === "Alt") {
+		} else if (event.code === "AltLeft") {
 			event.preventDefault();
 			openContextMenu();
 		}
