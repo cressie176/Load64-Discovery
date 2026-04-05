@@ -16,6 +16,11 @@
   text-transform: uppercase;
 }
 
+.swap-disks .list__row {
+  display: flex;
+  gap: 16px;
+}
+
 .swap-disks__col--label {
   flex: 0 0 180px;
   overflow: hidden;
