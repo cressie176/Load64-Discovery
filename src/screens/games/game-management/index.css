@@ -1,0 +1,50 @@
+/* ============================================================
+   Game Management Screen
+   ============================================================ */
+
+.game-management-delete {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  max-width: 340px;
+  padding: 20px 24px;
+  width: 100%;
+}
+
+.game-management-delete__title {
+  color: var(--colour-text-bright);
+  margin-bottom: 16px;
+}
+
+.game-management-delete__body {
+  color: var(--colour-text);
+  margin-bottom: 12px;
+}
+
+.game-management-delete__prompt {
+  color: var(--colour-text);
+  margin-bottom: 8px;
+}
+
+.game-management-delete__input {
+  display: block;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.game-management-delete__actions {
+  display: flex;
+  gap: 16px;
+}
+
+.game-management-delete__btn {
+  color: var(--colour-text-muted);
+  cursor: none;
+}
+
+.game-management-delete__btn--delete:not(:disabled) {
+  color: var(--colour-text-bright);
+}
+
+.game-management-delete__btn:disabled {
+  opacity: 0.4;
+}

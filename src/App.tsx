@@ -20,6 +20,7 @@ import { ControlListScreen } from "./screens/controls/control-list/ControlListSc
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
+import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
 import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
@@ -42,7 +43,9 @@ function AppScreens() {
     return <GameDetailsScreen gameId={currentParams.gameId ?? "game-bubble"} />;
   }
   if (currentScreen === "game-management") {
-    return <Placeholder name="Game Management" />;
+    return (
+      <GameManagementScreen gameId={currentParams.gameId ?? "game-bubble"} />
+    );
   }
   if (currentScreen === "snapshot-list") {
     return <Placeholder name="Snapshot List" />;
@@ -195,8 +198,26 @@ function AppScreens() {
   if (currentScreen === "import-candidate") {
     return <ImportCandidateScreen />;
   }
+  if (currentScreen === "game-info-edit") {
+    return <Placeholder name="Game Info Edit" />;
+  }
+  if (currentScreen === "game-rom-list") {
+    return <Placeholder name="Game ROM List" />;
+  }
+  if (currentScreen === "game-media-edit") {
+    return <Placeholder name="Game Media Edit" />;
+  }
   if (currentScreen === "game-catalogue-sources-list") {
     return <Placeholder name="Game Catalogue Sources List" />;
+  }
+  if (currentScreen === "game-control-list") {
+    return <Placeholder name="Game Control List" />;
+  }
+  if (currentScreen === "game-profiles-selection") {
+    return <Placeholder name="Game Profiles Selection" />;
+  }
+  if (currentScreen === "audit") {
+    return <Placeholder name="Audit" />;
   }
   return <GameCarouselScreen />;
 }
