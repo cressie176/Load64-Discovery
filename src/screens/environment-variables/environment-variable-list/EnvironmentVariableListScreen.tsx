@@ -15,7 +15,7 @@ const CONTEXT_MENU_ITEMS = ["Delete"] as const;
 function ownerTypeLabel(type: string): string {
 	switch (type) {
 		case "family":
-			return "Family";
+			return "Controller Family";
 		case "controller":
 			return "Controller";
 		case "profile":
@@ -36,7 +36,7 @@ function buildRows(ownerId: string, state: EnvVarsState): EnvVarRow[] {
 	const inheritedRows: EnvVarRow[] = owner.parentIds.flatMap((parentId) => {
 		const parent = state.owners.find((o) => o.id === parentId);
 		const parentLabel = parent
-			? `${ownerTypeLabel(parent.type)}: ${parent.name}`
+			? `${parent.name} (${ownerTypeLabel(parent.type)})`
 			: parentId;
 		return state.variables
 			.filter((v) => v.ownerId === parentId)

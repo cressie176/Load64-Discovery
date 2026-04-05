@@ -27,7 +27,9 @@ function buildRows(ownerId: string, state: KeyMappingsState): KeyMappingRow[] {
 					id: m.id,
 					hostKey: m.hostKey,
 					machineKey: m.machineKey,
-					sourceLabel: `Profile: ${profile?.name ?? profileId}`,
+					sourceLabel: profile
+						? `${profile.name} (${profile.type === "profile" ? "Profile" : "Launch Config"})`
+						: profileId,
 					isInherited: true,
 					ownerId: m.ownerId,
 				}));

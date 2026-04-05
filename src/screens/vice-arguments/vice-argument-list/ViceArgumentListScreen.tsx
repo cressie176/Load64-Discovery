@@ -45,7 +45,9 @@ function buildRows(
 					id: a.id,
 					name: a.name,
 					value: a.value,
-					sourceLabel: `Profile: ${profile?.name ?? profileId}`,
+					sourceLabel: profile
+						? `${profile.name} (${profile.type === "profile" ? "Profile" : "Launch Config"})`
+						: profileId,
 					isInherited: true,
 					ownerId: a.ownerId,
 				}));
