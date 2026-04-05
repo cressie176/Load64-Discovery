@@ -86,6 +86,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "USB Gamepad",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "connected",
 			};
@@ -97,6 +98,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "Logitech Dual Action",
+				deviceCount: 1,
 				connectedCount: 2,
 				status: "connected",
 			};
@@ -108,6 +110,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "DualShock 4",
+				deviceCount: 1,
 				connectedCount: 0,
 				status: "disconnected",
 			};
@@ -121,6 +124,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "USB Gamepad",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "not-configured",
 			};
@@ -132,6 +136,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "Xbox Wireless Controller",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "connected",
 			};
@@ -143,6 +148,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "DualShock 4",
+				deviceCount: 1,
 				connectedCount: 0,
 				status: "disconnected",
 			};
@@ -156,6 +162,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "USB Gamepad",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "not-configured",
 			};
@@ -167,6 +174,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "Xbox Wireless Controller",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "connected",
 			};
@@ -178,6 +186,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "DualShock 4",
+				deviceCount: 1,
 				connectedCount: 0,
 				status: "disconnected",
 			};
@@ -191,6 +200,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "USB Gamepad",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "not-configured",
 			};
@@ -202,6 +212,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "Xbox Wireless Controller",
+				deviceCount: 1,
 				connectedCount: 1,
 				status: "connected",
 			};
@@ -213,6 +224,7 @@ describe("ControllerListScreen", () => {
 				id: "c1",
 				guid: "abc",
 				name: "DualShock 4",
+				deviceCount: 1,
 				connectedCount: 0,
 				status: "disconnected",
 			};
@@ -227,6 +239,7 @@ describe("ControllerListScreen", () => {
 					id: "c1",
 					guid: "a",
 					name: "Xbox",
+					deviceCount: 1,
 					connectedCount: 1,
 					status: "connected",
 				},
@@ -234,6 +247,7 @@ describe("ControllerListScreen", () => {
 					id: "c2",
 					guid: "b",
 					name: "USB Gamepad",
+					deviceCount: 1,
 					connectedCount: 1,
 					status: "not-configured",
 				},
@@ -249,6 +263,7 @@ describe("ControllerListScreen", () => {
 					id: "c1",
 					guid: "a",
 					name: "Zzz Pad",
+					deviceCount: 1,
 					connectedCount: 1,
 					status: "not-configured",
 				},
@@ -256,6 +271,7 @@ describe("ControllerListScreen", () => {
 					id: "c2",
 					guid: "b",
 					name: "Aaa Pad",
+					deviceCount: 1,
 					connectedCount: 1,
 					status: "not-configured",
 				},
@@ -271,6 +287,7 @@ describe("ControllerListScreen", () => {
 					id: "c1",
 					guid: "a",
 					name: "Zzz Pad",
+					deviceCount: 1,
 					connectedCount: 1,
 					status: "connected",
 				},
@@ -278,6 +295,7 @@ describe("ControllerListScreen", () => {
 					id: "c2",
 					guid: "b",
 					name: "Aaa Pad",
+					deviceCount: 1,
 					connectedCount: 0,
 					status: "disconnected",
 				},

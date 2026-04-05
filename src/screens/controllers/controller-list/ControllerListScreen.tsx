@@ -10,9 +10,6 @@ type Overlay = "context-menu" | "delete";
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 
 function buildDisplayName(controller: Controller): string {
-	if (controller.connectedCount > 1) {
-		return `${controller.name} (${controller.connectedCount})`;
-	}
 	return controller.name;
 }
 
@@ -297,6 +294,10 @@ export function ControllerListScreen() {
 						<div className="list__header">
 							<div className="controller-list__header">
 								<span>Device</span>
+								<span className="controller-list__count">
+									Number of Devices
+								</span>
+								<span>Family</span>
 								<span>Connected</span>
 								<span>Configured</span>
 							</div>
@@ -317,7 +318,13 @@ export function ControllerListScreen() {
 								>
 									<div className="controller-list__row">
 										<span className="controller-list__name">
-											{buildDisplayName(controller)}
+											{controller.name}
+										</span>
+										<span className="controller-list__count">
+											{controller.deviceCount}
+										</span>
+										<span className="controller-list__family">
+											{controller.familyName ?? "—"}
 										</span>
 										<span
 											className={`controller-list__connected${isConnected(controller) ? " controller-list__connected--yes" : " controller-list__connected--no"}`}

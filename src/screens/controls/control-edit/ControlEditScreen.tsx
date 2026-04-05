@@ -80,7 +80,7 @@ function validateEvent(
 }
 
 export function ControlEditScreen() {
-	const { pop, currentParams } = useRouter();
+	const { pop, popWith, currentParams } = useRouter();
 	const { store, setStore } = useStore();
 
 	const ownerId = currentParams.ownerId ?? "";
@@ -327,7 +327,7 @@ export function ControlEditScreen() {
 			}));
 		}
 
-		pop();
+		popWith({ statusMessage: `${draftControlName.trim()} saved` });
 	}
 
 	const captureButtonLabel = isCapturing ? "[Cancel]" : "[Capture]";

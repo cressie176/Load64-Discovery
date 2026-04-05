@@ -16,6 +16,7 @@ interface RouterContextValue {
 	push: (screen: ScreenName, params?: ScreenParams) => void;
 	replace: (screen: ScreenName, params?: ScreenParams) => void;
 	pop: () => void;
+	popWith: (params: ScreenParams) => void;
 }
 
 const RouterContext = createContext<RouterContextValue | null>(null);
@@ -54,9 +55,18 @@ export function RouterProvider({
 		setStack((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
 	}
 
+	function popWith(params: ScreenParams) {
+		setStack((prev) => {
+			if (prev.length < 2) return prev;
+			const parent = prev[prev.length - 2];
+			const updated = { ...parent, params: { ...parent.params, ...params } };
+			return [...prev.slice(0, -2), updated];
+		});
+	}
+
 	return (
 		<RouterContext.Provider
-			value={{ currentScreen, currentParams, push, replace, pop }}
+			value={{ currentScreen, currentParams, push, replace, pop, popWith }}
 		>
 			{children}
 		</RouterContext.Provider>

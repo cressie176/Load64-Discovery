@@ -8,6 +8,8 @@ export interface Controller {
 	id: string;
 	guid: string;
 	name: string;
+	familyName?: string;
+	deviceCount: number;
 	connectedCount: number;
 	status: ControllerStatus;
 }

@@ -246,6 +246,11 @@ export function ControlListScreen({
 		if (!focusedRow) return;
 		if (focusedRow.isInherited || focusedRow.controlName === "—") return;
 		const items = isControllerContext ? ["Clear", "Delete"] : ["Clear"];
+		if (items.length === 1) {
+			setOverlayIndex(0);
+			setOverlay(items[0] === "Clear" ? "clear" : "delete");
+			return;
+		}
 		setContextMenuItems(items);
 		setOverlay("context-menu");
 		setOverlayIndex(0);

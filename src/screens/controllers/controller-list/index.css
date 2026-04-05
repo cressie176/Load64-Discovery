@@ -6,7 +6,7 @@
 .controller-list__header {
 	display: grid;
 	gap: 16px;
-	grid-template-columns: 1fr 100px 100px;
+	grid-template-columns: 1fr 120px 160px 100px 100px;
 	min-width: 0;
 	width: 100%;
 }
@@ -17,11 +17,20 @@
 	white-space: nowrap;
 }
 
+.controller-list__family,
 .controller-list__connected,
 .controller-list__configured {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.controller-list__count {
+	text-align: right;
+}
+
+.controller-list__family {
+	color: var(--colour-text-muted);
 }
 
 .controller-list__connected--yes {
