@@ -136,7 +136,8 @@ export function ControllerListScreen() {
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateSelected();
-		} else if (event.key === "x") {
+		} else if (event.key === "Alt") {
+			event.preventDefault();
 			openDeleteForFocused();
 		}
 	}

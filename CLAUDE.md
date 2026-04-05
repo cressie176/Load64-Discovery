@@ -7,12 +7,15 @@ This is the proof-of-concept implementation of Load!64. Its sole purpose is to v
 ## Commands
 
 ```bash
+npm install       # install dependencies (required once per worktree — node_modules are not shared)
 npm run dev       # start dev server
 npm run check     # Biome lint + format check
 npm run format    # Biome auto-format
 npm test          # node:test suite (3s timeout, no concurrency)
 ./node_modules/.bin/tsc -b        # type check
 ```
+
+**Worktrees:** Each git worktree needs its own `node_modules`. Run `npm install` once after creating a new worktree before running any other commands.
 
 ## Source Structure
 

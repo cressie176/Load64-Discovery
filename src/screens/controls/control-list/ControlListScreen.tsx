@@ -196,7 +196,8 @@ export function ControlListScreen({
 			setStatusMessage("");
 		} else if (event.key === "Enter") {
 			activateRow(focusedRow);
-		} else if (event.key === "x" || event.key === "X") {
+		} else if (event.key === "Alt") {
+			event.preventDefault();
 			openDeleteIfEligible();
 		}
 	}
