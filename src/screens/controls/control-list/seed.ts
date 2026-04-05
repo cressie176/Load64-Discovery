@@ -18,18 +18,25 @@ export const SEED_CONTROLS: ControlsState = {
 			type: "family",
 		},
 		{
-			id: "controller-logitech-dual-action",
+			id: "ctrl-logitech-dual-action",
 			name: "Logitech Dual Action",
 			type: "controller",
 			familyId: "family-logitech",
 			familyName: "Logitech",
 		},
 		{
-			id: "controller-dualsense",
-			name: "DualSense Edge",
+			id: "ctrl-dualshock4",
+			name: "DualShock 4",
 			type: "controller",
 			familyId: "family-dualshock",
 			familyName: "Sony DualShock",
+		},
+		{
+			id: "ctrl-xbox-wireless",
+			name: "Xbox Wireless Controller",
+			type: "controller",
+			familyId: "family-xbox",
+			familyName: "Microsoft Xbox",
 		},
 		{
 			id: "ctrl-usb-gamepad",
@@ -469,14 +476,14 @@ export const SEED_CONTROLS: ControlsState = {
 		// Logitech Dual Action controller overrides
 		{
 			id: "ctrl-lda-1",
-			ownerId: "controller-logitech-dual-action",
+			ownerId: "ctrl-logitech-dual-action",
 			controlName: "A",
 			canonicalName: "button_south",
 			event: "button_1",
 		},
 		{
 			id: "ctrl-lda-2",
-			ownerId: "controller-logitech-dual-action",
+			ownerId: "ctrl-logitech-dual-action",
 			controlName: "B",
 			canonicalName: "button_east",
 			event: "button_2",
