@@ -7,6 +7,16 @@ export type CanonicalControlName =
 	| "dpad_down"
 	| "dpad_left"
 	| "dpad_right"
+	| "left_shoulder"
+	| "right_shoulder"
+	| "left_trigger"
+	| "right_trigger"
+	| "left_stick_x"
+	| "left_stick_y"
+	| "left_stick_press"
+	| "right_stick_x"
+	| "right_stick_y"
+	| "right_stick_press"
 	| "start"
 	| "back";
 
@@ -19,6 +29,16 @@ export const CANONICAL_CONTROL_LABELS: Record<CanonicalControlName, string> = {
 	dpad_down: "D-Pad Down",
 	dpad_left: "D-Pad Left",
 	dpad_right: "D-Pad Right",
+	left_shoulder: "Left Shoulder",
+	right_shoulder: "Right Shoulder",
+	left_trigger: "Left Trigger",
+	right_trigger: "Right Trigger",
+	left_stick_x: "Left Stick X",
+	left_stick_y: "Left Stick Y",
+	left_stick_press: "Left Stick Press",
+	right_stick_x: "Right Stick X",
+	right_stick_y: "Right Stick Y",
+	right_stick_press: "Right Stick Press",
 	start: "Start",
 	back: "Back",
 };
@@ -32,6 +52,16 @@ export const CANONICAL_CONTROL_ORDER: CanonicalControlName[] = [
 	"dpad_down",
 	"dpad_left",
 	"dpad_right",
+	"left_shoulder",
+	"right_shoulder",
+	"left_trigger",
+	"right_trigger",
+	"left_stick_x",
+	"left_stick_y",
+	"left_stick_press",
+	"right_stick_x",
+	"right_stick_y",
+	"right_stick_press",
 	"start",
 	"back",
 ];
