@@ -215,6 +215,7 @@ button {
 input,
 select,
 textarea {
+	appearance: none;
 	background: var(--colour-surface);
 	border: 1px solid var(--colour-border);
 	color: var(--colour-text);
@@ -222,6 +223,13 @@ textarea {
 	font-size: var(--font-size-base);
 	outline: none;
 	padding: 4px 8px;
+}
+
+select {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%234040ff'/%3E%3C/svg%3E");
+	background-position: right 8px center;
+	background-repeat: no-repeat;
+	padding-right: 24px;
 }
 
 input:focus,
