@@ -17,6 +17,8 @@ import { SEED_ENV_VARS } from "../screens/environment-variables/environment-vari
 import type { EnvVarsState } from "../screens/environment-variables/environment-variable-list/types";
 import { SEED_GAME_DETAILS } from "../screens/games/game-details/seed";
 import type { GameDetailsState } from "../screens/games/game-details/types";
+import { SEED_IMPORT_CANDIDATE } from "../screens/import/import-candidate/seed";
+import type { ImportCandidateState } from "../screens/import/import-candidate/types";
 import { SEED_IMPORT_DISCOVERY } from "../screens/import/import-discovery/seed";
 import type { ImportDiscoveryState } from "../screens/import/import-discovery/types";
 import { SEED_KEY_MAPPINGS } from "../screens/key-mappings/key-mapping-list/seed";
@@ -44,6 +46,7 @@ interface Store {
   environmentVariables: EnvVarsState;
   discoveryMessage: string;
   importDiscovery: ImportDiscoveryState;
+  importCandidate: ImportCandidateState;
 }
 
 interface StoreContextValue {
@@ -73,6 +76,7 @@ const INITIAL_STORE: Store = {
   environmentVariables: SEED_ENV_VARS,
   discoveryMessage: "",
   importDiscovery: SEED_IMPORT_DISCOVERY,
+  importCandidate: SEED_IMPORT_CANDIDATE,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {

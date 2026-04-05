@@ -30,5 +30,6 @@ export type ScreenName =
   | "import-games"
   | "import-discovery"
   | "import-candidate"
+  | "game-catalogue-sources-list"
   | "game-management"
   | "snapshot-list";
