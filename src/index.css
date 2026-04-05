@@ -128,6 +128,18 @@ button {
 	list-style: none;
 }
 
+.list__header {
+	border-bottom: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	display: flex;
+	font-size: 11px;
+	gap: 16px;
+	letter-spacing: 0.05em;
+	margin-bottom: 4px;
+	padding: 4px 8px 4px 24px;
+	text-transform: uppercase;
+}
+
 .list__row {
 	color: var(--colour-text);
 	padding: 6px 8px 6px 24px;

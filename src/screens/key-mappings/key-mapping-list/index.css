@@ -25,6 +25,18 @@
 	white-space: nowrap;
 }
 
+.key-mapping-list__header-host-key {
+	flex: 0 0 180px;
+}
+
+.key-mapping-list__header-machine-key {
+	flex: 0 0 180px;
+}
+
+.key-mapping-list__header-source {
+	flex: 1;
+}
+
 .key-mapping-list__row--inherited {
 	color: var(--colour-text-muted);
 	font-style: italic;

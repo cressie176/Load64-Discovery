@@ -33,6 +33,22 @@
 	white-space: nowrap;
 }
 
+.control-list__header-control-name {
+	flex: 0 0 80px;
+}
+
+.control-list__header-canonical-name {
+	flex: 0 0 160px;
+}
+
+.control-list__header-event {
+	flex: 0 0 120px;
+}
+
+.control-list__header-source {
+	flex: 1;
+}
+
 .control-list__row--inherited {
 	color: var(--colour-text-muted);
 	font-style: italic;

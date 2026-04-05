@@ -320,24 +320,31 @@ export function EnvironmentVariableListScreen({
 				{rows.length === 0 ? (
 					<p>Select Add to add an environment variable.</p>
 				) : (
-					<ul className="list">
-						{rows.map((row, index) => (
-							<li
-								key={row.id ?? `${row.ownerId}-${row.name}`}
-								className={buildRowClassName(
-									index === safeSelectedIndex && focusRegion === "list",
-									row.isInherited,
-								)}
-								style={{ display: "flex", gap: "16px" }}
-							>
-								<span className="env-var-list__row-name">{row.name}</span>
-								<span className="env-var-list__row-value">{row.value}</span>
-								<span className="env-var-list__row-source">
-									{row.sourceLabel}
-								</span>
-							</li>
-						))}
-					</ul>
+					<>
+						<div className="list__header">
+							<span className="env-var-list__header-name">Name</span>
+							<span className="env-var-list__header-value">Value</span>
+							<span className="env-var-list__header-source">Source</span>
+						</div>
+						<ul className="list">
+							{rows.map((row, index) => (
+								<li
+									key={row.id ?? `${row.ownerId}-${row.name}`}
+									className={buildRowClassName(
+										index === safeSelectedIndex && focusRegion === "list",
+										row.isInherited,
+									)}
+									style={{ display: "flex", gap: "16px" }}
+								>
+									<span className="env-var-list__row-name">{row.name}</span>
+									<span className="env-var-list__row-value">{row.value}</span>
+									<span className="env-var-list__row-source">
+										{row.sourceLabel}
+									</span>
+								</li>
+							))}
+						</ul>
+					</>
 				)}
 			</div>
 			<div className="screen__bottombar">{derivedStatusMessage}</div>

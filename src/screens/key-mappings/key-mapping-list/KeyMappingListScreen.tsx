@@ -301,28 +301,39 @@ export function KeyMappingListScreen({
 				{rows.length === 0 ? (
 					<p>Select Add to add a key mapping.</p>
 				) : (
-					<ul className="list">
-						{rows.map((row, index) => (
-							<li
-								key={row.id}
-								className={buildRowClassName(
-									index === safeSelectedIndex && focusRegion === "list",
-									row.isInherited,
-								)}
-								style={{ display: "flex", gap: "16px" }}
-							>
-								<span className="key-mapping-list__row-host-key">
-									{row.hostKey}
-								</span>
-								<span className="key-mapping-list__row-machine-key">
-									{row.machineKey}
-								</span>
-								<span className="key-mapping-list__row-source">
-									{row.sourceLabel}
-								</span>
-							</li>
-						))}
-					</ul>
+					<>
+						<div className="list__header">
+							<span className="key-mapping-list__header-host-key">
+								Host Key
+							</span>
+							<span className="key-mapping-list__header-machine-key">
+								Machine Key
+							</span>
+							<span className="key-mapping-list__header-source">Source</span>
+						</div>
+						<ul className="list">
+							{rows.map((row, index) => (
+								<li
+									key={row.id}
+									className={buildRowClassName(
+										index === safeSelectedIndex && focusRegion === "list",
+										row.isInherited,
+									)}
+									style={{ display: "flex", gap: "16px" }}
+								>
+									<span className="key-mapping-list__row-host-key">
+										{row.hostKey}
+									</span>
+									<span className="key-mapping-list__row-machine-key">
+										{row.machineKey}
+									</span>
+									<span className="key-mapping-list__row-source">
+										{row.sourceLabel}
+									</span>
+								</li>
+							))}
+						</ul>
+					</>
 				)}
 			</div>
 			<div className="screen__bottombar">{derivedStatusMessage}</div>

@@ -204,43 +204,51 @@ export function ControllerListScreen() {
 				{controllers.length === 0 ? (
 					<p>Connect any controllers you want to configure.</p>
 				) : (
-					<ul className="list">
-						{controllers.map((controller, index) => (
-							<li
-								key={controller.id}
-								className={[
-									"list__row",
-									index === safeSelectedIndex && focusRegion === "list"
-										? "list__row--selected"
-										: "",
-									!isSelectable(controller) ? "list__row--disabled" : "",
-								]
-									.filter(Boolean)
-									.join(" ")}
-							>
-								<div className="controller-list__row">
-									<span className="controller-list__name">
-										{buildDisplayName(controller)}
-									</span>
-									<span
-										className={[
-											"controller-list__status",
-											controller.status === "connected"
-												? "controller-list__status--connected"
-												: "",
-											controller.status === "disconnected"
-												? "controller-list__status--disconnected"
-												: "",
-										]
-											.filter(Boolean)
-											.join(" ")}
-									>
-										{buildStatusLabel(controller)}
-									</span>
-								</div>
-							</li>
-						))}
-					</ul>
+					<>
+						<div className="list__header">
+							<div className="controller-list__header">
+								<span>Device</span>
+								<span>Status</span>
+							</div>
+						</div>
+						<ul className="list">
+							{controllers.map((controller, index) => (
+								<li
+									key={controller.id}
+									className={[
+										"list__row",
+										index === safeSelectedIndex && focusRegion === "list"
+											? "list__row--selected"
+											: "",
+										!isSelectable(controller) ? "list__row--disabled" : "",
+									]
+										.filter(Boolean)
+										.join(" ")}
+								>
+									<div className="controller-list__row">
+										<span className="controller-list__name">
+											{buildDisplayName(controller)}
+										</span>
+										<span
+											className={[
+												"controller-list__status",
+												controller.status === "connected"
+													? "controller-list__status--connected"
+													: "",
+												controller.status === "disconnected"
+													? "controller-list__status--disconnected"
+													: "",
+											]
+												.filter(Boolean)
+												.join(" ")}
+										>
+											{buildStatusLabel(controller)}
+										</span>
+									</div>
+								</li>
+							))}
+						</ul>
+					</>
 				)}
 			</div>
 			<div className="screen__bottombar">{statusMessage}</div>

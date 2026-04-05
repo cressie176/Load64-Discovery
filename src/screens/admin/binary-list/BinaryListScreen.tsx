@@ -170,6 +170,13 @@ export function BinaryListScreen() {
 				</div>
 			</div>
 			<div className="screen__content">
+				<div className="list__header">
+					<div className="binary-list__header">
+						<span>Machine</span>
+						<span>Path</span>
+						<span>Status</span>
+					</div>
+				</div>
 				<ul className="list">
 					{binaries.map((binary, index) => (
 						<li

@@ -2,7 +2,8 @@
    Binary List Screen
    ============================================================ */
 
-.binary-list__row {
+.binary-list__row,
+.binary-list__header {
 	display: grid;
 	grid-template-columns: 180px 1fr 24px;
 	gap: 16px;
