@@ -6,6 +6,7 @@ import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { GameCarouselScreen } from "./screens/carousel/game-carousel/GameCarouselScreen";
 import { CompilationDetailScreen } from "./screens/compilations/compilation-detail/CompilationDetailScreen";
+import { CompilationEditScreen } from "./screens/compilations/compilation-edit/CompilationEditScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
 import { ControllerFamilyEditScreen } from "./screens/controller-families/controller-family-edit/ControllerFamilyEditScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
@@ -131,7 +132,9 @@ function AppScreens() {
 		);
 	}
 	if (currentScreen === "compilation-edit") {
-		return <Placeholder name="Compilation Edit" />;
+		return (
+			<CompilationEditScreen compilationId={currentParams.compilationId} />
+		);
 	}
 	if (currentScreen === "compilation-membership") {
 		return <Placeholder name="Compilation Membership" />;
