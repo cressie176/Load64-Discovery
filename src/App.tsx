@@ -9,6 +9,7 @@ import { CompilationListScreen } from "./screens/compilations/compilation-list/C
 import { ControllerFamilyEditScreen } from "./screens/controller-families/controller-family-edit/ControllerFamilyEditScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
+import { ControllerDetailScreen } from "./screens/controllers/controller-detail/ControllerDetailScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
@@ -49,7 +50,12 @@ function AppScreens() {
 		return <ControllerListScreen />;
 	}
 	if (currentScreen === "controller-detail") {
-		return <Placeholder name="Controller Detail" />;
+		return (
+			<ControllerDetailScreen
+				controllerId={currentParams.controllerId ?? "ctrl-logitech-dual-action"}
+				statusMessage={currentParams.statusMessage}
+			/>
+		);
 	}
 	if (currentScreen === "vice-argument-list") {
 		return (
