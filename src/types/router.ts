@@ -26,4 +26,6 @@ export type ScreenName =
 	| "controller-family-list"
 	| "controller-family-edit"
 	| "control-list"
-	| "control-edit";
+	| "control-edit"
+	| "import-games"
+	| "import-discovery";

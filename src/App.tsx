@@ -19,6 +19,7 @@ import { ControlEditScreen } from "./screens/controls/control-edit/ControlEditSc
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
+import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
 import { Placeholder } from "./screens/Placeholder";
@@ -175,6 +176,12 @@ function AppScreens() {
 	}
 	if (currentScreen === "control-edit") {
 		return <ControlEditScreen />;
+	}
+	if (currentScreen === "import-games") {
+		return <ImportGamesScreen />;
+	}
+	if (currentScreen === "import-discovery") {
+		return <Placeholder name="Import Discovery" />;
 	}
 	return <GameCarouselScreen />;
 }
