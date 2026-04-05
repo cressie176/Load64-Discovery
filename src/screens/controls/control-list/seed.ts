@@ -31,6 +31,13 @@ export const SEED_CONTROLS: ControlsState = {
 			familyId: "family-dualshock",
 			familyName: "Sony DualShock",
 		},
+		{
+			id: "ctrl-usb-gamepad",
+			name: "USB Gamepad",
+			type: "controller",
+			familyId: undefined,
+			familyName: undefined,
+		},
 	],
 	controls: [
 		// Logitech family controls

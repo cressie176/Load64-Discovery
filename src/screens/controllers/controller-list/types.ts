@@ -1,4 +1,8 @@
-export type ControllerStatus = "not-configured" | "connected" | "disconnected";
+export type ControllerStatus =
+	| "not-configured"
+	| "connected"
+	| "disconnected"
+	| "disconnected-unconfigured";
 
 export interface Controller {
 	id: string;

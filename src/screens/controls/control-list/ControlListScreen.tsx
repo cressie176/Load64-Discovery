@@ -11,9 +11,9 @@ import {
 import "./index.css";
 
 type FocusRegion = "list" | "topbar";
-type Overlay = "context-menu" | "delete";
+type Overlay = "context-menu" | "clear" | "delete";
 
-const DELETE_OPTIONS = ["Yes", "No"] as const;
+const CONFIRM_OPTIONS = ["Yes", "No"] as const;
 
 function buildRows(ownerId: string, state: ControlsState): ControlRow[] {
 	const owner = state.owners.find((o) => o.id === ownerId);
@@ -79,8 +79,8 @@ function buildControllerRow(
 		return {
 			canonicalName,
 			canonicalLabel: CANONICAL_CONTROL_LABELS[canonicalName],
-			controlName: inherited.controlName,
-			event: inherited.event,
+			controlName: inherited.controlName || "—",
+			event: inherited.event || "—",
 			sourceLabel: familyName ?? "Family",
 			isInherited: true,
 			entryId: inherited.id,
@@ -141,8 +141,12 @@ export function ControlListScreen({
 				handleContextMenuKey(event);
 				return;
 			}
+			if (overlay === "clear") {
+				handleConfirmOverlayKey(event, confirmClear, () => setOverlay(null));
+				return;
+			}
 			if (overlay === "delete") {
-				handleDeleteOverlayKey(event);
+				handleConfirmOverlayKey(event, confirmDelete, () => setOverlay(null));
 				return;
 			}
 			handleMainKey(event);
@@ -159,9 +163,9 @@ export function ControlListScreen({
 			setOverlayIndex((prev) => wrapIndex(prev, -1, contextMenuItems.length));
 		} else if (event.key === "Enter") {
 			const action = contextMenuItems[overlayIndex];
-			setOverlay(null);
 			if (action === "Clear") {
-				confirmClear();
+				setOverlay("clear");
+				setOverlayIndex(0);
 			} else if (action === "Delete") {
 				setOverlay("delete");
 				setOverlayIndex(0);
@@ -171,19 +175,23 @@ export function ControlListScreen({
 		}
 	}
 
-	function handleDeleteOverlayKey(event: KeyboardEvent) {
+	function handleConfirmOverlayKey(
+		event: KeyboardEvent,
+		onConfirm: () => void,
+		onCancel: () => void,
+	) {
 		if (event.key === "ArrowDown") {
-			setOverlayIndex((prev) => wrapIndex(prev, 1, DELETE_OPTIONS.length));
+			setOverlayIndex((prev) => wrapIndex(prev, 1, CONFIRM_OPTIONS.length));
 		} else if (event.key === "ArrowUp") {
-			setOverlayIndex((prev) => wrapIndex(prev, -1, DELETE_OPTIONS.length));
+			setOverlayIndex((prev) => wrapIndex(prev, -1, CONFIRM_OPTIONS.length));
 		} else if (event.key === "Enter") {
 			if (overlayIndex === 0) {
-				confirmDelete();
+				onConfirm();
 			} else {
-				setOverlay(null);
+				onCancel();
 			}
 		} else if (event.key === "Escape") {
-			setOverlay(null);
+			onCancel();
 		}
 	}
 
@@ -236,7 +244,7 @@ export function ControlListScreen({
 
 	function openContextMenuIfEligible() {
 		if (!focusedRow) return;
-		if (focusedRow.isInherited || focusedRow.entryId === null) return;
+		if (focusedRow.isInherited || focusedRow.controlName === "—") return;
 		const items = isControllerContext ? ["Clear", "Delete"] : ["Clear"];
 		setContextMenuItems(items);
 		setOverlay("context-menu");
@@ -245,10 +253,6 @@ export function ControlListScreen({
 
 	function confirmClear() {
 		if (!focusedRow?.entryId) return;
-		const clearedName =
-			focusedRow.controlName !== "—"
-				? focusedRow.controlName
-				: focusedRow.canonicalLabel;
 		setStore((prev) => ({
 			...prev,
 			controls: {
@@ -260,15 +264,13 @@ export function ControlListScreen({
 				),
 			},
 		}));
-		setStatusMessage(`${clearedName} cleared`);
+		setOverlay(null);
+		setStatusMessage(`${focusedRow.canonicalLabel} cleared`);
 	}
 
 	function confirmDelete() {
 		if (!focusedRow?.entryId) return;
-		const deletedName =
-			focusedRow.controlName !== "—"
-				? focusedRow.controlName
-				: focusedRow.canonicalLabel;
+		const deletedName = focusedRow.controlName;
 		setStore((prev) => ({
 			...prev,
 			controls: {
@@ -380,18 +382,33 @@ export function ControlListScreen({
 					</div>
 				</div>
 			)}
+			{overlay === "clear" && focusedRow && (
+				<div className="overlay-backdrop">
+					<div className="overlay">
+						<div className="overlay__title">
+							Clear {focusedRow.controlName}?
+						</div>
+						<ul className="overlay__list">
+							{CONFIRM_OPTIONS.map((option, index) => (
+								<li
+									key={option}
+									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+								>
+									{option}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			)}
 			{overlay === "delete" && focusedRow && (
 				<div className="overlay-backdrop">
 					<div className="overlay">
 						<div className="overlay__title">
-							Delete{" "}
-							{focusedRow.controlName !== "—"
-								? focusedRow.controlName
-								: focusedRow.canonicalLabel}
-							?
+							Delete {focusedRow.controlName}?
 						</div>
 						<ul className="overlay__list">
-							{DELETE_OPTIONS.map((option, index) => (
+							{CONFIRM_OPTIONS.map((option, index) => (
 								<li
 									key={option}
 									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}

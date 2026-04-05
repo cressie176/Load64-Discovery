@@ -5,7 +5,7 @@ import type { Controller } from "./types";
 import "./index.css";
 
 type FocusRegion = "list" | "topbar";
-type Overlay = "delete";
+type Overlay = "context-menu" | "delete";
 
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 
@@ -16,14 +16,16 @@ function buildDisplayName(controller: Controller): string {
 	return controller.name;
 }
 
-function buildStatusLabel(controller: Controller): string {
-	if (controller.status === "not-configured") return "Not configured";
-	if (controller.status === "connected") return "Connected";
-	return "Disconnected";
+function isConnected(controller: Controller): boolean {
+	return (
+		controller.status === "not-configured" || controller.status === "connected"
+	);
 }
 
 function isSelectable(controller: Controller): boolean {
-	return controller.status !== "disconnected";
+	return (
+		controller.status === "not-configured" || controller.status === "connected"
+	);
 }
 
 function isConfigured(controller: Controller): boolean {
@@ -32,12 +34,27 @@ function isConfigured(controller: Controller): boolean {
 	);
 }
 
+function canClear(controller: Controller): boolean {
+	return isConfigured(controller);
+}
+
+function canDelete(controller: Controller): boolean {
+	return (
+		controller.status === "disconnected" ||
+		controller.status === "disconnected-unconfigured"
+	);
+}
+
 function sortControllers(controllers: Controller[]): Controller[] {
 	const unconfigured = controllers
-		.filter((c) => c.status === "not-configured")
+		.filter(
+			(c) =>
+				c.status === "not-configured" ||
+				c.status === "disconnected-unconfigured",
+		)
 		.sort((a, b) => a.name.localeCompare(b.name));
 	const configured = controllers
-		.filter((c) => c.status !== "not-configured")
+		.filter((c) => c.status === "connected" || c.status === "disconnected")
 		.sort((a, b) => a.name.localeCompare(b.name));
 	return [...unconfigured, ...configured];
 }
@@ -60,6 +77,7 @@ export function ControllerListScreen() {
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
 	const [overlay, setOverlay] = useState<Overlay | null>(null);
 	const [overlayIndex, setOverlayIndex] = useState(0);
+	const [contextMenuItems, setContextMenuItems] = useState<string[]>([]);
 	const [statusMessage, setStatusMessage] = useState("");
 
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -77,6 +95,10 @@ export function ControllerListScreen() {
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if (overlay === "context-menu") {
+				handleContextMenuKey(event);
+				return;
+			}
 			if (overlay === "delete") {
 				handleDeleteOverlayKey(event);
 				return;
@@ -86,6 +108,25 @@ export function ControllerListScreen() {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	});
+
+	function handleContextMenuKey(event: KeyboardEvent) {
+		if (event.key === "ArrowDown") {
+			setOverlayIndex((prev) => wrapIndex(prev, 1, contextMenuItems.length));
+		} else if (event.key === "ArrowUp") {
+			setOverlayIndex((prev) => wrapIndex(prev, -1, contextMenuItems.length));
+		} else if (event.key === "Enter") {
+			const action = contextMenuItems[overlayIndex];
+			setOverlay(null);
+			if (action === "Clear") {
+				confirmClear();
+			} else if (action === "Delete") {
+				setOverlay("delete");
+				setOverlayIndex(0);
+			}
+		} else if (event.key === "Escape") {
+			setOverlay(null);
+		}
+	}
 
 	function handleDeleteOverlayKey(event: KeyboardEvent) {
 		if (event.key === "ArrowDown") {
@@ -138,7 +179,7 @@ export function ControllerListScreen() {
 			activateSelected();
 		} else if (event.key === "Alt") {
 			event.preventDefault();
-			openDeleteForFocused();
+			openContextMenuForFocused();
 		}
 	}
 
@@ -162,10 +203,14 @@ export function ControllerListScreen() {
 		push("controller-detail", { controllerId: focusedController.id });
 	}
 
-	function openDeleteForFocused() {
+	function openContextMenuForFocused() {
 		if (!focusedController) return;
-		if (!isConfigured(focusedController)) return;
-		setOverlay("delete");
+		const items: string[] = [];
+		if (canClear(focusedController)) items.push("Clear");
+		if (canDelete(focusedController)) items.push("Delete");
+		if (items.length === 0) return;
+		setContextMenuItems(items);
+		setOverlay("context-menu");
 		setOverlayIndex(0);
 	}
 
@@ -174,12 +219,46 @@ export function ControllerListScreen() {
 		containerRef.current?.focus();
 	}
 
+	function confirmClear() {
+		if (!focusedController) return;
+		const clearedName = buildDisplayName(focusedController);
+		const clearedStatus =
+			focusedController.status === "disconnected"
+				? ("disconnected-unconfigured" as const)
+				: ("not-configured" as const);
+		setStore((prev) => ({
+			...prev,
+			controllers: prev.controllers.map((c) =>
+				c.id === focusedController.id ? { ...c, status: clearedStatus } : c,
+			),
+			controls: {
+				...prev.controls,
+				owners: prev.controls.owners.filter(
+					(o) => o.id !== focusedController.id,
+				),
+				controls: prev.controls.controls.filter(
+					(c) => c.ownerId !== focusedController.id,
+				),
+			},
+		}));
+		setStatusMessage(`${clearedName} cleared`);
+	}
+
 	function confirmDelete() {
 		if (!focusedController) return;
 		const deletedName = buildDisplayName(focusedController);
 		setStore((prev) => ({
 			...prev,
 			controllers: deleteController(prev.controllers, focusedController.id),
+			controls: {
+				...prev.controls,
+				owners: prev.controls.owners.filter(
+					(o) => o.id !== focusedController.id,
+				),
+				controls: prev.controls.controls.filter(
+					(c) => c.ownerId !== focusedController.id,
+				),
+			},
 		}));
 		setOverlay(null);
 		setStatusMessage(`${deletedName} deleted`);
@@ -187,7 +266,16 @@ export function ControllerListScreen() {
 	}
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenuForFocused();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">Controllers</span>
 				<div className="screen__topbar-ctas">
@@ -209,7 +297,8 @@ export function ControllerListScreen() {
 						<div className="list__header">
 							<div className="controller-list__header">
 								<span>Device</span>
-								<span>Status</span>
+								<span>Connected</span>
+								<span>Configured</span>
 							</div>
 						</div>
 						<ul className="list">
@@ -231,19 +320,14 @@ export function ControllerListScreen() {
 											{buildDisplayName(controller)}
 										</span>
 										<span
-											className={[
-												"controller-list__status",
-												controller.status === "connected"
-													? "controller-list__status--connected"
-													: "",
-												controller.status === "disconnected"
-													? "controller-list__status--disconnected"
-													: "",
-											]
-												.filter(Boolean)
-												.join(" ")}
+											className={`controller-list__connected${isConnected(controller) ? " controller-list__connected--yes" : " controller-list__connected--no"}`}
 										>
-											{buildStatusLabel(controller)}
+											{isConnected(controller) ? "Yes" : "No"}
+										</span>
+										<span
+											className={`controller-list__configured${isConfigured(controller) ? "" : " controller-list__configured--no"}`}
+										>
+											{isConfigured(controller) ? "Yes" : "No"}
 										</span>
 									</div>
 								</li>
@@ -253,6 +337,25 @@ export function ControllerListScreen() {
 				)}
 			</div>
 			<div className="screen__bottombar">{statusMessage}</div>
+			{overlay === "context-menu" && focusedController && (
+				<div
+					className="overlay-backdrop"
+					style={{ alignItems: "flex-start", paddingTop: "80px" }}
+				>
+					<div className="overlay">
+						<ul className="overlay__list">
+							{contextMenuItems.map((item, index) => (
+								<li
+									key={item}
+									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+								>
+									{item}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			)}
 			{overlay === "delete" && focusedController && (
 				<div className="overlay-backdrop">
 					<div className="overlay">

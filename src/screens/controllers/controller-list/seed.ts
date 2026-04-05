@@ -29,4 +29,11 @@ export const SEED_CONTROLLERS: ControllerList = [
 		connectedCount: 1,
 		status: "connected",
 	},
+	{
+		id: "ctrl-8bitdo-pro2",
+		guid: "050000003512000021ab000000780f00",
+		name: "8BitDo Pro 2",
+		connectedCount: 0,
+		status: "disconnected-unconfigured",
+	},
 ];

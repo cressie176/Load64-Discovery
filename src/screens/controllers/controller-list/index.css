@@ -5,7 +5,7 @@
 .controller-list__row,
 .controller-list__header {
 	display: grid;
-	grid-template-columns: 1fr 140px;
+	grid-template-columns: 1fr 100px 100px;
 	gap: 16px;
 	min-width: 0;
 }
@@ -16,18 +16,19 @@
 	white-space: nowrap;
 }
 
-.controller-list__status {
-	color: var(--colour-text-muted);
+.controller-list__connected,
+.controller-list__configured {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
-.controller-list__status--connected {
+.controller-list__connected--yes {
 	color: #44cc44;
 }
 
-.controller-list__status--disconnected {
+.controller-list__connected--no,
+.controller-list__configured--no {
 	color: var(--colour-text-muted);
 }
 
