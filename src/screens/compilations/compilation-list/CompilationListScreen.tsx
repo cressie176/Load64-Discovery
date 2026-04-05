@@ -273,10 +273,6 @@ export function CompilationListScreen({
 		).length;
 	}
 
-	function formatGameCount(count: number): string {
-		return count === 1 ? "1 game" : `${count} games`;
-	}
-
 	function deleteWarningMessage(compilation: Compilation | undefined): string {
 		if (!compilation) return "";
 		const count = countGames(compilation);
@@ -330,7 +326,7 @@ export function CompilationListScreen({
 				<div className="list__header">
 					<div className="compilation-list__columns">
 						<span>Name</span>
-						<span style={{ textAlign: "right" }}>Games</span>
+						<span style={{ textAlign: "right" }}>Number of Games</span>
 					</div>
 				</div>
 				<ul className="list">
@@ -344,7 +340,7 @@ export function CompilationListScreen({
 									{compilation.name}
 								</span>
 								<span className="compilation-list__row-count">
-									{formatGameCount(countGames(compilation))}
+									{countGames(compilation)}
 								</span>
 							</div>
 						</li>

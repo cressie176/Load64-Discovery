@@ -5,7 +5,7 @@
 .compilation-list__columns {
 	display: grid;
 	gap: 16px;
-	grid-template-columns: 1fr 100px;
+	grid-template-columns: 1fr 140px;
 	min-width: 0;
 	width: 100%;
 }
