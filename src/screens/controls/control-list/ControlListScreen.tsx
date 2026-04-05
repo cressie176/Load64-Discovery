@@ -312,7 +312,10 @@ export function ControlListScreen({
 		owner?.familyName,
 	);
 
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerName = owner?.name ?? ownerId;
+	const ownerLabel = isControllerContext
+		? `Controllers – ${ownerName} – Controls`
+		: `Controller Families – ${ownerName} – Controls`;
 
 	return (
 		<div
@@ -326,7 +329,7 @@ export function ControlListScreen({
 			}}
 		>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{ownerLabel} Controls</span>
+				<span className="screen__topbar-title">{ownerLabel}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

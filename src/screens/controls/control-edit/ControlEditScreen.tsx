@@ -94,10 +94,6 @@ export function ControlEditScreen() {
 		(c) => c.ownerId === ownerId && c.canonicalName === canonicalNameParam,
 	);
 
-	const ownerLabel = isFamily
-		? (owner?.name ?? ownerId)
-		: `${owner?.name ?? ownerId} Controls`;
-
 	const formFields = isFamily ? FORM_FIELDS_FAMILY : FORM_FIELDS_CONTROLLER;
 
 	const [draftControlName, setDraftControlName] = useState(
@@ -112,6 +108,8 @@ export function ControlEditScreen() {
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
 	const [activeField, setActiveField] = useState<FormField>("controlName");
 	const [errorMessage, setErrorMessage] = useState("");
+
+	const ownerLabel = `${owner?.name ?? ownerId} – ${CANONICAL_CONTROL_LABELS[draftCanonicalName]}`;
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const backButtonRef = useRef<HTMLButtonElement>(null);

@@ -208,7 +208,7 @@ export function ViceArgumentEditScreen() {
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">
-					{ownerLabel} VICE Arguments
+					{ownerLabel} – VICE Arguments{draftName ? ` – ${draftName}` : ""}
 				</span>
 				<div className="screen__topbar-ctas">
 					<button

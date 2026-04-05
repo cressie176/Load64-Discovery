@@ -279,7 +279,9 @@ export function KeyMappingListScreen({
 			}}
 		>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{ownerLabel} Key Mappings</span>
+				<span className="screen__topbar-title">
+					{ownerLabel} – Key Mappings
+				</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={addButtonRef}

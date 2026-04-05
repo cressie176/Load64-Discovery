@@ -38,8 +38,6 @@ export function ControllerDetailScreen({
 
 	const isConnected = (controller?.connectedCount ?? 0) > 0;
 	const deviceName = controller?.name ?? controllerId;
-	const familyName = controller?.familyName ?? "(No Family)";
-	const guid = controller?.guid ?? "";
 
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
@@ -129,7 +127,7 @@ export function ControllerDetailScreen({
 		}
 	}
 
-	const title = `${deviceName} - ${familyName} - ${guid}`;
+	const title = `Controllers – ${deviceName}`;
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

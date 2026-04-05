@@ -296,7 +296,7 @@ export function CompilationDetailScreen({
 		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">
-					{compilation?.name ?? "Compilation"}
+					Compilations – {compilation?.name ?? "Compilation"}
 				</span>
 				<div className="screen__topbar-ctas">
 					<button

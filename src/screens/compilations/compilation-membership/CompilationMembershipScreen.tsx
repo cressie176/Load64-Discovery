@@ -291,7 +291,7 @@ export function CompilationMembershipScreen({
 		<div role="application" className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">
-					{compilation?.name ?? "Compilation"} – Add Games
+					Compilations – {compilation?.name ?? "Compilation"}
 				</span>
 				<div className="screen__topbar-ctas">
 					<button

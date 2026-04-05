@@ -227,7 +227,7 @@ export function ControllerSelectionScreen({
 		pop();
 	}
 
-	const title = `${resolvedOwnerName} Controllers`;
+	const title = `${resolvedOwnerName} – Controllers`;
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

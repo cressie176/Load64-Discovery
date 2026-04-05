@@ -295,7 +295,7 @@ export function EnvironmentVariableListScreen({
 		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">
-					{ownerLabel} Environment Variables
+					{ownerLabel} – Environment Variables
 				</span>
 				<div className="screen__topbar-ctas">
 					<button

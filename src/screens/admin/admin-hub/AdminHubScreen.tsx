@@ -95,7 +95,7 @@ export function AdminHubScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">Administration</span>
+				<span className="screen__topbar-title">Admin</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

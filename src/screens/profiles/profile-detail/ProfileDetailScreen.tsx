@@ -152,7 +152,7 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{profileName}</span>
+				<span className="screen__topbar-title">Profiles – {profileName}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}
