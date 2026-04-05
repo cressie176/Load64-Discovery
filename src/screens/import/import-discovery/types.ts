@@ -4,6 +4,7 @@ export type ImportSuggestion = {
   publisher: string | null;
   year: number | null;
   romCount: number;
+  filenames: string[];
 };
 
 export type ImportDiscoveryState = {

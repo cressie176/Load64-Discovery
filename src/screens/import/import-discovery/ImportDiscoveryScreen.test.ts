@@ -2,8 +2,29 @@ import { equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { ImportSuggestion } from "./types";
 
+function stripExtension(filename: string): string {
+  return filename.replace(/\.[^.]+$/, "");
+}
+
+function commonPrefix(filenames: string[]): string {
+  const first = filenames[0];
+  let prefix = "";
+  for (let i = 0; i < first.length; i++) {
+    if (filenames.every((f) => f[i] === first[i])) {
+      prefix += first[i];
+    } else {
+      break;
+    }
+  }
+  return prefix.replace(/[-_\s]+$/, "");
+}
+
 function formatTitle(suggestion: ImportSuggestion): string {
-  return suggestion.title ?? "—";
+  if (suggestion.title !== null) return suggestion.title;
+  if (suggestion.filenames.length === 1) {
+    return stripExtension(suggestion.filenames[0]);
+  }
+  return commonPrefix(suggestion.filenames.map(stripExtension));
 }
 
 function formatPublisher(publisher: string | null): string {
@@ -23,19 +44,33 @@ describe("ImportDiscoveryScreen", () => {
         publisher: "System 3",
         year: 1987,
         romCount: 3,
+        filenames: ["last-ninja-1.d64", "last-ninja-2.d64", "last-ninja-3.d64"],
       };
       eq(formatTitle(suggestion), "The Last Ninja");
     });
 
-    it("returns a dash for an unrecognised game", () => {
+    it("returns the filename without extension for an unrecognised single-ROM game", () => {
       const suggestion: ImportSuggestion = {
         id: "sug-2",
         title: null,
         publisher: null,
         year: null,
-        romCount: 2,
+        romCount: 1,
+        filenames: ["game-tape2.t64"],
       };
-      eq(formatTitle(suggestion), "—");
+      eq(formatTitle(suggestion), "game-tape2");
+    });
+
+    it("returns the common filename prefix for an unrecognised multi-ROM game", () => {
+      const suggestion: ImportSuggestion = {
+        id: "sug-3",
+        title: null,
+        publisher: null,
+        year: null,
+        romCount: 2,
+        filenames: ["last-ninja-1.d64", "last-ninja-2.d64"],
+      };
+      eq(formatTitle(suggestion), "last-ninja");
     });
   });
 
