@@ -311,6 +311,17 @@ export function CompilationMembershipScreen({
 					<p>All games are already in this compilation.</p>
 				) : (
 					<>
+						<div
+							className="list__header"
+							style={{ display: "flex", gap: "16px" }}
+						>
+							<span className="compilation-membership__row-checkbox" />
+							<span className="compilation-membership__row-title">Title</span>
+							<span className="compilation-membership__row-publisher">
+								Publisher
+							</span>
+							<span className="compilation-membership__row-year">Year</span>
+						</div>
 						<ul className="list">
 							{eligibleGames.map((game, index) => (
 								<li
