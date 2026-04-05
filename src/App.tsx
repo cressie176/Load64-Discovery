@@ -8,6 +8,7 @@ import { GameCarouselScreen } from "./screens/carousel/game-carousel/GameCarouse
 import { CompilationDetailScreen } from "./screens/compilations/compilation-detail/CompilationDetailScreen";
 import { CompilationEditScreen } from "./screens/compilations/compilation-edit/CompilationEditScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
+import { CompilationMembershipScreen } from "./screens/compilations/compilation-membership/CompilationMembershipScreen";
 import { ControllerFamilyEditScreen } from "./screens/controller-families/controller-family-edit/ControllerFamilyEditScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
@@ -143,7 +144,11 @@ function AppScreens() {
 		);
 	}
 	if (currentScreen === "compilation-membership") {
-		return <Placeholder name="Compilation Membership" />;
+		return (
+			<CompilationMembershipScreen
+				compilationId={currentParams.compilationId ?? "compilation-all-games"}
+			/>
+		);
 	}
 	if (currentScreen === "controller-family-list") {
 		return (
