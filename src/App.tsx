@@ -20,6 +20,7 @@ import { ControlListScreen } from "./screens/controls/control-list/ControlListSc
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
+import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
@@ -188,7 +189,10 @@ function AppScreens() {
 		return <ImportGamesScreen />;
 	}
 	if (currentScreen === "import-discovery") {
-		return <Placeholder name="Import Discovery" />;
+		return <ImportDiscoveryScreen />;
+	}
+	if (currentScreen === "import-candidate") {
+		return <Placeholder name="Import Candidate" />;
 	}
 	return <GameCarouselScreen />;
 }

@@ -1,0 +1,89 @@
+/* ============================================================
+   Import Discovery Screen
+   ============================================================ */
+
+.import-discovery__summary {
+	border: 1px solid var(--colour-border);
+	padding: 16px;
+}
+
+.import-discovery__stat {
+	display: flex;
+	gap: 16px;
+	padding: 2px 0;
+}
+
+.import-discovery__stat-label {
+	color: var(--colour-text-muted);
+	min-width: 120px;
+}
+
+.import-discovery__stat-value {
+	color: var(--colour-text-bright);
+}
+
+.import-discovery__sample {
+	margin-top: 16px;
+}
+
+.import-discovery__sample-heading {
+	color: var(--colour-text-muted);
+	font-size: 12px;
+	letter-spacing: 0.05em;
+	margin-bottom: 8px;
+	text-transform: uppercase;
+}
+
+.import-discovery__sample-list {
+	list-style: none;
+}
+
+.import-discovery__sample-header {
+	border-bottom: 1px solid var(--colour-border);
+	color: var(--colour-text-muted);
+	display: flex;
+	font-size: 11px;
+	gap: 0;
+	letter-spacing: 0.05em;
+	margin-bottom: 4px;
+	padding: 4px 8px;
+	text-transform: uppercase;
+}
+
+.import-discovery__sample-row {
+	color: var(--colour-text);
+	display: flex;
+	gap: 0;
+	overflow: hidden;
+	padding: 4px 8px;
+}
+
+.import-discovery__col-title {
+	flex: 2;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.import-discovery__col-publisher {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.import-discovery__col-year {
+	flex: 0 0 60px;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.import-discovery__col-roms {
+	flex: 0 0 48px;
+	min-width: 0;
+	text-align: right;
+}
