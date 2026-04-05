@@ -2,8 +2,15 @@
    Compilation Detail Screen
    ============================================================ */
 
+.compilation-detail__columns {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 1fr 180px 60px;
+	min-width: 0;
+	width: 100%;
+}
+
 .compilation-detail__row-title {
-	flex: 1 1 0;
 	min-width: 0;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -12,7 +19,6 @@
 
 .compilation-detail__row-publisher {
 	color: var(--colour-text-muted);
-	flex: 0 0 180px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -20,7 +26,6 @@
 
 .compilation-detail__row-year {
 	color: var(--colour-text-muted);
-	flex: 0 0 40px;
 	text-align: right;
 }
 

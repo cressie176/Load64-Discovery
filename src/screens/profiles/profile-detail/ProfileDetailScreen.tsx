@@ -165,17 +165,24 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
 				</div>
 			</div>
 			<div className="screen__content">
+				<div className="list__header">
+					<div className="profile-detail__columns">
+						<span>Setting</span>
+						<span style={{ textAlign: "right" }}>Count</span>
+					</div>
+				</div>
 				<ul className="list">
 					{rows.map((row, index) => (
 						<li
 							key={row.key}
 							className={`list__row${index === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-							style={{ display: "flex", gap: "16px" }}
 						>
-							<span className="profile-detail__row-label">{row.label}</span>
-							<span className="profile-detail__row-count">
-								{pluralise(row.count, row.countUnit)}
-							</span>
+							<div className="profile-detail__columns">
+								<span className="profile-detail__row-label">{row.label}</span>
+								<span className="profile-detail__row-count">
+									{pluralise(row.count, row.countUnit)}
+								</span>
+							</div>
 						</li>
 					))}
 				</ul>

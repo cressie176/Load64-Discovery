@@ -323,25 +323,35 @@ export function CompilationDetailScreen({
 				{isEmpty ? (
 					<p>Select Add to add games to this compilation.</p>
 				) : (
-					<ul className="list">
-						{games.map((game, index) => (
-							<li
-								key={game.id}
-								className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-								style={{ display: "flex", gap: "16px" }}
-							>
-								<span className="compilation-detail__row-title">
-									{game.title}
-								</span>
-								<span className="compilation-detail__row-publisher">
-									{game.publisher ?? "—"}
-								</span>
-								<span className="compilation-detail__row-year">
-									{game.year ?? "—"}
-								</span>
-							</li>
-						))}
-					</ul>
+					<>
+						<div className="list__header">
+							<div className="compilation-detail__columns">
+								<span>Title</span>
+								<span>Publisher</span>
+								<span style={{ textAlign: "right" }}>Year</span>
+							</div>
+						</div>
+						<ul className="list">
+							{games.map((game, index) => (
+								<li
+									key={game.id}
+									className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+								>
+									<div className="compilation-detail__columns">
+										<span className="compilation-detail__row-title">
+											{game.title}
+										</span>
+										<span className="compilation-detail__row-publisher">
+											{game.publisher ?? "—"}
+										</span>
+										<span className="compilation-detail__row-year">
+											{game.year ?? "—"}
+										</span>
+									</div>
+								</li>
+							))}
+						</ul>
+					</>
 				)}
 			</div>
 			<div className="screen__bottombar">
