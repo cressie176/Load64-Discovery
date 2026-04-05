@@ -21,6 +21,7 @@ export type ScreenName =
 	| "compilation-list"
 	| "compilation-detail"
 	| "compilation-edit"
+	| "compilation-membership"
 	| "controller-family-selection"
 	| "controller-family-list"
 	| "controller-family-edit"
