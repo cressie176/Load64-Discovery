@@ -9,10 +9,22 @@ export const SEED_ENV_VARS: EnvVarsState = {
 			parentIds: [],
 		},
 		{
-			id: "controller-logitech-dual-action",
+			id: "ctrl-logitech-dual-action",
 			name: "Logitech Dual Action",
 			type: "controller",
 			parentIds: ["family-logitech"],
+		},
+		{
+			id: "ctrl-dualshock4",
+			name: "DualShock 4",
+			type: "controller",
+			parentIds: [],
+		},
+		{
+			id: "ctrl-xbox-wireless",
+			name: "Xbox Wireless Controller",
+			type: "controller",
+			parentIds: [],
 		},
 		{
 			id: "profile-default",
@@ -50,7 +62,7 @@ export const SEED_ENV_VARS: EnvVarsState = {
 		// Logitech Dual Action controller variable (overrides family + adds own)
 		{
 			id: "ev-3",
-			ownerId: "controller-logitech-dual-action",
+			ownerId: "ctrl-logitech-dual-action",
 			name: "SDL_JOYSTICK_BLACKLIST_DEVICES",
 			value: "0xAAAA/0xBBBB",
 		},
