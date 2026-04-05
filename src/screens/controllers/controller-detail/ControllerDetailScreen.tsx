@@ -111,12 +111,11 @@ export function ControllerDetailScreen({
 	}
 
 	function handleListKey(event: KeyboardEvent) {
-		if (!isConnected) return;
 		if (event.key === "ArrowDown") {
 			setSelectedIndex((prev) => wrapIndex(prev, 1, ITEMS.length));
 		} else if (event.key === "ArrowUp") {
 			setSelectedIndex((prev) => wrapIndex(prev, -1, ITEMS.length));
-		} else if (event.key === "Enter") {
+		} else if (event.key === "Enter" && isConnected) {
 			activateItem(ITEMS[selectedIndex]);
 		}
 	}
