@@ -329,12 +329,18 @@ export function ControlListScreen({
 			</div>
 			<div className="screen__content">
 				<div className="list__header">
-					<span className="control-list__header-control-name">Control</span>
-					<span className="control-list__header-canonical-name">Canonical</span>
-					<span className="control-list__header-event">Event</span>
-					{isControllerContext && (
-						<span className="control-list__header-source">Source</span>
-					)}
+					<div
+						className={`control-list__header-columns${isControllerContext ? "" : " control-list__header-columns--no-source"}`}
+					>
+						<span className="control-list__header-control-name">Control</span>
+						<span className="control-list__header-canonical-name">
+							Canonical
+						</span>
+						<span className="control-list__header-event">Event</span>
+						{isControllerContext && (
+							<span className="control-list__header-source">Source</span>
+						)}
+					</div>
 				</div>
 				<ul className="list">
 					{rows.map((row, index) => (
@@ -344,20 +350,23 @@ export function ControlListScreen({
 								index === safeSelectedIndex && focusRegion === "list",
 								row.isInherited,
 							)}
-							style={{ display: "flex", gap: "16px" }}
 						>
-							<span className="control-list__row-control-name">
-								{row.controlName}
-							</span>
-							<span className="control-list__row-canonical-name">
-								{row.canonicalLabel}
-							</span>
-							<span className="control-list__row-event">{row.event}</span>
-							{isControllerContext && (
-								<span className="control-list__row-source">
-									{row.sourceLabel ?? "—"}
+							<div
+								className={`control-list__columns${isControllerContext ? "" : " control-list__columns--no-source"}`}
+							>
+								<span className="control-list__row-control-name">
+									{row.controlName}
 								</span>
-							)}
+								<span className="control-list__row-canonical-name">
+									{row.canonicalLabel}
+								</span>
+								<span className="control-list__row-event">{row.event}</span>
+								{isControllerContext && (
+									<span className="control-list__row-source">
+										{row.sourceLabel ?? "—"}
+									</span>
+								)}
+							</div>
 						</li>
 					))}
 				</ul>

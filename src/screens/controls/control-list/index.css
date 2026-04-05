@@ -2,51 +2,40 @@
    Control List Screen
    ============================================================ */
 
-.control-list__row-control-name {
-	flex: 0 0 80px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+.control-list__columns,
+.control-list__header-columns {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 80px 160px 120px 1fr;
+	min-width: 0;
 }
 
-.control-list__row-canonical-name {
-	flex: 0 0 160px;
+.control-list__columns--no-source,
+.control-list__header-columns--no-source {
+	grid-template-columns: 80px 160px 1fr;
+}
+
+.control-list__row-control-name,
+.control-list__row-canonical-name,
+.control-list__row-event,
+.control-list__header-control-name,
+.control-list__header-canonical-name,
+.control-list__header-event {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .control-list__row-event {
-	flex: 0 0 120px;
 	font-family: var(--font-mono);
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
 }
 
 .control-list__row-source {
 	color: var(--colour-text-muted);
-	flex: 1;
 	font-style: italic;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-
-.control-list__header-control-name {
-	flex: 0 0 80px;
-}
-
-.control-list__header-canonical-name {
-	flex: 0 0 160px;
-}
-
-.control-list__header-event {
-	flex: 0 0 120px;
-}
-
-.control-list__header-source {
-	flex: 1;
 }
 
 .control-list__row--inherited {
