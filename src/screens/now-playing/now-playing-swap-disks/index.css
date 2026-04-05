@@ -1,0 +1,36 @@
+/* ============================================================
+   Now Playing Swap Disks Screen
+   ============================================================ */
+
+.swap-disks {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.swap-disks__section-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.swap-disks__col--label {
+  flex: 0 0 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swap-disks__col--filename {
+  flex: 1 1 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.swap-disks__col--current {
+  flex: 0 0 80px;
+  text-align: right;
+}

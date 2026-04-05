@@ -27,6 +27,7 @@ import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScre
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
 import { NowPlayingScreen } from "./screens/now-playing/now-playing/NowPlayingScreen";
+import { NowPlayingSwapDisksScreen } from "./screens/now-playing/now-playing-swap-disks/NowPlayingSwapDisksScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
@@ -224,7 +225,11 @@ function AppScreens() {
     return <NowPlayingScreen gameId={currentParams.gameId ?? "game-bubble"} />;
   }
   if (currentScreen === "now-playing-swap-disks") {
-    return <Placeholder name="Now Playing – Swap Disks" />;
+    return (
+      <NowPlayingSwapDisksScreen
+        gameId={currentParams.gameId ?? "game-turrican"}
+      />
+    );
   }
   if (currentScreen === "now-playing-take-screenshot") {
     return <Placeholder name="Now Playing – Take Screenshot" />;

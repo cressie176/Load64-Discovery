@@ -11,14 +11,21 @@ export interface JoystickPorts {
   port2DeviceName: string;
 }
 
+export interface Disk {
+  label: string;
+  filename: string;
+}
+
 export interface ActiveDisk {
   label: string;
+  filename: string;
 }
 
 export interface NowPlayingState {
   gameId: string;
   gameTitle: string;
   joystickPorts: JoystickPorts;
+  disks: Disk[];
   activeDisk: ActiveDisk | null;
   gameplayScreenshotUrl: string | null;
 }
