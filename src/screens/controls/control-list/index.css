@@ -2,16 +2,24 @@
    Control List Screen
    ============================================================ */
 
-.control-list__columns,
-.control-list__header-columns {
+.control-list__columns {
 	display: grid;
-	flex: 1;
 	gap: 16px;
 	grid-template-columns: 80px 160px 120px 1fr;
 	min-width: 0;
 }
 
-.control-list__columns--no-source,
+.control-list__columns--no-source {
+	grid-template-columns: 80px 160px 1fr;
+}
+
+.control-list__header-columns {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 80px 160px 120px 1fr;
+	min-width: 0;
+}
+
 .control-list__header-columns--no-source {
 	grid-template-columns: 80px 160px 1fr;
 }
