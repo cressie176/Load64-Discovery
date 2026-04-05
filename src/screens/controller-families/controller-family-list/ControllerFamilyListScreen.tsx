@@ -231,6 +231,13 @@ export function ControllerFamilyListScreen({
 					c.familyId === focusedFamily.id ? { ...c, familyId: null } : c,
 				),
 			},
+			controls: {
+				...prev.controls,
+				owners: prev.controls.owners.filter((o) => o.id !== focusedFamily.id),
+				controls: prev.controls.controls.filter(
+					(c) => c.ownerId !== focusedFamily.id,
+				),
+			},
 		}));
 		setOverlay(null);
 		setStatusMessage(`${deletedName} deleted`);
