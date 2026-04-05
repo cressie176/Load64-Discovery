@@ -35,24 +35,17 @@ export function ControllerDetailScreen({
 	const { store } = useStore();
 
 	const controller = store.controllers.find((c) => c.id === controllerId);
-	const familyEntry = store.controllerFamilies.controllers.find(
-		(c) => c.id === controllerId,
-	);
-	const familyId = familyEntry?.familyId ?? null;
-	const family = familyId
-		? store.controllerFamilies.families.find((f) => f.id === familyId)
-		: null;
 
-	const isConnected = controller?.status === "connected";
+	const isConnected = (controller?.connectedCount ?? 0) > 0;
 	const deviceName = controller?.name ?? controllerId;
-	const familyName = family?.name ?? "(No Family)";
+	const familyName = controller?.familyName ?? "(No Family)";
 	const guid = controller?.guid ?? "";
 
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
 	const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
-	const prevFamilyIdRef = useRef<string | null | undefined>(familyId);
+	const prevFamilyNameRef = useRef<string | undefined>(controller?.familyName);
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const backButtonRef = useRef<HTMLButtonElement>(null);
@@ -62,19 +55,15 @@ export function ControllerDetailScreen({
 	}, []);
 
 	useEffect(() => {
-		const prev = prevFamilyIdRef.current;
-		if (prev !== familyId) {
-			if (familyId === null) {
+		const prev = prevFamilyNameRef.current;
+		const current = controller?.familyName;
+		if (prev !== current) {
+			if (!current) {
 				setStatusMessage("Family removed");
 			} else {
-				const assignedFamily = store.controllerFamilies.families.find(
-					(f) => f.id === familyId,
-				);
-				if (assignedFamily) {
-					setStatusMessage(`Family set to ${assignedFamily.name}`);
-				}
+				setStatusMessage(`Family set to ${current}`);
 			}
-			prevFamilyIdRef.current = familyId;
+			prevFamilyNameRef.current = current;
 		}
 	});
 
