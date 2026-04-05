@@ -13,6 +13,7 @@ import { ControllerFamilySelectionScreen } from "./screens/controller-families/c
 import { ControllerDetailScreen } from "./screens/controllers/controller-detail/ControllerDetailScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
+import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
@@ -106,7 +107,7 @@ function AppScreens() {
 		);
 	}
 	if (currentScreen === "environment-variable-edit") {
-		return <Placeholder name="Environment Variable Edit" />;
+		return <EnvironmentVariableEditScreen />;
 	}
 	if (currentScreen === "profile-edit") {
 		return <ProfileEditScreen profileId={currentParams.profileId} />;
