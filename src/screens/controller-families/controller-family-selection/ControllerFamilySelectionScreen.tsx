@@ -110,6 +110,9 @@ export function ControllerFamilySelectionScreen({
 	function confirmSelection() {
 		const selected = items[selectedIndex];
 		if (!selected || !controllerId) return;
+		const selectedFamily = selected.id
+			? store.controllerFamilies.families.find((f) => f.id === selected.id)
+			: null;
 		setStore((prev) => ({
 			...prev,
 			controllerFamilies: {
@@ -118,6 +121,14 @@ export function ControllerFamilySelectionScreen({
 					c.id === controllerId ? { ...c, familyId: selected.id } : c,
 				),
 			},
+			controllers: prev.controllers.map((c) =>
+				c.id === controllerId
+					? {
+							...c,
+							familyName: selectedFamily?.name ?? undefined,
+						}
+					: c,
+			),
 		}));
 		pop();
 	}
