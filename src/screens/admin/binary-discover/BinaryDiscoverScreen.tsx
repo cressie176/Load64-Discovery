@@ -194,7 +194,7 @@ export function BinaryDiscoverScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">Binaries – Discover</span>
+				<span className="screen__topbar-title">{"Binaries > Discover"}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

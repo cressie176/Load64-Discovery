@@ -109,7 +109,11 @@ export function ControlEditScreen() {
 	const [activeField, setActiveField] = useState<FormField>("controlName");
 	const [errorMessage, setErrorMessage] = useState("");
 
-	const ownerLabel = `${owner?.name ?? ownerId} – ${CANONICAL_CONTROL_LABELS[draftCanonicalName]}`;
+	const ownerName = owner?.name ?? ownerId;
+	const canonicalLabel = CANONICAL_CONTROL_LABELS[draftCanonicalName];
+	const ownerLabel = isFamily
+		? `Controller Families > ${ownerName} > Controls > ${canonicalLabel}`
+		: `Controllers > ${ownerName} > Controls > ${canonicalLabel}`;
 
 	const containerRef = useRef<HTMLDivElement>(null);
 	const backButtonRef = useRef<HTMLButtonElement>(null);

@@ -8,6 +8,14 @@ type FormField = "name" | "value" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["name", "value", "save", "cancel"];
 
+function buildViceArgOwnerPrefix(
+	type: string | undefined,
+	name: string,
+): string {
+	if (type === "profile") return `Profiles > ${name}`;
+	return name;
+}
+
 function validateName(name: string): string | null {
 	if (!name.trim()) return "Name is required.";
 	if (!/^[-+]/.test(name)) return "Name must begin with - or +.";
@@ -32,7 +40,10 @@ export function ViceArgumentEditScreen() {
 		: undefined;
 
 	const owner = store.viceArguments.owners.find((o) => o.id === ownerId);
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerPrefix = buildViceArgOwnerPrefix(
+		owner?.type,
+		owner?.name ?? ownerId,
+	);
 
 	const [draftName, setDraftName] = useState(existingArg?.name ?? "");
 	const [draftValue, setDraftValue] = useState(existingArg?.value ?? "");
@@ -207,9 +218,7 @@ export function ViceArgumentEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – VICE Arguments{draftName ? ` – ${draftName}` : ""}
-				</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > VICE Arguments${draftName ? ` > ${draftName}` : ""}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

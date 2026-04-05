@@ -27,6 +27,23 @@ function ownerTypeLabel(type: string): string {
 	}
 }
 
+function buildOwnerTitle(
+	type: string | undefined,
+	name: string,
+	section: string,
+): string {
+	switch (type) {
+		case "family":
+			return `Controller Families > ${name} > ${section}`;
+		case "controller":
+			return `Controllers > ${name} > ${section}`;
+		case "profile":
+			return `Profiles > ${name} > ${section}`;
+		default:
+			return `${name} > ${section}`;
+	}
+}
+
 function buildRows(ownerId: string, state: EnvVarsState): EnvVarRow[] {
 	const owner = state.owners.find((o) => o.id === ownerId);
 	if (!owner) return [];
@@ -280,7 +297,11 @@ export function EnvironmentVariableListScreen({
 	}
 
 	const derivedStatusMessage = deriveStatusMessage(focusedRow, statusMessage);
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerLabel = buildOwnerTitle(
+		owner?.type,
+		owner?.name ?? ownerId,
+		"Environment Variables",
+	);
 
 	return (
 		<div
@@ -294,9 +315,7 @@ export function EnvironmentVariableListScreen({
 			}}
 		>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – Environment Variables
-				</span>
+				<span className="screen__topbar-title">{ownerLabel}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={addButtonRef}

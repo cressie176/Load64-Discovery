@@ -188,7 +188,7 @@ export function BinaryEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">Binaries – {machineName}</span>
+				<span className="screen__topbar-title">{`Binaries > ${machineName}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

@@ -127,7 +127,7 @@ export function ControllerDetailScreen({
 		}
 	}
 
-	const title = `Controllers – ${deviceName}`;
+	const title = `Controllers > ${deviceName}`;
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

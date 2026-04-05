@@ -205,7 +205,9 @@ export function ControllerFamilyEditScreen({
 		}
 	}
 
-	const title = isRename ? "Rename Controller Family" : "Add Controller Family";
+	const title = isRename
+		? `Controller Families > ${family?.name ?? ""} > Rename`
+		: "Controller Families > Add";
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

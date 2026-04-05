@@ -196,7 +196,9 @@ export function ProfileEditScreen({ profileId }: ProfileEditScreenProps) {
 		}
 	}
 
-	const title = isRename ? "Rename Profile" : "Add Profile";
+	const title = isRename
+		? `Profiles > ${profile?.name ?? ""} > Rename`
+		: "Profiles > Add";
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

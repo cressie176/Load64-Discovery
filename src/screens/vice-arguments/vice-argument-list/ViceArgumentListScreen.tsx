@@ -12,6 +12,15 @@ const TOP_BAR_CTAS: TopBarCta[] = ["add", "back"];
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 const CONTEXT_MENU_ITEMS = ["Delete"] as const;
 
+function buildViceArgTitle(
+	type: string | undefined,
+	name: string,
+	section: string,
+): string {
+	if (type === "profile") return `Profiles > ${name} > ${section}`;
+	return `${name} > ${section}`;
+}
+
 function stripPrefix(name: string): string {
 	return name.replace(/^[-+]/, "");
 }
@@ -286,7 +295,11 @@ export function ViceArgumentListScreen({
 		rows.length,
 	);
 
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerLabel = buildViceArgTitle(
+		owner?.type,
+		owner?.name ?? ownerId,
+		"VICE Arguments",
+	);
 	const showSourceColumn = owner?.type !== "profile";
 
 	return (
@@ -301,9 +314,7 @@ export function ViceArgumentListScreen({
 			}}
 		>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – VICE Arguments
-				</span>
+				<span className="screen__topbar-title">{ownerLabel}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={addButtonRef}

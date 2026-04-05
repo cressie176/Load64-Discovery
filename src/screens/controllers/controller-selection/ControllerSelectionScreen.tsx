@@ -45,11 +45,13 @@ function wrapIndex(index: number, delta: number, length: number): number {
 interface ControllerSelectionScreenProps {
 	profileId: string;
 	ownerName?: string;
+	ownerType?: "profile" | "game";
 }
 
 export function ControllerSelectionScreen({
 	profileId,
 	ownerName,
+	ownerType = "profile",
 }: ControllerSelectionScreenProps) {
 	const { pop } = useRouter();
 	const { store, setStore } = useStore();
@@ -227,7 +229,10 @@ export function ControllerSelectionScreen({
 		pop();
 	}
 
-	const title = `${resolvedOwnerName} – Controllers`;
+	const title =
+		ownerType === "profile"
+			? `Profiles > ${resolvedOwnerName} > Controllers > Select`
+			: `${resolvedOwnerName} > Controllers > Select`;
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

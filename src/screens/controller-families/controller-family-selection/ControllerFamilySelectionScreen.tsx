@@ -44,6 +44,8 @@ export function ControllerFamilySelectionScreen({
 	const controller = store.controllerFamilies.controllers.find(
 		(c) => c.id === controllerId,
 	);
+	const deviceName =
+		store.controllers.find((c) => c.id === controllerId)?.name ?? controllerId;
 	const items = buildListItems(store.controllerFamilies.families);
 
 	const [selectedIndex, setSelectedIndex] = useState(() =>
@@ -145,7 +147,7 @@ export function ControllerFamilySelectionScreen({
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">Select Controller Family</span>
+				<span className="screen__topbar-title">{`Controllers > ${deviceName} > Controller Family > Select`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

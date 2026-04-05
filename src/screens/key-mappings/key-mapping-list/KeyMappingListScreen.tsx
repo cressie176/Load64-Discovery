@@ -12,6 +12,15 @@ const TOP_BAR_CTAS: TopBarCta[] = ["add", "back"];
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 const CONTEXT_MENU_ITEMS = ["Delete"] as const;
 
+function buildKeyMappingTitle(
+	type: string | undefined,
+	name: string,
+	section: string,
+): string {
+	if (type === "profile") return `Profiles > ${name} > ${section}`;
+	return `${name} > ${section}`;
+}
+
 function buildRows(ownerId: string, state: KeyMappingsState): KeyMappingRow[] {
 	const owner = state.owners.find((o) => o.id === ownerId);
 	if (!owner) return [];
@@ -265,7 +274,11 @@ export function KeyMappingListScreen({
 		rows.length,
 	);
 
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerLabel = buildKeyMappingTitle(
+		owner?.type,
+		owner?.name ?? ownerId,
+		"Key Mappings",
+	);
 
 	return (
 		<div
@@ -279,9 +292,7 @@ export function KeyMappingListScreen({
 			}}
 		>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – Key Mappings
-				</span>
+				<span className="screen__topbar-title">{ownerLabel}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={addButtonRef}

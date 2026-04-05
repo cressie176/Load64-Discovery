@@ -203,7 +203,9 @@ export function CompilationEditScreen({
 		}
 	}
 
-	const title = isRename ? "Rename Compilation" : "Add Compilation";
+	const title = isRename
+		? `Compilations > ${compilation?.name ?? ""} > Rename`
+		: "Compilations > Add";
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

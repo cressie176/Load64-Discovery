@@ -108,7 +108,10 @@ export function KeyMappingEditScreen() {
 		: undefined;
 
 	const owner = store.keyMappings.owners.find((o) => o.id === ownerId);
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerPrefix =
+		owner?.type === "profile"
+			? `Profiles > ${owner.name}`
+			: (owner?.name ?? ownerId);
 
 	const mappedHostKeys = isEditing
 		? store.keyMappings.mappings
@@ -284,9 +287,7 @@ export function KeyMappingEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – Key Mappings{draftHostKey ? ` – ${draftHostKey}` : ""}
-				</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > Key Mappings${draftHostKey ? ` > ${draftHostKey}` : ""}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

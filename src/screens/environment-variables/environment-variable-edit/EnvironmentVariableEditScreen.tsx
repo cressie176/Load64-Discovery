@@ -8,6 +8,22 @@ type FormField = "name" | "value" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["name", "value", "save", "cancel"];
 
+function buildEnvVarOwnerPrefix(
+	type: string | undefined,
+	name: string,
+): string {
+	switch (type) {
+		case "family":
+			return `Controller Families > ${name}`;
+		case "controller":
+			return `Controllers > ${name}`;
+		case "profile":
+			return `Profiles > ${name}`;
+		default:
+			return name;
+	}
+}
+
 function validateForm(name: string, existingNames: string[]): string | null {
 	if (!name.trim()) return "Name is required.";
 	if (existingNames.includes(name.trim()))
@@ -32,7 +48,10 @@ export function EnvironmentVariableEditScreen() {
 		: undefined;
 
 	const owner = store.environmentVariables.owners.find((o) => o.id === ownerId);
-	const ownerLabel = owner?.name ?? ownerId;
+	const ownerPrefix = buildEnvVarOwnerPrefix(
+		owner?.type,
+		owner?.name ?? ownerId,
+	);
 
 	const existingNames = isEditing
 		? store.environmentVariables.variables
@@ -215,10 +234,7 @@ export function EnvironmentVariableEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">
-					{ownerLabel} – Environment Variables
-					{draftName ? ` – ${draftName}` : ""}
-				</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > Environment Variables${draftName ? ` > ${draftName}` : ""}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

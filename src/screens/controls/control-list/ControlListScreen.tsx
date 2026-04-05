@@ -314,8 +314,8 @@ export function ControlListScreen({
 
 	const ownerName = owner?.name ?? ownerId;
 	const ownerLabel = isControllerContext
-		? `Controllers – ${ownerName} – Controls`
-		: `Controller Families – ${ownerName} – Controls`;
+		? `Controllers > ${ownerName} > Controls`
+		: `Controller Families > ${ownerName} > Controls`;
 
 	return (
 		<div
