@@ -328,15 +328,19 @@ export function ControlListScreen({
 				</div>
 			</div>
 			<div className="screen__content">
-				<div
-					className={`list__header control-list__header-columns${isControllerContext ? "" : " control-list__header-columns--no-source"}`}
-				>
-					<span className="control-list__header-control-name">Control</span>
-					<span className="control-list__header-canonical-name">Canonical</span>
-					<span className="control-list__header-event">Event</span>
-					{isControllerContext && (
-						<span className="control-list__header-source">Source</span>
-					)}
+				<div className="list__header">
+					<div
+						className={`control-list__columns${isControllerContext ? "" : " control-list__columns--no-source"}`}
+					>
+						<span className="control-list__header-control-name">Control</span>
+						<span className="control-list__header-canonical-name">
+							Canonical
+						</span>
+						<span className="control-list__header-event">Event</span>
+						{isControllerContext && (
+							<span className="control-list__header-source">Source</span>
+						)}
+					</div>
 				</div>
 				<ul className="list">
 					{rows.map((row, index) => (
