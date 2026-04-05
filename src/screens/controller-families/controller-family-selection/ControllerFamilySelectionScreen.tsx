@@ -123,12 +123,21 @@ export function ControllerFamilySelectionScreen({
 			},
 			controllers: prev.controllers.map((c) =>
 				c.id === controllerId
-					? {
-							...c,
-							familyName: selectedFamily?.name ?? undefined,
-						}
+					? { ...c, familyName: selectedFamily?.name ?? undefined }
 					: c,
 			),
+			controls: {
+				...prev.controls,
+				owners: prev.controls.owners.map((o) =>
+					o.id === controllerId
+						? {
+								...o,
+								familyId: selected.id ?? undefined,
+								familyName: selectedFamily?.name ?? undefined,
+							}
+						: o,
+				),
+			},
 		}));
 		pop();
 	}
