@@ -370,15 +370,15 @@ export function ControlEditScreen() {
 							Canonical Name
 						</label>
 						<select
-							className={`form__input${!isFamily && activeField === "canonicalName" && focusRegion === "form" ? " form__input--active" : ""}`}
+							className={`form__input${isFamily ? " form__input--readonly" : activeField === "canonicalName" && focusRegion === "form" ? " form__input--active" : ""}`}
 							id="canonical-name"
 							ref={canonicalNameSelectRef}
 							value={draftCanonicalName}
-							disabled={isFamily}
 							tabIndex={isFamily ? -1 : undefined}
-							onChange={(e) =>
-								setDraftCanonicalName(e.target.value as CanonicalControlName)
-							}
+							onChange={(e) => {
+								if (!isFamily)
+									setDraftCanonicalName(e.target.value as CanonicalControlName);
+							}}
 							onFocus={() => {
 								if (!isFamily) {
 									setActiveField("canonicalName");

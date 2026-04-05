@@ -35,6 +35,11 @@
 	color: var(--colour-text-bright);
 }
 
+.form__input--readonly {
+	color: var(--colour-text-muted);
+	pointer-events: none;
+}
+
 .form__toggle {
 	color: var(--colour-text);
 	cursor: pointer;
