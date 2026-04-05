@@ -1,0 +1,34 @@
+/* ============================================================
+   Controller Selection Screen
+   ============================================================ */
+
+.controller-selection__list {
+	margin-bottom: 16px;
+}
+
+.controller-selection__checkbox {
+	color: var(--colour-text-muted);
+	flex-shrink: 0;
+	margin-right: 8px;
+}
+
+.list__row--selected .controller-selection__checkbox {
+	color: var(--colour-accent);
+}
+
+.controller-selection__name {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.list__row .controller-selection__checkbox,
+.list__row .controller-selection__name {
+	display: inline;
+}
+
+.controller-selection__actions {
+	display: flex;
+	gap: 16px;
+	padding-left: 24px;
+}
