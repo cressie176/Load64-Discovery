@@ -6,6 +6,7 @@ import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
 import { GameCarouselScreen } from "./screens/carousel/game-carousel/GameCarouselScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
+import { ControllerFamilyEditScreen } from "./screens/controller-families/controller-family-edit/ControllerFamilyEditScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
 import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
@@ -124,7 +125,7 @@ function AppScreens() {
 		);
 	}
 	if (currentScreen === "controller-family-edit") {
-		return <Placeholder name="Controller Family Edit" />;
+		return <ControllerFamilyEditScreen familyId={currentParams.familyId} />;
 	}
 	if (currentScreen === "controller-family-selection") {
 		return (
