@@ -11,7 +11,7 @@ import {
 import "./index.css";
 
 type FocusRegion = "list" | "topbar";
-type Overlay = "delete";
+type Overlay = "context-menu" | "delete";
 
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 
@@ -50,8 +50,8 @@ function buildFamilyRow(
 	return {
 		canonicalName,
 		canonicalLabel: CANONICAL_CONTROL_LABELS[canonicalName],
-		controlName: owned?.controlName ?? "—",
-		event: owned?.event ?? "—",
+		controlName: owned?.controlName || "—",
+		event: owned?.event || "—",
 		sourceLabel: null,
 		isInherited: false,
 		entryId: owned?.id ?? null,
@@ -68,8 +68,8 @@ function buildControllerRow(
 		return {
 			canonicalName,
 			canonicalLabel: CANONICAL_CONTROL_LABELS[canonicalName],
-			controlName: owned.controlName,
-			event: owned.event,
+			controlName: owned.controlName || "—",
+			event: owned.event || "—",
 			sourceLabel: "—",
 			isInherited: false,
 			entryId: owned.id,
@@ -120,6 +120,7 @@ export function ControlListScreen({
 	const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
 	const [overlay, setOverlay] = useState<Overlay | null>(null);
 	const [overlayIndex, setOverlayIndex] = useState(0);
+	const [contextMenuItems, setContextMenuItems] = useState<string[]>([]);
 	const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -136,6 +137,10 @@ export function ControlListScreen({
 
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
+			if (overlay === "context-menu") {
+				handleContextMenuKey(event);
+				return;
+			}
 			if (overlay === "delete") {
 				handleDeleteOverlayKey(event);
 				return;
@@ -146,6 +151,25 @@ export function ControlListScreen({
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
 	});
+
+	function handleContextMenuKey(event: KeyboardEvent) {
+		if (event.key === "ArrowDown") {
+			setOverlayIndex((prev) => wrapIndex(prev, 1, contextMenuItems.length));
+		} else if (event.key === "ArrowUp") {
+			setOverlayIndex((prev) => wrapIndex(prev, -1, contextMenuItems.length));
+		} else if (event.key === "Enter") {
+			const action = contextMenuItems[overlayIndex];
+			setOverlay(null);
+			if (action === "Clear") {
+				confirmClear();
+			} else if (action === "Delete") {
+				setOverlay("delete");
+				setOverlayIndex(0);
+			}
+		} else if (event.key === "Escape") {
+			setOverlay(null);
+		}
+	}
 
 	function handleDeleteOverlayKey(event: KeyboardEvent) {
 		if (event.key === "ArrowDown") {
@@ -198,7 +222,7 @@ export function ControlListScreen({
 			activateRow(focusedRow);
 		} else if (event.key === "Alt") {
 			event.preventDefault();
-			openDeleteIfEligible();
+			openContextMenuIfEligible();
 		}
 	}
 
@@ -210,12 +234,33 @@ export function ControlListScreen({
 		});
 	}
 
-	function openDeleteIfEligible() {
+	function openContextMenuIfEligible() {
 		if (!focusedRow) return;
-		if (!isControllerContext) return;
 		if (focusedRow.isInherited || focusedRow.entryId === null) return;
-		setOverlay("delete");
+		const items = isControllerContext ? ["Clear", "Delete"] : ["Clear"];
+		setContextMenuItems(items);
+		setOverlay("context-menu");
 		setOverlayIndex(0);
+	}
+
+	function confirmClear() {
+		if (!focusedRow?.entryId) return;
+		const clearedName =
+			focusedRow.controlName !== "—"
+				? focusedRow.controlName
+				: focusedRow.canonicalLabel;
+		setStore((prev) => ({
+			...prev,
+			controls: {
+				...prev.controls,
+				controls: prev.controls.controls.map((c) =>
+					c.id === focusedRow.entryId
+						? { ...c, controlName: "", event: "" }
+						: c,
+				),
+			},
+		}));
+		setStatusMessage(`${clearedName} cleared`);
 	}
 
 	function confirmDelete() {
@@ -257,7 +302,16 @@ export function ControlListScreen({
 	const ownerLabel = owner?.name ?? ownerId;
 
 	return (
-		<div className="screen" ref={containerRef} tabIndex={-1}>
+		<div
+			role="application"
+			className="screen"
+			ref={containerRef}
+			tabIndex={-1}
+			onContextMenu={(e) => {
+				e.preventDefault();
+				openContextMenuIfEligible();
+			}}
+		>
 			<div className="screen__topbar">
 				<span className="screen__topbar-title">{ownerLabel} Controls</span>
 				<div className="screen__topbar-ctas">
@@ -307,6 +361,25 @@ export function ControlListScreen({
 				</ul>
 			</div>
 			<div className="screen__bottombar">{derivedStatusMessage}</div>
+			{overlay === "context-menu" && focusedRow && (
+				<div
+					className="overlay-backdrop"
+					style={{ alignItems: "flex-start", paddingTop: "80px" }}
+				>
+					<div className="overlay">
+						<ul className="overlay__list">
+							{contextMenuItems.map((item, index) => (
+								<li
+									key={item}
+									className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+								>
+									{item}
+								</li>
+							))}
+						</ul>
+					</div>
+				</div>
+			)}
 			{overlay === "delete" && focusedRow && (
 				<div className="overlay-backdrop">
 					<div className="overlay">
