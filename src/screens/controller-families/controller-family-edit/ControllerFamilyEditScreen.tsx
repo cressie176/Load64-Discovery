@@ -193,6 +193,13 @@ export function ControllerFamilyEditScreen({
 						{ id: newId, name: trimmedName },
 					],
 				},
+				controls: {
+					...prev.controls,
+					owners: [
+						...prev.controls.owners,
+						{ id: newId, name: trimmedName, type: "family" },
+					],
+				},
 			}));
 			push("control-list", { ownerId: newId });
 		}

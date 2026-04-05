@@ -369,29 +369,36 @@ export function ControlEditScreen() {
 						<label className="form__label" htmlFor="canonical-name">
 							Canonical Name
 						</label>
-						<select
-							className={`form__input${isFamily ? " form__input--readonly" : activeField === "canonicalName" && focusRegion === "form" ? " form__input--active" : ""}`}
-							id="canonical-name"
-							ref={canonicalNameSelectRef}
-							value={draftCanonicalName}
-							tabIndex={isFamily ? -1 : undefined}
-							onChange={(e) => {
-								if (!isFamily)
-									setDraftCanonicalName(e.target.value as CanonicalControlName);
-							}}
-							onFocus={() => {
-								if (!isFamily) {
+						{isFamily ? (
+							<input
+								className="form__input"
+								id="canonical-name"
+								type="text"
+								value={CANONICAL_CONTROL_LABELS[draftCanonicalName]}
+								readOnly
+								tabIndex={-1}
+							/>
+						) : (
+							<select
+								className={`form__input${activeField === "canonicalName" && focusRegion === "form" ? " form__input--active" : ""}`}
+								id="canonical-name"
+								ref={canonicalNameSelectRef}
+								value={draftCanonicalName}
+								onChange={(e) =>
+									setDraftCanonicalName(e.target.value as CanonicalControlName)
+								}
+								onFocus={() => {
 									setActiveField("canonicalName");
 									setFocusRegion("form");
-								}
-							}}
-						>
-							{CANONICAL_CONTROL_ORDER.map((name) => (
-								<option key={name} value={name}>
-									{CANONICAL_CONTROL_LABELS[name]}
-								</option>
-							))}
-						</select>
+								}}
+							>
+								{CANONICAL_CONTROL_ORDER.map((name) => (
+									<option key={name} value={name}>
+										{CANONICAL_CONTROL_LABELS[name]}
+									</option>
+								))}
+							</select>
+						)}
 					</div>
 					<div className="form__field">
 						<label className="form__label" htmlFor="event">
