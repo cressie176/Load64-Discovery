@@ -38,4 +38,8 @@ export type ScreenName =
   | "game-catalogue-sources-list"
   | "game-control-list"
   | "game-profiles-selection"
-  | "audit";
+  | "audit"
+  | "now-playing"
+  | "now-playing-swap-disks"
+  | "now-playing-take-screenshot"
+  | "now-playing-take-snapshot";

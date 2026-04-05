@@ -1,0 +1,24 @@
+export type NowPlayingAction =
+  | "resume"
+  | "view-controls"
+  | "swap-joystick"
+  | "swap-disks"
+  | "take-screenshot"
+  | "take-snapshot";
+
+export interface JoystickPorts {
+  port1DeviceName: string;
+  port2DeviceName: string;
+}
+
+export interface ActiveDisk {
+  label: string;
+}
+
+export interface NowPlayingState {
+  gameId: string;
+  gameTitle: string;
+  joystickPorts: JoystickPorts;
+  activeDisk: ActiveDisk | null;
+  gameplayScreenshotUrl: string | null;
+}

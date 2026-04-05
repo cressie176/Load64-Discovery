@@ -23,6 +23,8 @@ import { SEED_IMPORT_DISCOVERY } from "../screens/import/import-discovery/seed";
 import type { ImportDiscoveryState } from "../screens/import/import-discovery/types";
 import { SEED_KEY_MAPPINGS } from "../screens/key-mappings/key-mapping-list/seed";
 import type { KeyMappingsState } from "../screens/key-mappings/key-mapping-list/types";
+import { SEED_NOW_PLAYING } from "../screens/now-playing/now-playing/seed";
+import type { NowPlayingState } from "../screens/now-playing/now-playing/types";
 import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
@@ -47,6 +49,7 @@ interface Store {
   discoveryMessage: string;
   importDiscovery: ImportDiscoveryState;
   importCandidate: ImportCandidateState;
+  nowPlaying: NowPlayingState;
 }
 
 interface StoreContextValue {
@@ -77,6 +80,7 @@ const INITIAL_STORE: Store = {
   discoveryMessage: "",
   importDiscovery: SEED_IMPORT_DISCOVERY,
   importCandidate: SEED_IMPORT_CANDIDATE,
+  nowPlaying: SEED_NOW_PLAYING,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {

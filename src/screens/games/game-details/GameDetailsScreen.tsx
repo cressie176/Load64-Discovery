@@ -184,8 +184,9 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
     }
     if (action === "load-snapshot") {
       push("snapshot-list", { gameId });
+    } else {
+      push("now-playing", { gameId });
     }
-    // Other actions would launch VICE — no-op in POC
   }
 
   function toggleFocusRegion(reverse = false) {

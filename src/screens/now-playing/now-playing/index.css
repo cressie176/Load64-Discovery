@@ -1,0 +1,59 @@
+/* ============================================================
+   Now Playing Screen
+   ============================================================ */
+
+.now-playing {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  height: 100%;
+}
+
+.now-playing__actions {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  min-width: 280px;
+}
+
+.now-playing__actions-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.now-playing__preview {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.now-playing__preview-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.now-playing__preview-image {
+  aspect-ratio: 4 / 3;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  width: 320px;
+}
+
+.now-playing__preview-placeholder {
+  align-items: center;
+  aspect-ratio: 4 / 3;
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text-muted);
+  display: flex;
+  font-size: 11px;
+  justify-content: center;
+  width: 320px;
+}

@@ -26,6 +26,7 @@ import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportD
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
 import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/KeyMappingEditScreen";
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
+import { NowPlayingScreen } from "./screens/now-playing/now-playing/NowPlayingScreen";
 import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
@@ -218,6 +219,18 @@ function AppScreens() {
   }
   if (currentScreen === "audit") {
     return <Placeholder name="Audit" />;
+  }
+  if (currentScreen === "now-playing") {
+    return <NowPlayingScreen gameId={currentParams.gameId ?? "game-bubble"} />;
+  }
+  if (currentScreen === "now-playing-swap-disks") {
+    return <Placeholder name="Now Playing – Swap Disks" />;
+  }
+  if (currentScreen === "now-playing-take-screenshot") {
+    return <Placeholder name="Now Playing – Take Screenshot" />;
+  }
+  if (currentScreen === "now-playing-take-snapshot") {
+    return <Placeholder name="Now Playing – Take Snapshot" />;
   }
   return <GameCarouselScreen />;
 }
