@@ -218,7 +218,7 @@ export function ViceArgumentEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{`${ownerPrefix} > VICE Arguments${draftName ? ` > ${draftName}` : ""}`}</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > VICE Arguments${isEditing ? (draftName ? ` > ${draftName}` : "") : " > Add"}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

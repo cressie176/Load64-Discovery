@@ -197,7 +197,7 @@ export function ProfileEditScreen({ profileId }: ProfileEditScreenProps) {
 	}
 
 	const title = isRename
-		? `Profiles > ${profile?.name ?? ""} > Rename`
+		? `Profiles > ${profile?.name ?? ""}`
 		: "Profiles > Add";
 
 	return (

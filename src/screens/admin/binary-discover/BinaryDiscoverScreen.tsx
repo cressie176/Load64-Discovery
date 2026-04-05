@@ -83,6 +83,7 @@ export function BinaryDiscoverScreen() {
 		if (event.key === "Escape") {
 			event.preventDefault();
 			blurActiveInput();
+			pop();
 		}
 	}
 

@@ -234,7 +234,7 @@ export function EnvironmentVariableEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{`${ownerPrefix} > Environment Variables${draftName ? ` > ${draftName}` : ""}`}</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > Environment Variables${isEditing ? (draftName ? ` > ${draftName}` : "") : " > Add"}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

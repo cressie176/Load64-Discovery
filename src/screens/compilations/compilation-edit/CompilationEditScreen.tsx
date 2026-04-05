@@ -204,7 +204,7 @@ export function CompilationEditScreen({
 	}
 
 	const title = isRename
-		? `Compilations > ${compilation?.name ?? ""} > Rename`
+		? `Compilations > ${compilation?.name ?? ""}`
 		: "Compilations > Add";
 
 	return (

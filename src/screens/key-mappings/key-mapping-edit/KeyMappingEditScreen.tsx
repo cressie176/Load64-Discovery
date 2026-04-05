@@ -287,7 +287,7 @@ export function KeyMappingEditScreen() {
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>
 			<div className="screen__topbar">
-				<span className="screen__topbar-title">{`${ownerPrefix} > Key Mappings${draftHostKey ? ` > ${draftHostKey}` : ""}`}</span>
+				<span className="screen__topbar-title">{`${ownerPrefix} > Key Mappings${isEditing ? (draftHostKey ? ` > ${draftHostKey}` : "") : " > Add"}`}</span>
 				<div className="screen__topbar-ctas">
 					<button
 						ref={backButtonRef}

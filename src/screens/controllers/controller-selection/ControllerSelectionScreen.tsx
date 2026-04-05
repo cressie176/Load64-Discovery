@@ -231,8 +231,8 @@ export function ControllerSelectionScreen({
 
 	const title =
 		ownerType === "profile"
-			? `Profiles > ${resolvedOwnerName} > Controllers > Select`
-			: `${resolvedOwnerName} > Controllers > Select`;
+			? `Profiles > ${resolvedOwnerName} > Controllers`
+			: `${resolvedOwnerName} > Controllers`;
 
 	return (
 		<div className="screen" ref={containerRef} tabIndex={-1}>

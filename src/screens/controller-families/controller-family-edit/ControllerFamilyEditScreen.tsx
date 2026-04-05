@@ -206,7 +206,7 @@ export function ControllerFamilyEditScreen({
 	}
 
 	const title = isRename
-		? `Controller Families > ${family?.name ?? ""} > Rename`
+		? `Controller Families > ${family?.name ?? ""}`
 		: "Controller Families > Add";
 
 	return (
