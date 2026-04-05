@@ -24,7 +24,7 @@ export const SEED_CONTROLLERS: ControllerList = [
 		name: "Logitech Dual Action",
 		familyName: "Logitech",
 		deviceCount: 2,
-		connectedCount: 1,
+		connectedCount: 2,
 		status: "connected",
 	},
 	{
@@ -42,6 +42,6 @@ export const SEED_CONTROLLERS: ControllerList = [
 		name: "8BitDo Pro 2",
 		deviceCount: 1,
 		connectedCount: 0,
-		status: "disconnected-unconfigured",
+		status: "not-configured",
 	},
 ];
