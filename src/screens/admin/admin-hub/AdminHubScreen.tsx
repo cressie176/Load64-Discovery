@@ -10,8 +10,11 @@ import {
 type FocusRegion = "list" | "topbar";
 
 export function AdminHubScreen() {
-  const { pop, push } = useRouter();
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const { pop, pushFrom, currentParams } = useRouter();
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [showQuitOverlay, setShowQuitOverlay] = useState(false);
   const [quitSelectedIndex, setQuitSelectedIndex] = useState(0);
@@ -89,7 +92,7 @@ export function AdminHubScreen() {
       setQuitSelectedIndex(0);
       return;
     }
-    push(item.screen);
+    pushFrom({ selectedIndex: String(selectedIndex) }, item.screen);
   }
 
   return (

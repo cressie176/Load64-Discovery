@@ -114,13 +114,16 @@ export function ControlListScreen({
   ownerId,
   statusMessage: initialStatusMessage = "",
 }: ControlListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const rows = buildRows(ownerId, store.controls);
   const owner = store.controls.owners.find((o) => o.id === ownerId);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
@@ -240,7 +243,7 @@ export function ControlListScreen({
 
   function activateRow(row: ControlRow | undefined) {
     if (!row) return;
-    push("control-edit", {
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "control-edit", {
       ownerId,
       canonicalName: row.canonicalName,
     });

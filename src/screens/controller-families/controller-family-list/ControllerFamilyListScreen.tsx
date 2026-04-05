@@ -34,12 +34,15 @@ interface ControllerFamilyListScreenProps {
 export function ControllerFamilyListScreen({
   statusMessage: initialStatusMessage = "",
 }: ControllerFamilyListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const families = sortFamilies(store.controllerFamilies.families);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -142,7 +145,9 @@ export function ControllerFamilyListScreen({
       setStatusMessage("");
     } else if (event.key === "Enter") {
       if (focusedFamily) {
-        push("control-list", { ownerId: focusedFamily.id });
+        pushFrom({ selectedIndex: String(safeSelectedIndex) }, "control-list", {
+          ownerId: focusedFamily.id,
+        });
       }
     } else if (event.code === "AltLeft") {
       event.preventDefault();
@@ -198,12 +203,19 @@ export function ControllerFamilyListScreen({
   }
 
   function navigateToAdd() {
-    push("controller-family-edit");
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "controller-family-edit",
+    );
   }
 
   function navigateToRename() {
     if (!focusedFamily) return;
-    push("controller-family-edit", { familyId: focusedFamily.id });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "controller-family-edit",
+      { familyId: focusedFamily.id },
+    );
   }
 
   function openContextMenu() {

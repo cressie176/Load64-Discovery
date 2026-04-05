@@ -72,13 +72,16 @@ export function KeyMappingListScreen({
   ownerId,
   statusMessage: initialStatusMessage = "",
 }: KeyMappingListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const rows = buildRows(ownerId, store.keyMappings);
   const owner = store.keyMappings.owners.find((o) => o.id === ownerId);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -203,7 +206,10 @@ export function KeyMappingListScreen({
 
   function activateRow(row: KeyMappingRow | undefined) {
     if (!row) return;
-    push("key-mapping-edit", { ownerId, keyMappingId: row.id });
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "key-mapping-edit", {
+      ownerId,
+      keyMappingId: row.id,
+    });
   }
 
   function toggleFocusRegion(reverse = false) {
@@ -237,7 +243,9 @@ export function KeyMappingListScreen({
   }
 
   function navigateToAdd() {
-    push("key-mapping-edit", { ownerId });
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "key-mapping-edit", {
+      ownerId,
+    });
   }
 
   function openContextMenu() {

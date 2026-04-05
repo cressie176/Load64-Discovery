@@ -49,7 +49,7 @@ export function CompilationListScreen({
   mode,
   statusMessage: initialStatusMessage = "",
 }: CompilationListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const allCompilations = store.compilations.compilations;
@@ -61,7 +61,10 @@ export function CompilationListScreen({
   const topBarCtas =
     mode === "admin" ? ADMIN_TOP_BAR_CTAS : BROWSE_TOP_BAR_CTAS;
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -192,9 +195,15 @@ export function CompilationListScreen({
   function activateCompilation() {
     if (!focusedCompilation) return;
     if (mode === "browse") {
-      push("carousel", { compilationId: focusedCompilation.id });
+      pushFrom({ selectedIndex: String(safeSelectedIndex) }, "carousel", {
+        compilationId: focusedCompilation.id,
+      });
     } else {
-      push("compilation-detail", { compilationId: focusedCompilation.id });
+      pushFrom(
+        { selectedIndex: String(safeSelectedIndex) },
+        "compilation-detail",
+        { compilationId: focusedCompilation.id },
+      );
     }
   }
 
@@ -227,12 +236,14 @@ export function CompilationListScreen({
   }
 
   function navigateToAdd() {
-    push("compilation-edit");
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "compilation-edit");
   }
 
   function navigateToRename() {
     if (!focusedCompilation) return;
-    push("compilation-edit", { compilationId: focusedCompilation.id });
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "compilation-edit", {
+      compilationId: focusedCompilation.id,
+    });
   }
 
   function openDeleteOverlay() {

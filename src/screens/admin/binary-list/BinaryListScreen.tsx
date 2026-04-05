@@ -32,11 +32,14 @@ function deriveBottomBarMessage(binary: Binary | undefined): string {
 }
 
 export function BinaryListScreen() {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
   const binaries = store.binaries;
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [topbarCtaIndex, setTopbarCtaIndex] = useState(0);
   const [discoveryMessage] = useState(() => {
@@ -125,7 +128,7 @@ export function BinaryListScreen() {
     if (cta === "back") {
       pop();
     } else if (cta === "discover") {
-      push("binary-discover");
+      pushFrom({ selectedIndex: String(selectedIndex) }, "binary-discover");
     }
   }
 
@@ -138,7 +141,10 @@ export function BinaryListScreen() {
       );
     } else if (event.key === "Enter") {
       const binary = binaries[selectedIndex];
-      if (binary) push("binary-edit", { machineName: binary.machineName });
+      if (binary)
+        pushFrom({ selectedIndex: String(selectedIndex) }, "binary-edit", {
+          machineName: binary.machineName,
+        });
     }
   }
 
@@ -154,7 +160,12 @@ export function BinaryListScreen() {
           <button
             ref={discoverButtonRef}
             className={`topbar-cta${focusRegion === "topbar" && topbarCtaIndex === 0 ? " topbar-cta--focused" : ""}`}
-            onClick={() => push("binary-discover")}
+            onClick={() =>
+              pushFrom(
+                { selectedIndex: String(selectedIndex) },
+                "binary-discover",
+              )
+            }
             type="button"
           >
             [Discover]

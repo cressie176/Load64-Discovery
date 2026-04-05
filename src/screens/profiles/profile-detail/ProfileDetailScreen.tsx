@@ -25,7 +25,7 @@ interface ProfileDetailScreenProps {
 }
 
 export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store } = useStore();
 
   const profile = store.profiles.profiles.find((p) => p.id === profileId);
@@ -73,7 +73,10 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
     },
   ];
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -127,13 +130,25 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
 
   function activateRow(row: SettingRow) {
     if (row.key === "controllers") {
-      push("controller-selection", { profileId });
+      pushFrom(
+        { selectedIndex: String(selectedIndex) },
+        "controller-selection",
+        { profileId },
+      );
     } else if (row.key === "vice-arguments") {
-      push("vice-argument-list", { ownerId: profileId });
+      pushFrom({ selectedIndex: String(selectedIndex) }, "vice-argument-list", {
+        ownerId: profileId,
+      });
     } else if (row.key === "key-mappings") {
-      push("key-mapping-list", { profileId });
+      pushFrom({ selectedIndex: String(selectedIndex) }, "key-mapping-list", {
+        profileId,
+      });
     } else if (row.key === "environment-variables") {
-      push("environment-variable-list", { profileId });
+      pushFrom(
+        { selectedIndex: String(selectedIndex) },
+        "environment-variable-list",
+        { profileId },
+      );
     }
   }
 

@@ -41,7 +41,7 @@ export function CompilationDetailScreen({
   compilationId,
   statusMessage: initialStatusMessage = "",
 }: CompilationDetailScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const compilation = store.compilations.compilations.find(
@@ -71,7 +71,10 @@ export function CompilationDetailScreen({
       })),
   );
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -251,7 +254,11 @@ export function CompilationDetailScreen({
   }
 
   function navigateToAdd() {
-    push("compilation-membership", { compilationId });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "compilation-membership",
+      { compilationId },
+    );
   }
 
   function openRemoveOverlay() {

@@ -26,12 +26,15 @@ interface ProfileListScreenProps {
 export function ProfileListScreen({
   statusMessage: initialStatusMessage = "",
 }: ProfileListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const profiles = sortProfiles(store.profiles.profiles);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -167,7 +170,9 @@ export function ProfileListScreen({
 
   function navigateToDetail() {
     if (!focusedProfile) return;
-    push("profile-detail", { profileId: focusedProfile.id });
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "profile-detail", {
+      profileId: focusedProfile.id,
+    });
   }
 
   function toggleFocusRegion(reverse: boolean) {
@@ -200,12 +205,14 @@ export function ProfileListScreen({
   }
 
   function navigateToAdd() {
-    push("profile-edit");
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "profile-edit");
   }
 
   function navigateToRename() {
     if (!focusedProfile) return;
-    push("profile-edit", { profileId: focusedProfile.id });
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "profile-edit", {
+      profileId: focusedProfile.id,
+    });
   }
 
   function openContextMenu() {

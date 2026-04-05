@@ -98,13 +98,16 @@ export function EnvironmentVariableListScreen({
   ownerId,
   statusMessage: initialStatusMessage = "",
 }: EnvironmentVariableListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const rows = buildRows(ownerId, store.environmentVariables);
   const owner = store.environmentVariables.owners.find((o) => o.id === ownerId);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -231,7 +234,11 @@ export function EnvironmentVariableListScreen({
     if (!row) return;
     const params: Record<string, string> = { ownerId };
     if (row.id !== null) params.envVarId = row.id;
-    push("environment-variable-edit", params);
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "environment-variable-edit",
+      params,
+    );
   }
 
   function toggleFocusRegion(reverse = false) {
@@ -265,7 +272,11 @@ export function EnvironmentVariableListScreen({
   }
 
   function navigateToAdd() {
-    push("environment-variable-edit", { ownerId });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "environment-variable-edit",
+      { ownerId },
+    );
   }
 
   function openContextMenu() {

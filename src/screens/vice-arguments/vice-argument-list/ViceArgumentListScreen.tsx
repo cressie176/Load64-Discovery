@@ -90,13 +90,16 @@ export function ViceArgumentListScreen({
   ownerId,
   statusMessage: initialStatusMessage = "",
 }: ViceArgumentListScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const rows = buildRows(ownerId, store.viceArguments);
   const owner = store.viceArguments.owners.find((o) => o.id === ownerId);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -221,10 +224,14 @@ export function ViceArgumentListScreen({
 
   function activateRow(row: ViceArgumentRow | undefined) {
     if (!row) return;
-    push("vice-argument-edit", {
-      ownerId: row.isInherited ? row.ownerId : ownerId,
-      argumentId: row.id,
-    });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "vice-argument-edit",
+      {
+        ownerId: row.isInherited ? row.ownerId : ownerId,
+        argumentId: row.id,
+      },
+    );
   }
 
   function toggleFocusRegion(reverse = false) {
@@ -258,7 +265,11 @@ export function ViceArgumentListScreen({
   }
 
   function navigateToAdd() {
-    push("vice-argument-edit", { ownerId });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "vice-argument-edit",
+      { ownerId },
+    );
   }
 
   function openContextMenu() {

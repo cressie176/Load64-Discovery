@@ -49,12 +49,15 @@ function wrapIndex(index: number, delta: number, length: number): number {
 }
 
 export function ControllerListScreen() {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const controllers = sortControllers(store.controllers);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
@@ -185,7 +188,11 @@ export function ControllerListScreen() {
   function activateSelected() {
     if (!focusedController) return;
     if (!isSelectable(focusedController)) return;
-    push("controller-detail", { controllerId: focusedController.id });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "controller-detail",
+      { controllerId: focusedController.id },
+    );
   }
 
   function openContextMenuForFocused() {

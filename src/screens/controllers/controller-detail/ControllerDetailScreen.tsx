@@ -31,7 +31,7 @@ export function ControllerDetailScreen({
   controllerId,
   statusMessage: initialStatusMessage = "",
 }: ControllerDetailScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, pushFrom, currentParams } = useRouter();
   const { store } = useStore();
 
   const controller = store.controllers.find((c) => c.id === controllerId);
@@ -39,7 +39,10 @@ export function ControllerDetailScreen({
   const isConnected = (controller?.connectedCount ?? 0) > 0;
   const deviceName = controller?.name ?? controllerId;
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
@@ -109,11 +112,21 @@ export function ControllerDetailScreen({
 
   function activateItem(item: ControllerDetailItem) {
     if (item === "family") {
-      push("controller-family-selection", { controllerId });
+      pushFrom(
+        { selectedIndex: String(selectedIndex) },
+        "controller-family-selection",
+        { controllerId },
+      );
     } else if (item === "controls") {
-      push("control-list", { ownerId: controllerId });
+      pushFrom({ selectedIndex: String(selectedIndex) }, "control-list", {
+        ownerId: controllerId,
+      });
     } else if (item === "environment-variables") {
-      push("environment-variable-list", { ownerId: controllerId });
+      pushFrom(
+        { selectedIndex: String(selectedIndex) },
+        "environment-variable-list",
+        { ownerId: controllerId },
+      );
     }
   }
 

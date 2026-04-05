@@ -39,6 +39,13 @@ export const SEED_CONTROLS: ControlsState = {
       familyName: "Microsoft Xbox",
     },
     {
+      id: "ctrl-xbox-wireless",
+      name: "Xbox Wireless Controller",
+      type: "controller",
+      familyId: "family-xbox",
+      familyName: "Microsoft Xbox",
+    },
+    {
       id: "controller-dualsense",
       name: "DualSense",
       type: "controller",

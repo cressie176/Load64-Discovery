@@ -9,6 +9,12 @@ export const SEED_VICE_ARGUMENTS: ViceArgumentsState = {
       profileIds: [],
     },
     {
+      id: "profile-multiplayer",
+      name: "Multiplayer",
+      type: "profile",
+      profileIds: [],
+    },
+    {
       id: "profile-sid-8580",
       name: "SID 8580",
       type: "profile",
