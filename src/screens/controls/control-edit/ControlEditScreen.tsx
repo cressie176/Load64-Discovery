@@ -153,10 +153,13 @@ export function ControlEditScreen() {
 			eventInputRef.current?.focus();
 			return;
 		}
-		// In the POC, simulate capturing a keyboard event as a controller event identifier
-		// Any key press (except Escape) is treated as a capture event
 		event.preventDefault();
-		const captured = deriveEventFromKey(event.key);
+		const usedEvents = new Set(
+			store.controls.controls
+				.filter((c) => c.ownerId === ownerId && c.id !== existing?.id)
+				.map((c) => c.event),
+		);
+		const captured = nextUnusedButtonEvent(usedEvents);
 		setDraftEvent(captured);
 		setIsCapturing(false);
 		setActiveField("event");
@@ -467,14 +470,9 @@ export function ControlEditScreen() {
 	);
 }
 
-function deriveEventFromKey(key: string): string {
-	const map: Record<string, string> = {
-		" ": "button_0",
-		Enter: "button_1",
-		ArrowUp: "axis_1_up",
-		ArrowDown: "axis_1_down",
-		ArrowLeft: "axis_0_left",
-		ArrowRight: "axis_0_right",
-	};
-	return map[key] ?? `button_${key.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+function nextUnusedButtonEvent(usedEvents: Set<string>): string {
+	for (let i = 0; ; i++) {
+		const candidate = `button_${i}`;
+		if (!usedEvents.has(candidate)) return candidate;
+	}
 }
