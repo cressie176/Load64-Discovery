@@ -5,9 +5,10 @@
 .controller-list__row,
 .controller-list__header {
 	display: grid;
-	grid-template-columns: 1fr 100px 100px;
 	gap: 16px;
+	grid-template-columns: 1fr 100px 100px;
 	min-width: 0;
+	width: 100%;
 }
 
 .controller-list__name {
