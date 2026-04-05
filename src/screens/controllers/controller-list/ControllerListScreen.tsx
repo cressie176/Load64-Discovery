@@ -31,17 +31,13 @@ function canDelete(controller: Controller): boolean {
 }
 
 function sortControllers(controllers: Controller[]): Controller[] {
-	const unconfigured = controllers
-		.filter(
-			(c) =>
-				c.status === "not-configured" ||
-				c.status === "disconnected-unconfigured",
-		)
+	const connected = controllers
+		.filter((c) => c.connectedCount > 0)
 		.sort((a, b) => a.name.localeCompare(b.name));
-	const configured = controllers
-		.filter((c) => c.status === "connected" || c.status === "disconnected")
+	const disconnected = controllers
+		.filter((c) => c.connectedCount === 0)
 		.sort((a, b) => a.name.localeCompare(b.name));
-	return [...unconfigured, ...configured];
+	return [...connected, ...disconnected];
 }
 
 function deleteController(controllers: Controller[], id: string): Controller[] {
