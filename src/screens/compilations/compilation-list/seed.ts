@@ -28,6 +28,11 @@ export const SEED_COMPILATIONS: CompilationsState = {
 			name: "Shoot-em-ups",
 			kind: "user-defined",
 		},
+		{
+			id: "compilation-sports",
+			name: "Sports",
+			kind: "user-defined",
+		},
 	],
 	compilationGameRefs: [
 		{ compilationId: "compilation-untested", gameId: "game-monty" },

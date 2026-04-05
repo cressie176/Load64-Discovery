@@ -409,34 +409,45 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
 					</button>
 				</div>
 			</div>
-			<div className="carousel">
-				<div className="carousel__track">
-					{getVisibleItems().map(({ game, offset }) => (
-						<div key={game.id} className={itemClassName(offset)}>
-							<div className="carousel__item-wrapper">
-								{game.coverUrl ? (
-									<img
-										src={game.coverUrl}
-										alt={game.title}
-										className="carousel__cover"
-									/>
-								) : (
-									<div className="carousel__cover-placeholder">
-										{game.title}
-									</div>
-								)}
-								{offset === 0 && !game.launchable && (
-									<div className="carousel__out-of-order">
-										<span className="carousel__out-of-order-label">
-											Out of Order
-										</span>
-									</div>
-								)}
-							</div>
-						</div>
-					))}
+			{allGames.length === 0 ? (
+				<div className="screen__content screen__content--empty">
+					No games in your library. Select Admin to import games.
 				</div>
-			</div>
+			) : games.length === 0 ? (
+				<div className="screen__content screen__content--empty">
+					No games in this compilation. Select Compilations to switch
+					compilation.
+				</div>
+			) : (
+				<div className="carousel">
+					<div className="carousel__track">
+						{getVisibleItems().map(({ game, offset }) => (
+							<div key={offset} className={itemClassName(offset)}>
+								<div className="carousel__item-wrapper">
+									{game.coverUrl ? (
+										<img
+											src={game.coverUrl}
+											alt={game.title}
+											className="carousel__cover"
+										/>
+									) : (
+										<div className="carousel__cover-placeholder">
+											{game.title}
+										</div>
+									)}
+									{offset === 0 && !game.launchable && (
+										<div className="carousel__out-of-order">
+											<span className="carousel__out-of-order-label">
+												Out of Order
+											</span>
+										</div>
+									)}
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
+			)}
 			<div className="screen__bottombar">{statusMessage}</div>
 		</div>
 	);

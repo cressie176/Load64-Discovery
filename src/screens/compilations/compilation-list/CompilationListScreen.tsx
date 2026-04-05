@@ -264,9 +264,12 @@ export function CompilationListScreen({
 		setSelectedIndex((prev) => Math.max(0, prev - 1));
 	}
 
-	function countGames(compilationId: string): number {
+	function countGames(compilation: Compilation): number {
+		if (compilation.kind === "all-games") {
+			return store.carousel.games.length;
+		}
 		return store.compilations.compilationGameRefs.filter(
-			(ref) => ref.compilationId === compilationId,
+			(ref) => ref.compilationId === compilation.id,
 		).length;
 	}
 
@@ -276,7 +279,7 @@ export function CompilationListScreen({
 
 	function deleteWarningMessage(compilation: Compilation | undefined): string {
 		if (!compilation) return "";
-		const count = countGames(compilation.id);
+		const count = countGames(compilation);
 		if (count === 0) return "";
 		return `${compilation.name} contains ${count} game(s). Deleting it will not remove the games from your library.`;
 	}
@@ -335,7 +338,7 @@ export function CompilationListScreen({
 								{compilation.name}
 							</span>
 							<span className="compilation-list__row-count">
-								{formatGameCount(countGames(compilation.id))}
+								{formatGameCount(countGames(compilation))}
 							</span>
 						</li>
 					))}

@@ -89,6 +89,13 @@ button {
 	padding: 16px;
 }
 
+.screen__content--empty {
+	align-items: center;
+	color: var(--colour-text-muted);
+	display: flex;
+	justify-content: center;
+}
+
 .screen__bottombar {
 	border-top: 1px solid var(--colour-border);
 	color: var(--colour-text-muted);
