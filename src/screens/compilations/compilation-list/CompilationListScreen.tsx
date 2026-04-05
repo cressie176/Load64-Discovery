@@ -327,19 +327,26 @@ export function CompilationListScreen({
 				</div>
 			</div>
 			<div className="screen__content">
+				<div className="list__header">
+					<div className="compilation-list__columns">
+						<span>Name</span>
+						<span style={{ textAlign: "right" }}>Games</span>
+					</div>
+				</div>
 				<ul className="list">
 					{compilations.map((compilation, index) => (
 						<li
 							key={compilation.id}
 							className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-							style={{ display: "flex", gap: "16px" }}
 						>
-							<span className="compilation-list__row-name">
-								{compilation.name}
-							</span>
-							<span className="compilation-list__row-count">
-								{formatGameCount(countGames(compilation))}
-							</span>
+							<div className="compilation-list__columns">
+								<span className="compilation-list__row-name">
+									{compilation.name}
+								</span>
+								<span className="compilation-list__row-count">
+									{formatGameCount(countGames(compilation))}
+								</span>
+							</div>
 						</li>
 					))}
 				</ul>

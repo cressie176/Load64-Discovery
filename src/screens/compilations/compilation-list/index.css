@@ -2,8 +2,15 @@
    Compilation List Screen
    ============================================================ */
 
+.compilation-list__columns {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: 1fr 100px;
+	min-width: 0;
+	width: 100%;
+}
+
 .compilation-list__row-name {
-	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
@@ -11,7 +18,7 @@
 
 .compilation-list__row-count {
 	color: var(--colour-text-muted);
-	flex-shrink: 0;
+	text-align: right;
 }
 
 .list__row--selected .compilation-list__row-count {
