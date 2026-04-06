@@ -237,6 +237,9 @@ function AppScreens() {
   if (currentScreen === "audit") {
     return <Placeholder name="Audit" />;
   }
+  if (currentScreen === "load64-catalogue-update") {
+    return <Placeholder name="Load!64 Catalogue Update" />;
+  }
   if (currentScreen === "now-playing") {
     return <NowPlayingScreen gameId={currentParams.gameId ?? "game-bubble"} />;
   }

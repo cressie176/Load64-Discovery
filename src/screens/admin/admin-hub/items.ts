@@ -14,9 +14,16 @@ type ItemWithAction = {
 
 export type AdminHubItem = ItemWithScreen | ItemWithAction;
 
-export const ADMIN_HUB_ITEMS: readonly AdminHubItem[] = [
+export type AdminHubRow =
+  | { kind: "group-header"; label: string }
+  | { kind: "item"; item: AdminHubItem };
+
+const SYSTEM_CONFIGURATION_ITEMS: readonly AdminHubItem[] = [
   { label: "General Settings", screen: "general-settings" as ScreenName },
   { label: "Binaries", screen: "binary-list" as ScreenName },
+];
+
+const GAMING_CONFIGURATION_ITEMS: readonly AdminHubItem[] = [
   {
     label: "Controller Families",
     screen: "controller-family-list" as ScreenName,
@@ -24,10 +31,41 @@ export const ADMIN_HUB_ITEMS: readonly AdminHubItem[] = [
   { label: "Controllers", screen: "controller-list" as ScreenName },
   { label: "Profiles", screen: "profile-list" as ScreenName },
   { label: "Compilations", screen: "compilation-list" as ScreenName },
+];
+
+const TOOLS_ITEMS: readonly AdminHubItem[] = [
   { label: "Import Games", screen: "import-games" as ScreenName },
+  {
+    label: "Update Load!64 Catalogue",
+    screen: "load64-catalogue-update" as ScreenName,
+  },
   { label: "Audit", screen: "audit" as ScreenName },
+];
+
+const UNGROUPED_ITEMS: readonly AdminHubItem[] = [
   { label: "Quit Load!64", action: "quit" },
-] as const;
+];
+
+export const ADMIN_HUB_ITEMS: readonly AdminHubItem[] = [
+  ...SYSTEM_CONFIGURATION_ITEMS,
+  ...GAMING_CONFIGURATION_ITEMS,
+  ...TOOLS_ITEMS,
+  ...UNGROUPED_ITEMS,
+];
+
+export const ADMIN_HUB_ROWS: readonly AdminHubRow[] = [
+  { kind: "group-header", label: "SYSTEM CONFIGURATION" },
+  ...SYSTEM_CONFIGURATION_ITEMS.map(
+    (item): AdminHubRow => ({ kind: "item", item }),
+  ),
+  { kind: "group-header", label: "GAMING CONFIGURATION" },
+  ...GAMING_CONFIGURATION_ITEMS.map(
+    (item): AdminHubRow => ({ kind: "item", item }),
+  ),
+  { kind: "group-header", label: "TOOLS" },
+  ...TOOLS_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
+  ...UNGROUPED_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
+];
 
 export const QUIT_OPTIONS = ["Yes", "No"] as const;
 

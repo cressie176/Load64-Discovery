@@ -40,6 +40,7 @@ export type ScreenName =
   | "game-control-list"
   | "game-profiles-selection"
   | "audit"
+  | "load64-catalogue-update"
   | "now-playing"
   | "now-playing-swap-disks"
   | "now-playing-take-screenshot"

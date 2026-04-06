@@ -1,11 +1,16 @@
 import { deepStrictEqual as deep, equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { ADMIN_HUB_ITEMS, QUIT_OPTIONS, wrapIndex } from "./items.ts";
+import {
+  ADMIN_HUB_ITEMS,
+  ADMIN_HUB_ROWS,
+  QUIT_OPTIONS,
+  wrapIndex,
+} from "./items.ts";
 
 describe("AdminHubScreen", () => {
   describe("ADMIN_HUB_ITEMS", () => {
     it("has the correct number of items", () => {
-      eq(ADMIN_HUB_ITEMS.length, 9);
+      eq(ADMIN_HUB_ITEMS.length, 10);
     });
 
     it("has items in the correct order with correct labels", () => {
@@ -18,6 +23,7 @@ describe("AdminHubScreen", () => {
         "Profiles",
         "Compilations",
         "Import Games",
+        "Update Load!64 Catalogue",
         "Audit",
         "Quit Load!64",
       ]);
@@ -32,6 +38,39 @@ describe("AdminHubScreen", () => {
       const navItems = ADMIN_HUB_ITEMS.slice(0, -1);
       for (const item of navItems) {
         eq(typeof item.screen, "string");
+      }
+    });
+  });
+
+  describe("ADMIN_HUB_ROWS", () => {
+    it("has group headers for each group", () => {
+      const headers = ADMIN_HUB_ROWS.filter(
+        (row) => row.kind === "group-header",
+      ).map((row) => row.label);
+      deep(headers, ["SYSTEM CONFIGURATION", "GAMING CONFIGURATION", "TOOLS"]);
+    });
+
+    it("has all items from ADMIN_HUB_ITEMS as item rows", () => {
+      const itemLabels = ADMIN_HUB_ROWS.filter(
+        (row) => row.kind === "item",
+      ).map((row) => row.item.label);
+      deep(
+        itemLabels,
+        ADMIN_HUB_ITEMS.map((item) => item.label),
+      );
+    });
+
+    it("group headers are not in ADMIN_HUB_ITEMS", () => {
+      const headerLabels = ADMIN_HUB_ROWS.filter(
+        (row) => row.kind === "group-header",
+      ).map((row) => row.label);
+      const itemLabels = ADMIN_HUB_ITEMS.map((item) => item.label);
+      for (const header of headerLabels) {
+        eq(
+          itemLabels.includes(header),
+          false,
+          `"${header}" should not be in ADMIN_HUB_ITEMS`,
+        );
       }
     });
   });
@@ -52,21 +91,21 @@ describe("AdminHubScreen", () => {
 
   describe("wrapIndex", () => {
     it("moves forward by delta", () => {
-      eq(wrapIndex(0, 1, 9), 1);
-      eq(wrapIndex(3, 1, 9), 4);
+      eq(wrapIndex(0, 1, 10), 1);
+      eq(wrapIndex(3, 1, 10), 4);
     });
 
     it("moves backward by delta", () => {
-      eq(wrapIndex(3, -1, 9), 2);
-      eq(wrapIndex(1, -1, 9), 0);
+      eq(wrapIndex(3, -1, 10), 2);
+      eq(wrapIndex(1, -1, 10), 0);
     });
 
     it("wraps forward past the end to 0", () => {
-      eq(wrapIndex(8, 1, 9), 0);
+      eq(wrapIndex(9, 1, 10), 0);
     });
 
     it("wraps backward before start to last index", () => {
-      eq(wrapIndex(0, -1, 9), 8);
+      eq(wrapIndex(0, -1, 10), 9);
     });
 
     it("wraps correctly for overlay with 2 items", () => {

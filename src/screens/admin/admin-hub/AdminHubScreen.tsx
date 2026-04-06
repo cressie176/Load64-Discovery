@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import {
   ADMIN_HUB_ITEMS,
+  ADMIN_HUB_ROWS,
   type AdminHubItem,
   QUIT_OPTIONS,
   wrapIndex,
@@ -112,14 +113,24 @@ export function AdminHubScreen() {
       </div>
       <div className="screen__content">
         <ul className="list">
-          {ADMIN_HUB_ITEMS.map((item, index) => (
-            <li
-              className={`list__row${index === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-              key={item.label}
-            >
-              {item.label}
-            </li>
-          ))}
+          {ADMIN_HUB_ROWS.map((row) => {
+            if (row.kind === "group-header") {
+              return (
+                <li className="list__group-header" key={row.label}>
+                  {row.label}
+                </li>
+              );
+            }
+            const itemIndex = ADMIN_HUB_ITEMS.indexOf(row.item);
+            return (
+              <li
+                className={`list__row${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+                key={row.item.label}
+              >
+                {row.item.label}
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className="screen__bottombar" />

@@ -3,6 +3,7 @@ import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import {
   GAME_MANAGEMENT_ITEMS,
+  GAME_MANAGEMENT_ROWS,
   type GameManagementItem,
   wrapIndex,
 } from "./items";
@@ -228,24 +229,34 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
       </div>
       <div className="screen__content">
         <ul className="list">
-          {GAME_MANAGEMENT_ITEMS.map((item, index) => (
-            <li
-              key={item.label}
-              className={`list__row${index === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-              onClick={() => {
-                setSelectedIndex(index);
-                activateItem(item);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setSelectedIndex(index);
-                  activateItem(item);
-                }
-              }}
-            >
-              {item.label}
-            </li>
-          ))}
+          {GAME_MANAGEMENT_ROWS.map((row) => {
+            if (row.kind === "group-header") {
+              return (
+                <li className="list__group-header" key={row.label}>
+                  {row.label}
+                </li>
+              );
+            }
+            const itemIndex = GAME_MANAGEMENT_ITEMS.indexOf(row.item);
+            return (
+              <li
+                key={row.item.label}
+                className={`list__row${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+                onClick={() => {
+                  setSelectedIndex(itemIndex);
+                  activateItem(row.item);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSelectedIndex(itemIndex);
+                    activateItem(row.item);
+                  }
+                }}
+              >
+                {row.item.label}
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className="screen__bottombar" />

@@ -1,6 +1,10 @@
 import { deepStrictEqual as deep, equal as eq, ok } from "node:assert/strict";
 import { describe, it } from "node:test";
-import { GAME_MANAGEMENT_ITEMS, wrapIndex } from "./items.ts";
+import {
+  GAME_MANAGEMENT_ITEMS,
+  GAME_MANAGEMENT_ROWS,
+  wrapIndex,
+} from "./items.ts";
 
 describe("GameManagementScreen", () => {
   describe("GAME_MANAGEMENT_ITEMS", () => {
@@ -12,13 +16,13 @@ describe("GameManagementScreen", () => {
       const labels = GAME_MANAGEMENT_ITEMS.map((item) => item.label);
       deep(labels, [
         "Game Info",
+        "Catalogue Sources",
         "ROMs",
+        "Snapshots",
         "Cover Thumbnail",
         "Loading Screen",
         "Title Screen",
         "Gameplay Screen",
-        "Catalogue Sources",
-        "Snapshots",
         "Controls",
         "Controllers",
         "Profiles",
@@ -58,8 +62,8 @@ describe("GameManagementScreen", () => {
     it("non-media navigation items do not have a mediaSlot", () => {
       const nonMediaLabels = [
         "Game Info",
-        "ROMs",
         "Catalogue Sources",
+        "ROMs",
         "Snapshots",
         "Controls",
         "Controllers",
@@ -75,6 +79,39 @@ describe("GameManagementScreen", () => {
           "mediaSlot" in item ? item.mediaSlot : undefined,
           undefined,
           `${label} should not have mediaSlot`,
+        );
+      }
+    });
+  });
+
+  describe("GAME_MANAGEMENT_ROWS", () => {
+    it("has group headers for each group", () => {
+      const headers = GAME_MANAGEMENT_ROWS.filter(
+        (row) => row.kind === "group-header",
+      ).map((row) => row.label);
+      deep(headers, ["GAME", "MEDIA", "CONFIGURATION"]);
+    });
+
+    it("has all items from GAME_MANAGEMENT_ITEMS as item rows", () => {
+      const itemLabels = GAME_MANAGEMENT_ROWS.filter(
+        (row) => row.kind === "item",
+      ).map((row) => row.item.label);
+      deep(
+        itemLabels,
+        GAME_MANAGEMENT_ITEMS.map((item) => item.label),
+      );
+    });
+
+    it("group headers are not in GAME_MANAGEMENT_ITEMS", () => {
+      const headerLabels = GAME_MANAGEMENT_ROWS.filter(
+        (row) => row.kind === "group-header",
+      ).map((row) => row.label);
+      const itemLabels = GAME_MANAGEMENT_ITEMS.map((item) => item.label);
+      for (const header of headerLabels) {
+        eq(
+          itemLabels.includes(header),
+          false,
+          `"${header}" should not be in GAME_MANAGEMENT_ITEMS`,
         );
       }
     });
