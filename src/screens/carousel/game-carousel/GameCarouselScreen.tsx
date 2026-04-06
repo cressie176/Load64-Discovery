@@ -279,7 +279,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
       );
       return;
     }
-    setStatusMessage(buildStatusMessage(selectedGame));
+    push("now-playing", { gameId: selectedGame.id });
   }
 
   function handleLoadRom() {
@@ -297,7 +297,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
       setStatusMessage(buildBlockedMessage(selectedGame, "No ROM configured"));
       return;
     }
-    setStatusMessage(buildStatusMessage(selectedGame));
+    push("now-playing", { gameId: selectedGame.id });
   }
 
   function handleContinue() {
@@ -317,7 +317,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
       );
       return;
     }
-    setStatusMessage(buildStatusMessage(selectedGame));
+    push("now-playing", { gameId: selectedGame.id });
   }
 
   function toggleFocusRegion(reverse = false) {

@@ -55,7 +55,7 @@ interface NowPlayingScreenProps {
 }
 
 export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
-  const { push, replace } = useRouter();
+  const { pop, push } = useRouter();
   const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -162,7 +162,7 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
 
   function quitGame() {
     setShowQuitConfirm(false);
-    replace("carousel");
+    pop();
   }
 
   function activateAction(action: NowPlayingAction) {
