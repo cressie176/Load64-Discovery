@@ -62,9 +62,9 @@ function getSectionBoundary(
 function buildLaunchActions(game: Game): string {
   if (!game.launchable) return game.blockingReason ?? "Unlaunchable";
   const actions: string[] = [];
-  if (game.hasQuickstart) actions.push("Quickstart (X | Alt+Enter)");
-  if (game.hasRom) actions.push("Load (B | CTRL+Enter)");
-  if (game.hasSave) actions.push("Continue (Y | Shift+Enter)");
+  if (game.hasQuickstart) actions.push("Quickstart: B or Alt+Enter");
+  if (game.hasRom) actions.push("Load: X or CTRL+Enter");
+  if (game.hasSave) actions.push("Continue: Y or Shift+Enter");
   return actions.join(" ◆ ");
 }
 
@@ -384,9 +384,9 @@ describe("GameCarouselScreen", () => {
         hasSave: true,
       };
       const msg = buildStatusMessage(game);
-      ok(msg.includes("Quickstart (X | Alt+Enter)"));
-      ok(msg.includes("Load (B | CTRL+Enter)"));
-      ok(msg.includes("Continue (Y | Shift+Enter)"));
+      ok(msg.includes("Quickstart: B or"));
+      ok(msg.includes("Load: X or CTRL+Enter"));
+      ok(msg.includes("Continue: Y or Shift+Enter"));
       ok(msg.includes(" ◆ "));
     });
 
@@ -404,8 +404,8 @@ describe("GameCarouselScreen", () => {
       };
       const msg = buildStatusMessage(game);
       ok(!msg.includes("Quickstart"));
-      ok(msg.includes("Load (B | CTRL+Enter)"));
-      ok(msg.includes("Continue (Y | Shift+Enter)"));
+      ok(msg.includes("Load: X or CTRL+Enter"));
+      ok(msg.includes("Continue: Y or Shift+Enter"));
     });
 
     it("omits continue action when hasSave is false", () => {

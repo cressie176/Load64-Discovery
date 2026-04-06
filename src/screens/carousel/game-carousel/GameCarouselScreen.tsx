@@ -78,12 +78,21 @@ function getSectionBoundary(
   return i >= 0 ? i : 0;
 }
 
+function getQuickstartKeyboardShortcut(): string {
+  const platform = navigator.platform ?? "";
+  const userAgent = navigator.userAgent ?? "";
+  const isApple =
+    /mac|iphone|ipad|ipod/i.test(platform) || /mac os x/i.test(userAgent);
+  return isApple ? "Option+Enter" : "Alt+Enter";
+}
+
 function buildLaunchActions(game: Game): string {
   if (!game.launchable) return game.blockingReason ?? "Unlaunchable";
+  const quickstartKey = getQuickstartKeyboardShortcut();
   const actions: string[] = [];
-  if (game.hasQuickstart) actions.push("Quickstart (X | Alt+Enter)");
-  if (game.hasRom) actions.push("Load (B | CTRL+Enter)");
-  if (game.hasSave) actions.push("Continue (Y | Shift+Enter)");
+  if (game.hasQuickstart) actions.push(`Quickstart: B or ${quickstartKey}`);
+  if (game.hasRom) actions.push("Load: X or CTRL+Enter");
+  if (game.hasSave) actions.push("Continue: Y or Shift+Enter");
   return actions.join(" ◆ ");
 }
 
