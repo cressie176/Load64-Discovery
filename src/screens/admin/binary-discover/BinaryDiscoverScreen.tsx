@@ -42,6 +42,20 @@ function discoverBinaries(
   return discovered;
 }
 
+async function browseForDirectory(): Promise<string | null> {
+  if (!("showDirectoryPicker" in window)) return null;
+  try {
+    const handle = await (
+      window as unknown as {
+        showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
+      }
+    ).showDirectoryPicker();
+    return handle.name;
+  } catch {
+    return null;
+  }
+}
+
 export function BinaryDiscoverScreen() {
   const { pop } = useRouter();
   const { store, setStore } = useStore();
@@ -150,7 +164,7 @@ export function BinaryDiscoverScreen() {
     if (activeField === "vicePath") {
       vicePathRef.current?.focus();
     } else if (activeField === "browse") {
-      vicePathRef.current?.focus();
+      handleBrowse();
     } else if (activeField === "discover") {
       handleDiscover();
     } else if (activeField === "cancel") {
@@ -161,6 +175,15 @@ export function BinaryDiscoverScreen() {
   function blurActiveInput() {
     vicePathRef.current?.blur();
     setActiveField("vicePath");
+  }
+
+  function handleBrowse() {
+    browseForDirectory().then((selected) => {
+      if (selected !== null) {
+        setVicePath(selected);
+        vicePathRef.current?.focus();
+      }
+    });
   }
 
   function handleDiscover() {
@@ -233,7 +256,7 @@ export function BinaryDiscoverScreen() {
                 ref={browseButtonRef}
                 className={`binary-discover__browse${activeField === "browse" && focusRegion === "form" ? " binary-discover__browse--active" : ""}`}
                 type="button"
-                onClick={() => vicePathRef.current?.focus()}
+                onClick={handleBrowse}
                 onFocus={() => {
                   setActiveField("browse");
                   setFocusRegion("form");

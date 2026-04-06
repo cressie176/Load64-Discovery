@@ -16,6 +16,20 @@ function simulateDiscovery(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 1500));
 }
 
+async function browseForDirectory(): Promise<string | null> {
+  if (!("showDirectoryPicker" in window)) return null;
+  try {
+    const handle = await (
+      window as unknown as {
+        showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
+      }
+    ).showDirectoryPicker();
+    return handle.name;
+  } catch {
+    return null;
+  }
+}
+
 export function ImportGamesScreen() {
   const { pop, push } = useRouter();
 
@@ -122,10 +136,19 @@ export function ImportGamesScreen() {
     if (activeField === "path") {
       pathRef.current?.focus();
     } else if (activeField === "browse") {
-      pathRef.current?.focus();
+      handleBrowse();
     } else if (activeField === "discover") {
       handleDiscover();
     }
+  }
+
+  function handleBrowse() {
+    browseForDirectory().then((selected) => {
+      if (selected !== null) {
+        setPath(selected);
+        pathRef.current?.focus();
+      }
+    });
   }
 
   function blurActiveInput() {
@@ -190,7 +213,7 @@ export function ImportGamesScreen() {
               <button
                 className={`import-games__browse${activeField === "browse" && focusRegion === "form" ? " import-games__browse--active" : ""}`}
                 disabled={discovering}
-                onClick={() => pathRef.current?.focus()}
+                onClick={handleBrowse}
                 onFocus={() => {
                   setActiveField("browse");
                   setFocusRegion("form");
