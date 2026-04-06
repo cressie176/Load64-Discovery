@@ -28,7 +28,7 @@ function buildBottomBarMessage(
 ): string {
   switch (action) {
     case "swap-joystick":
-      return `Port 1: ${port1Name}  Port 2: ${port2Name}`;
+      return `Port 1: ${port1Name}  ◆  Port 2: ${port2Name}`;
     case "swap-disks":
       return diskLabel !== null ? `Current: ${diskLabel}` : "";
     default:
@@ -108,7 +108,7 @@ describe("NowPlayingScreen", () => {
         "Controller B",
         null,
       );
-      eq(msg, "Port 1: Controller A  Port 2: Controller B");
+      eq(msg, "Port 1: Controller A  ◆  Port 2: Controller B");
     });
 
     it("shows current disk for swap-disks", () => {
