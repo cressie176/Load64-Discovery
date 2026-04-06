@@ -7,7 +7,9 @@ export type NowPlayingAction =
   | "take-snapshot";
 
 export interface JoystickPorts {
+  port1ControllerId: string;
   port1DeviceName: string;
+  port2ControllerId: string;
   port2DeviceName: string;
 }
 

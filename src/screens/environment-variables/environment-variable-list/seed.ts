@@ -9,6 +9,18 @@ export const SEED_ENV_VARS: EnvVarsState = {
       parentIds: [],
     },
     {
+      id: "family-xbox",
+      name: "Microsoft Xbox",
+      type: "family",
+      parentIds: [],
+    },
+    {
+      id: "family-dualshock",
+      name: "Sony DualShock",
+      type: "family",
+      parentIds: [],
+    },
+    {
       id: "ctrl-8bitdo-pro2",
       name: "8BitDo Pro 2",
       type: "controller",
@@ -30,13 +42,13 @@ export const SEED_ENV_VARS: EnvVarsState = {
       id: "ctrl-dualshock4",
       name: "DualShock 4",
       type: "controller",
-      parentIds: [],
+      parentIds: ["family-dualshock"],
     },
     {
       id: "ctrl-xbox-wireless",
       name: "Xbox Wireless Controller",
       type: "controller",
-      parentIds: [],
+      parentIds: ["family-xbox"],
     },
     {
       id: "profile-default",

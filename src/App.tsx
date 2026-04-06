@@ -108,6 +108,7 @@ function AppScreens() {
       <ControllerSelectionScreen
         profileId={currentParams.profileId ?? "profile-default"}
         ownerName={currentParams.ownerName}
+        ownerType={currentParams.ownerType === "game" ? "game" : "profile"}
       />
     );
   }
@@ -242,21 +243,21 @@ function AppScreens() {
   if (currentScreen === "now-playing-swap-disks") {
     return (
       <NowPlayingSwapDisksScreen
-        gameId={currentParams.gameId ?? "game-turrican"}
+        gameId={currentParams.gameId ?? "game-bubble"}
       />
     );
   }
   if (currentScreen === "now-playing-take-screenshot") {
     return (
       <NowPlayingTakeScreenshotScreen
-        gameId={currentParams.gameId ?? "game-turrican"}
+        gameId={currentParams.gameId ?? "game-bubble"}
       />
     );
   }
   if (currentScreen === "now-playing-take-snapshot") {
     return (
       <NowPlayingTakeSnapshotScreen
-        gameId={currentParams.gameId ?? "game-turrican"}
+        gameId={currentParams.gameId ?? "game-bubble"}
       />
     );
   }

@@ -193,26 +193,26 @@ describe("ControlListScreen", () => {
 
   describe("buildRows for a controller owner with family", () => {
     it("returns one row per canonical control", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_CONTROLS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_CONTROLS);
       eq(rows.length, CANONICAL_CONTROL_ORDER.length);
     });
 
     it("marks controller-owned rows as not inherited with sourceLabel —", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_CONTROLS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_CONTROLS);
       const owned = rows.filter((r) => !r.isInherited);
       ok(owned.length > 0);
       ok(owned.every((r) => r.sourceLabel === "—"));
     });
 
     it("marks family-inherited rows as inherited with family name as sourceLabel", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_CONTROLS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_CONTROLS);
       const inherited = rows.filter((r) => r.isInherited);
       ok(inherited.length > 0);
       ok(inherited.every((r) => r.sourceLabel === "Logitech"));
     });
 
     it("controller-owned rows take precedence over inherited rows", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_CONTROLS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_CONTROLS);
       const buttonSouthRow = rows.find(
         (r) => r.canonicalName === "button_south",
       );

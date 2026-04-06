@@ -37,11 +37,18 @@ function buildBottomBarMessage(
 }
 
 function swapJoystickPorts(state: NowPlayingState): NowPlayingState {
-  const { port1DeviceName, port2DeviceName } = state.joystickPorts;
+  const {
+    port1ControllerId,
+    port1DeviceName,
+    port2ControllerId,
+    port2DeviceName,
+  } = state.joystickPorts;
   return {
     ...state,
     joystickPorts: {
+      port1ControllerId: port2ControllerId,
       port1DeviceName: port2DeviceName,
+      port2ControllerId: port1ControllerId,
       port2DeviceName: port1DeviceName,
     },
   };
@@ -59,8 +66,10 @@ describe("NowPlayingScreen", () => {
       ok(SEED_NOW_PLAYING.gameTitle.length > 0);
     });
 
-    it("has joystickPorts with two device names", () => {
+    it("has joystickPorts with two controller IDs and device names", () => {
+      eq(typeof SEED_NOW_PLAYING.joystickPorts.port1ControllerId, "string");
       eq(typeof SEED_NOW_PLAYING.joystickPorts.port1DeviceName, "string");
+      eq(typeof SEED_NOW_PLAYING.joystickPorts.port2ControllerId, "string");
       eq(typeof SEED_NOW_PLAYING.joystickPorts.port2DeviceName, "string");
     });
   });
@@ -182,12 +191,20 @@ describe("NowPlayingScreen", () => {
   });
 
   describe("swapJoystickPorts", () => {
-    it("swaps port1 and port2 device names", () => {
+    it("swaps port1 and port2 controller IDs and device names", () => {
       const state = SEED_NOW_PLAYING;
       const swapped = swapJoystickPorts(state);
       eq(
+        swapped.joystickPorts.port1ControllerId,
+        state.joystickPorts.port2ControllerId,
+      );
+      eq(
         swapped.joystickPorts.port1DeviceName,
         state.joystickPorts.port2DeviceName,
+      );
+      eq(
+        swapped.joystickPorts.port2ControllerId,
+        state.joystickPorts.port1ControllerId,
       );
       eq(
         swapped.joystickPorts.port2DeviceName,

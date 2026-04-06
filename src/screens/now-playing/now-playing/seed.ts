@@ -4,7 +4,9 @@ export const SEED_NOW_PLAYING: NowPlayingState = {
   gameId: "game-turrican",
   gameTitle: "Turrican II",
   joystickPorts: {
+    port1ControllerId: "ctrl-logitech-dual-action",
     port1DeviceName: "Logitech Dual Action",
+    port2ControllerId: "ctrl-xbox-wireless",
     port2DeviceName: "Xbox Wireless Controller",
   },
   disks: [

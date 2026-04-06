@@ -79,6 +79,18 @@ export const SEED_CAROUSEL: CarouselState = {
       hasSave: false,
     },
     {
+      id: "game-turrican",
+      title: "Turrican II: The Final Fight",
+      sortTitle: "Turrican II: The Final Fight",
+      publisher: "Rainbow Arts",
+      year: 1991,
+      coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Turrican+II",
+      launchable: true,
+      hasRom: true,
+      hasQuickstart: true,
+      hasSave: false,
+    },
+    {
       id: "game-zzap",
       title: "Zzap!64 Megatape 1",
       sortTitle: "Zzap!64 Megatape 1",

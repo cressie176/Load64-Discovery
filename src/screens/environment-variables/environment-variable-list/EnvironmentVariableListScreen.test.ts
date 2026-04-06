@@ -121,7 +121,7 @@ describe("EnvironmentVariableListScreen", () => {
 
   describe("buildRows for a controller owner with a family parent", () => {
     it("includes owned rows and inherited rows from the family", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_ENV_VARS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_ENV_VARS);
       const ownedRows = rows.filter((r) => !r.isInherited);
       const inheritedRows = rows.filter((r) => r.isInherited);
       ok(ownedRows.length > 0);
@@ -129,7 +129,7 @@ describe("EnvironmentVariableListScreen", () => {
     });
 
     it("labels inherited rows with the family name", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_ENV_VARS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_ENV_VARS);
       const inherited = rows.filter((r) => r.isInherited);
       ok(inherited.every((r) => r.sourceLabel === "Family: Logitech"));
     });
@@ -163,7 +163,7 @@ describe("EnvironmentVariableListScreen", () => {
     });
 
     it("rows are sorted alphabetically by name", () => {
-      const rows = buildRows("controller-logitech-dual-action", SEED_ENV_VARS);
+      const rows = buildRows("ctrl-logitech-dual-action", SEED_ENV_VARS);
       const names = rows.map((r) => r.name);
       const sorted = [...names].sort((a, b) => a.localeCompare(b));
       deep(names, sorted);

@@ -173,16 +173,25 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       case "resume":
         break;
       case "view-controls":
-        push("control-list", { ownerId: nowPlaying.gameId });
+        push("control-list", {
+          ownerId: nowPlaying.joystickPorts.port1ControllerId,
+        });
         break;
       case "swap-joystick": {
-        const { port1DeviceName, port2DeviceName } = nowPlaying.joystickPorts;
+        const {
+          port1ControllerId,
+          port1DeviceName,
+          port2ControllerId,
+          port2DeviceName,
+        } = nowPlaying.joystickPorts;
         setStore((prev) => ({
           ...prev,
           nowPlaying: {
             ...prev.nowPlaying,
             joystickPorts: {
+              port1ControllerId: port2ControllerId,
               port1DeviceName: port2DeviceName,
+              port2ControllerId: port1ControllerId,
               port2DeviceName: port1DeviceName,
             },
           },

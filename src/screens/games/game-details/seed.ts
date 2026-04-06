@@ -137,6 +137,29 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasAnySnapshot: false,
     },
     {
+      id: "game-turrican",
+      title: "Turrican II: The Final Fight",
+      publisher: "Rainbow Arts",
+      year: 1991,
+      coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Turrican+II",
+      notes: "Action platformer by Factor 5. One of the finest C64 titles.",
+      screenshots: [
+        {
+          slot: "loading",
+          url: "https://placehold.co/320x200/0d0d0d/4040ff?text=Loading+Screen",
+        },
+        {
+          slot: "gameplay",
+          url: "https://placehold.co/320x200/0d0d0d/4040ff?text=Gameplay",
+        },
+      ],
+      sources: [{ catalogueName: "GameBase64", entryId: "3847" }],
+      hasRom: true,
+      hasQuickstart: true,
+      hasContinue: true,
+      hasAnySnapshot: false,
+    },
+    {
       id: "game-zzap",
       title: "Zzap!64 Megatape 1",
       publisher: "Newsfield Publications",
