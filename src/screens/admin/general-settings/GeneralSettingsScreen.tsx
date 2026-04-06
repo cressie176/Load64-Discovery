@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { GeneralSettings } from "./types";
@@ -7,6 +8,7 @@ import "./index.css";
 type FocusRegion = "form" | "topbar";
 type FormField =
   | "gamesDirectory"
+  | "browseGamesDirectory"
   | "catalogueUrl"
   | "showSplashscreen"
   | "save"
@@ -15,6 +17,7 @@ type Overlay = "createDirectory";
 
 const FORM_FIELDS_WITH_CANCEL: FormField[] = [
   "gamesDirectory",
+  "browseGamesDirectory",
   "catalogueUrl",
   "showSplashscreen",
   "save",
@@ -22,6 +25,7 @@ const FORM_FIELDS_WITH_CANCEL: FormField[] = [
 ];
 const FORM_FIELDS_WITHOUT_CANCEL: FormField[] = [
   "gamesDirectory",
+  "browseGamesDirectory",
   "catalogueUrl",
   "showSplashscreen",
   "save",
@@ -102,6 +106,7 @@ export function GeneralSettingsScreen() {
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
   const gamesDirectoryRef = useRef<HTMLInputElement>(null);
+  const browseGamesDirectoryRef = useRef<HTMLButtonElement>(null);
   const catalogueUrlRef = useRef<HTMLInputElement>(null);
   const showSplashscreenButtonRef = useRef<HTMLButtonElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
@@ -209,6 +214,8 @@ export function GeneralSettingsScreen() {
     setFocusRegion("form");
     if (field === "gamesDirectory") {
       gamesDirectoryRef.current?.focus();
+    } else if (field === "browseGamesDirectory") {
+      browseGamesDirectoryRef.current?.focus();
     } else if (field === "catalogueUrl") {
       catalogueUrlRef.current?.focus();
     } else if (field === "showSplashscreen") {
@@ -230,6 +237,8 @@ export function GeneralSettingsScreen() {
   function activateField() {
     if (activeField === "gamesDirectory") {
       gamesDirectoryRef.current?.focus();
+    } else if (activeField === "browseGamesDirectory") {
+      handleBrowseGamesDirectory("/Users/steve/Games/C64");
     } else if (activeField === "catalogueUrl") {
       catalogueUrlRef.current?.focus();
     } else if (activeField === "showSplashscreen") {
@@ -242,6 +251,11 @@ export function GeneralSettingsScreen() {
     } else if (activeField === "cancel") {
       pop();
     }
+  }
+
+  function handleBrowseGamesDirectory(selected: string) {
+    setDraft((prev) => ({ ...prev, gamesDirectory: selected }));
+    gamesDirectoryRef.current?.focus();
   }
 
   function blurActiveInput() {
@@ -317,24 +331,39 @@ export function GeneralSettingsScreen() {
             <label className="form__label" htmlFor="games-directory">
               Games Directory *
             </label>
-            <input
-              className={`form__input${activeField === "gamesDirectory" && focusRegion === "form" ? " form__input--active" : ""}`}
-              id="games-directory"
-              ref={gamesDirectoryRef}
-              type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              value={draft.gamesDirectory}
-              onChange={(e) =>
-                setDraft((prev) => ({
-                  ...prev,
-                  gamesDirectory: e.target.value,
-                }))
-              }
-              onFocus={() => setActiveField("gamesDirectory")}
-              onBlur={() => setActiveField("gamesDirectory")}
-            />
+            <div className="general-settings__input-row">
+              <input
+                className={`form__input${activeField === "gamesDirectory" && focusRegion === "form" ? " form__input--active" : ""}`}
+                id="games-directory"
+                ref={gamesDirectoryRef}
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                value={draft.gamesDirectory}
+                onChange={(e) =>
+                  setDraft((prev) => ({
+                    ...prev,
+                    gamesDirectory: e.target.value,
+                  }))
+                }
+                onFocus={() => setActiveField("gamesDirectory")}
+                onBlur={() => setActiveField("gamesDirectory")}
+              />
+              <BrowseButton
+                active={
+                  activeField === "browseGamesDirectory" &&
+                  focusRegion === "form"
+                }
+                buttonRef={browseGamesDirectoryRef}
+                examplePath="/Users/steve/Games/C64"
+                onFocus={() => {
+                  setActiveField("browseGamesDirectory");
+                  setFocusRegion("form");
+                }}
+                onSelect={handleBrowseGamesDirectory}
+              />
+            </div>
           </div>
           <div className="form__field">
             <label className="form__label" htmlFor="catalogue-url">

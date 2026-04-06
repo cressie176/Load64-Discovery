@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { BinaryStatus, BinaryStatusReason } from "../binary-list/types";
 import "./index.css";
 
 type FocusRegion = "form" | "topbar";
-type FormField = "path" | "save" | "cancel";
+type FormField = "path" | "browsePath" | "save" | "cancel";
 
-const FORM_FIELDS: FormField[] = ["path", "save", "cancel"];
+const FORM_FIELDS: FormField[] = ["path", "browsePath", "save", "cancel"];
 
 function validatePath(path: string): BinaryStatusReason | null {
   if (!path) return null;
@@ -46,6 +47,7 @@ export function BinaryEditScreen() {
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLButtonElement>(null);
   const pathInputRef = useRef<HTMLInputElement>(null);
+  const browsePathRef = useRef<HTMLButtonElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -130,6 +132,8 @@ export function BinaryEditScreen() {
     setFocusRegion("form");
     if (field === "path") {
       pathInputRef.current?.focus();
+    } else if (field === "browsePath") {
+      browsePathRef.current?.focus();
     } else if (field === "save") {
       saveButtonRef.current?.focus();
     } else if (field === "cancel") {
@@ -147,11 +151,18 @@ export function BinaryEditScreen() {
   function activateField() {
     if (activeField === "path") {
       pathInputRef.current?.focus();
+    } else if (activeField === "browsePath") {
+      handleBrowsePath("/Applications/VICE/bin/x64sc");
     } else if (activeField === "save") {
       handleSave();
     } else if (activeField === "cancel") {
       pop();
     }
+  }
+
+  function handleBrowsePath(selected: string) {
+    setDraftPath(selected);
+    pathInputRef.current?.focus();
   }
 
   function blurPathInput() {
@@ -206,22 +217,34 @@ export function BinaryEditScreen() {
             <label className="form__label" htmlFor="binary-path">
               Path
             </label>
-            <input
-              className={`form__input${activeField === "path" && focusRegion === "form" ? " form__input--active" : ""}`}
-              id="binary-path"
-              ref={pathInputRef}
-              type="text"
-              autoComplete="off"
-              autoCorrect="off"
-              autoCapitalize="off"
-              value={draftPath}
-              onChange={(e) => setDraftPath(e.target.value)}
-              onFocus={() => {
-                setActiveField("path");
-                setFocusRegion("form");
-              }}
-              onBlur={() => setActiveField("path")}
-            />
+            <div className="binary-edit__input-row">
+              <input
+                className={`form__input${activeField === "path" && focusRegion === "form" ? " form__input--active" : ""}`}
+                id="binary-path"
+                ref={pathInputRef}
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                value={draftPath}
+                onChange={(e) => setDraftPath(e.target.value)}
+                onFocus={() => {
+                  setActiveField("path");
+                  setFocusRegion("form");
+                }}
+                onBlur={() => setActiveField("path")}
+              />
+              <BrowseButton
+                active={activeField === "browsePath" && focusRegion === "form"}
+                buttonRef={browsePathRef}
+                examplePath="/Applications/VICE/bin/x64sc"
+                onFocus={() => {
+                  setActiveField("browsePath");
+                  setFocusRegion("form");
+                }}
+                onSelect={handleBrowsePath}
+              />
+            </div>
           </div>
           <div className="form__actions">
             <button

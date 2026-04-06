@@ -254,6 +254,26 @@ button {
 }
 
 /* ============================================================
+   Browse Button
+   ============================================================ */
+
+.browse-button {
+  color: var(--colour-text-muted);
+  cursor: none;
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+}
+
+.browse-button:hover {
+  color: var(--colour-text);
+}
+
+.browse-button--active {
+  color: var(--colour-accent);
+}
+
+/* ============================================================
    Form Inputs
    ============================================================ */
 

@@ -1,3 +1,13 @@
 /* ============================================================
    Binary Edit Screen
    ============================================================ */
+
+.binary-edit__input-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.binary-edit__input-row .form__input {
+  flex: 1;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import "./index.css";
 
@@ -14,20 +15,6 @@ function validatePath(path: string): string | null {
 
 function simulateDiscovery(): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, 1500));
-}
-
-async function browseForDirectory(): Promise<string | null> {
-  if (!("showDirectoryPicker" in window)) return null;
-  try {
-    const handle = await (
-      window as unknown as {
-        showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
-      }
-    ).showDirectoryPicker();
-    return handle.name;
-  } catch {
-    return null;
-  }
 }
 
 export function ImportGamesScreen() {
@@ -136,19 +123,15 @@ export function ImportGamesScreen() {
     if (activeField === "path") {
       pathRef.current?.focus();
     } else if (activeField === "browse") {
-      handleBrowse();
+      handleBrowse("/Users/steve/Games/C64");
     } else if (activeField === "discover") {
       handleDiscover();
     }
   }
 
-  function handleBrowse() {
-    browseForDirectory().then((selected) => {
-      if (selected !== null) {
-        setPath(selected);
-        pathRef.current?.focus();
-      }
-    });
+  function handleBrowse(selected: string) {
+    setPath(selected);
+    pathRef.current?.focus();
   }
 
   function blurActiveInput() {
@@ -210,19 +193,16 @@ export function ImportGamesScreen() {
                 autoCapitalize="off"
                 value={path}
               />
-              <button
-                className={`import-games__browse${activeField === "browse" && focusRegion === "form" ? " import-games__browse--active" : ""}`}
-                disabled={discovering}
-                onClick={handleBrowse}
+              <BrowseButton
+                active={activeField === "browse" && focusRegion === "form"}
+                buttonRef={browseButtonRef}
+                examplePath="/Users/steve/Games/C64"
                 onFocus={() => {
                   setActiveField("browse");
                   setFocusRegion("form");
                 }}
-                ref={browseButtonRef}
-                type="button"
-              >
-                [Browse]
-              </button>
+                onSelect={handleBrowse}
+              />
             </div>
           </div>
           <div className="form__actions">

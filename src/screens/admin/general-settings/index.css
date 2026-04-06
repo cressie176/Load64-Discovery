@@ -6,6 +6,16 @@
   max-width: 600px;
 }
 
+.general-settings__input-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.general-settings__input-row .form__input {
+  flex: 1;
+}
+
 .general-settings .form__toggle {
   color: var(--colour-text);
   cursor: pointer;

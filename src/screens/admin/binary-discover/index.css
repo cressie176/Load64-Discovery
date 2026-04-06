@@ -11,19 +11,3 @@
 .binary-discover__input-row .form__input {
   flex: 1;
 }
-
-.binary-discover__browse {
-  color: var(--colour-text-muted);
-  cursor: none;
-  flex-shrink: 0;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-}
-
-.binary-discover__browse:hover {
-  color: var(--colour-text);
-}
-
-.binary-discover__browse--active {
-  color: var(--colour-accent);
-}

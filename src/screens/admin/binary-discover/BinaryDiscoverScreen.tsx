@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import "./index.css";
@@ -40,20 +41,6 @@ function discoverBinaries(
     }
   }
   return discovered;
-}
-
-async function browseForDirectory(): Promise<string | null> {
-  if (!("showDirectoryPicker" in window)) return null;
-  try {
-    const handle = await (
-      window as unknown as {
-        showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
-      }
-    ).showDirectoryPicker();
-    return handle.name;
-  } catch {
-    return null;
-  }
 }
 
 export function BinaryDiscoverScreen() {
@@ -164,7 +151,7 @@ export function BinaryDiscoverScreen() {
     if (activeField === "vicePath") {
       vicePathRef.current?.focus();
     } else if (activeField === "browse") {
-      handleBrowse();
+      handleBrowse("/Applications/VICE");
     } else if (activeField === "discover") {
       handleDiscover();
     } else if (activeField === "cancel") {
@@ -177,13 +164,9 @@ export function BinaryDiscoverScreen() {
     setActiveField("vicePath");
   }
 
-  function handleBrowse() {
-    browseForDirectory().then((selected) => {
-      if (selected !== null) {
-        setVicePath(selected);
-        vicePathRef.current?.focus();
-      }
-    });
+  function handleBrowse(selected: string) {
+    setVicePath(selected);
+    vicePathRef.current?.focus();
   }
 
   function handleDiscover() {
@@ -252,18 +235,16 @@ export function BinaryDiscoverScreen() {
                   setFocusRegion("form");
                 }}
               />
-              <button
-                ref={browseButtonRef}
-                className={`binary-discover__browse${activeField === "browse" && focusRegion === "form" ? " binary-discover__browse--active" : ""}`}
-                type="button"
-                onClick={handleBrowse}
+              <BrowseButton
+                active={activeField === "browse" && focusRegion === "form"}
+                buttonRef={browseButtonRef}
+                examplePath="/Applications/VICE"
                 onFocus={() => {
                   setActiveField("browse");
                   setFocusRegion("form");
                 }}
-              >
-                [Browse]
-              </button>
+                onSelect={handleBrowse}
+              />
             </div>
           </div>
           <div className="form__actions">
