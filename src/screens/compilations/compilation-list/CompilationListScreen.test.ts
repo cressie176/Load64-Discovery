@@ -1,7 +1,9 @@
 import { deepStrictEqual as deep, equal as eq, ok } from "node:assert/strict";
 import { describe, it } from "node:test";
+import { SEED_CAROUSEL } from "../../carousel/game-carousel/seed.ts";
+import type { Game } from "../../carousel/game-carousel/types.ts";
 import { SEED_COMPILATIONS } from "./seed.ts";
-import type { Compilation } from "./types.ts";
+import type { Compilation, CompilationGameRef } from "./types.ts";
 
 function sortCompilationsForAdmin(compilations: Compilation[]): Compilation[] {
   const untested = compilations.filter((c) => c.kind === "untested");
@@ -25,6 +27,28 @@ function deleteCompilation(
   compilationId: string,
 ): Compilation[] {
   return compilations.filter((c) => c.id !== compilationId);
+}
+
+interface CompilationStats {
+  working: number;
+  broken: number;
+  total: number;
+}
+
+function countCompilationStats(
+  compilation: Compilation,
+  allGames: Game[],
+  compilationGameRefs: CompilationGameRef[],
+): CompilationStats {
+  const games =
+    compilation.kind === "all-games"
+      ? allGames
+      : compilationGameRefs
+          .filter((ref) => ref.compilationId === compilation.id)
+          .map((ref) => allGames.find((g) => g.id === ref.gameId))
+          .filter((g) => g !== undefined);
+  const working = games.filter((g) => g.hasRom).length;
+  return { working, broken: games.length - working, total: games.length };
 }
 
 describe("CompilationListScreen", () => {
@@ -183,6 +207,127 @@ describe("CompilationListScreen", () => {
         "compilation-unknown",
       );
       eq(result.length, SEED_COMPILATIONS.compilations.length);
+    });
+  });
+
+  describe("countCompilationStats", () => {
+    const allGames = SEED_CAROUSEL.games;
+    const refs = SEED_COMPILATIONS.compilationGameRefs;
+
+    it("counts all games for an all-games compilation", () => {
+      const compilation: Compilation = {
+        id: "compilation-all-games",
+        name: "All Games",
+        kind: "all-games",
+      };
+      const stats = countCompilationStats(compilation, allGames, refs);
+      eq(stats.total, allGames.length);
+      eq(stats.working + stats.broken, allGames.length);
+    });
+
+    it("working + broken equals total for all-games", () => {
+      const compilation: Compilation = {
+        id: "compilation-all-games",
+        name: "All Games",
+        kind: "all-games",
+      };
+      const { working, broken, total } = countCompilationStats(
+        compilation,
+        allGames,
+        refs,
+      );
+      eq(working + broken, total);
+    });
+
+    it("counts only games belonging to a user-defined compilation", () => {
+      const compilation: Compilation = {
+        id: "compilation-favourites",
+        name: "Favourites",
+        kind: "user-defined",
+      };
+      const stats = countCompilationStats(compilation, allGames, refs);
+      const expectedTotal = refs.filter(
+        (r) => r.compilationId === "compilation-favourites",
+      ).length;
+      eq(stats.total, expectedTotal);
+    });
+
+    it("working + broken equals total for a user-defined compilation", () => {
+      const compilation: Compilation = {
+        id: "compilation-favourites",
+        name: "Favourites",
+        kind: "user-defined",
+      };
+      const { working, broken, total } = countCompilationStats(
+        compilation,
+        allGames,
+        refs,
+      );
+      eq(working + broken, total);
+    });
+
+    it("counts working as games with hasRom true", () => {
+      const games: Game[] = [
+        {
+          id: "g1",
+          title: "A",
+          sortTitle: "A",
+          publisher: "P",
+          year: 1985,
+          launchable: true,
+          hasRom: true,
+          hasQuickstart: false,
+          hasSave: false,
+        },
+        {
+          id: "g2",
+          title: "B",
+          sortTitle: "B",
+          publisher: "P",
+          year: 1986,
+          launchable: false,
+          hasRom: false,
+          hasQuickstart: false,
+          hasSave: false,
+        },
+        {
+          id: "g3",
+          title: "C",
+          sortTitle: "C",
+          publisher: "P",
+          year: 1987,
+          launchable: true,
+          hasRom: true,
+          hasQuickstart: false,
+          hasSave: false,
+        },
+      ];
+      const testRefs: CompilationGameRef[] = [
+        { compilationId: "c1", gameId: "g1" },
+        { compilationId: "c1", gameId: "g2" },
+        { compilationId: "c1", gameId: "g3" },
+      ];
+      const compilation: Compilation = {
+        id: "c1",
+        name: "Test",
+        kind: "user-defined",
+      };
+      const stats = countCompilationStats(compilation, games, testRefs);
+      eq(stats.working, 2);
+      eq(stats.broken, 1);
+      eq(stats.total, 3);
+    });
+
+    it("returns zero counts for an empty compilation", () => {
+      const compilation: Compilation = {
+        id: "compilation-sports",
+        name: "Sports",
+        kind: "user-defined",
+      };
+      const stats = countCompilationStats(compilation, allGames, refs);
+      eq(stats.working, 0);
+      eq(stats.broken, 0);
+      eq(stats.total, 0);
     });
   });
 });

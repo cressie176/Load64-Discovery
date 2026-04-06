@@ -5,7 +5,7 @@
 .compilation-list__columns {
   display: grid;
   gap: 16px;
-  grid-template-columns: 1fr 140px;
+  grid-template-columns: 1fr 80px 80px 80px;
   min-width: 0;
   width: 100%;
 }
@@ -23,4 +23,9 @@
 
 .list__row--selected .compilation-list__row-count {
   color: var(--colour-text);
+}
+
+.compilation-list__column-header {
+  color: var(--colour-text-muted);
+  text-align: right;
 }

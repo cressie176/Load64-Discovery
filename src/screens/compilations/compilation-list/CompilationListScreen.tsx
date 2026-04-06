@@ -275,20 +275,29 @@ export function CompilationListScreen({
     setSelectedIndex((prev) => Math.max(0, prev - 1));
   }
 
-  function countGames(compilation: Compilation): number {
-    if (compilation.kind === "all-games") {
-      return store.carousel.games.length;
-    }
-    return store.compilations.compilationGameRefs.filter(
-      (ref) => ref.compilationId === compilation.id,
-    ).length;
+  interface CompilationStats {
+    working: number;
+    broken: number;
+    total: number;
+  }
+
+  function countCompilationStats(compilation: Compilation): CompilationStats {
+    const games =
+      compilation.kind === "all-games"
+        ? store.carousel.games
+        : store.compilations.compilationGameRefs
+            .filter((ref) => ref.compilationId === compilation.id)
+            .map((ref) => store.carousel.games.find((g) => g.id === ref.gameId))
+            .filter((g) => g !== undefined);
+    const working = games.filter((g) => g.hasRom).length;
+    return { working, broken: games.length - working, total: games.length };
   }
 
   function deleteWarningMessage(compilation: Compilation | undefined): string {
     if (!compilation) return "";
-    const count = countGames(compilation);
-    if (count === 0) return "";
-    return `${compilation.name} contains ${count} game(s). Deleting it will not remove the games from your library.`;
+    const { total } = countCompilationStats(compilation);
+    if (total === 0) return "";
+    return `${compilation.name} contains ${total} game(s). Deleting it will not remove the games from your library.`;
   }
 
   const canShowContextMenu =
@@ -337,25 +346,36 @@ export function CompilationListScreen({
         <div className="list__header">
           <div className="compilation-list__columns">
             <span>Name</span>
-            <span style={{ textAlign: "right" }}>Number of Games</span>
+            <span className="compilation-list__column-header">Working</span>
+            <span className="compilation-list__column-header">Broken</span>
+            <span className="compilation-list__column-header">Total</span>
           </div>
         </div>
         <ul className="list">
-          {compilations.map((compilation, index) => (
-            <li
-              key={compilation.id}
-              className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
-            >
-              <div className="compilation-list__columns">
-                <span className="compilation-list__row-name">
-                  {compilation.name}
-                </span>
-                <span className="compilation-list__row-count">
-                  {countGames(compilation)}
-                </span>
-              </div>
-            </li>
-          ))}
+          {compilations.map((compilation, index) => {
+            const stats = countCompilationStats(compilation);
+            return (
+              <li
+                key={compilation.id}
+                className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+              >
+                <div className="compilation-list__columns">
+                  <span className="compilation-list__row-name">
+                    {compilation.name}
+                  </span>
+                  <span className="compilation-list__row-count">
+                    {stats.working}
+                  </span>
+                  <span className="compilation-list__row-count">
+                    {stats.broken}
+                  </span>
+                  <span className="compilation-list__row-count">
+                    {stats.total}
+                  </span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       </div>
       <div className="screen__bottombar">{statusMessage}</div>
