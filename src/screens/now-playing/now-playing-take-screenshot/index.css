@@ -3,6 +3,7 @@
    ============================================================ */
 
 .take-screenshot {
+  align-items: flex-start;
   display: flex;
   flex-direction: row;
   gap: 32px;
@@ -20,6 +21,7 @@
 .take-screenshot__form-panel {
   flex-shrink: 0;
   min-width: 280px;
+  width: fit-content;
 }
 
 .take-screenshot__preview-panel {
@@ -43,46 +45,50 @@
 }
 
 /* ============================================================
-   Form (shared block — overrides scoped to this screen)
+   Form (scoped to this screen)
    ============================================================ */
 
-.form {
+.take-screenshot .form {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: fit-content;
 }
 
-.form__field {
+.take-screenshot .form__field {
+  align-items: flex-start;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.form__label {
+.take-screenshot .form__label {
   color: var(--colour-text-muted);
   font-size: 11px;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
-.form__input {
+.take-screenshot .form__input {
   width: 240px;
 }
 
-.form__input--active {
+.take-screenshot .form__input--active {
   border-color: var(--colour-accent);
 }
 
-.form__actions {
+.take-screenshot .form__actions {
+  align-self: flex-start;
   display: flex;
   gap: 16px;
 }
 
-.form__action {
+.take-screenshot .form__action {
   color: var(--colour-text-muted);
   cursor: none;
 }
 
-.form__action--active {
+.take-screenshot .form__action--active {
   color: var(--colour-text-bright);
 }
