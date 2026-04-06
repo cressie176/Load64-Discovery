@@ -320,6 +320,9 @@ export function NowPlayingTakeScreenshotScreen({
                     id="screenshot-name"
                     ref={nameInputRef}
                     type="text"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onFocus={() => {

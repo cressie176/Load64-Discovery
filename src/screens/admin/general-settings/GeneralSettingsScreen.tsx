@@ -322,6 +322,9 @@ export function GeneralSettingsScreen() {
               id="games-directory"
               ref={gamesDirectoryRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draft.gamesDirectory}
               onChange={(e) =>
                 setDraft((prev) => ({
@@ -342,6 +345,9 @@ export function GeneralSettingsScreen() {
               id="catalogue-url"
               ref={catalogueUrlRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draft.catalogueUrl}
               onChange={(e) =>
                 setDraft((prev) => ({ ...prev, catalogueUrl: e.target.value }))

@@ -262,6 +262,9 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
               ref={deleteInputRef}
               className="game-management-delete__input"
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
               onKeyDown={(e) => {
@@ -273,7 +276,6 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
                   closeDeleteOverlay();
                 }
               }}
-              autoComplete="off"
             />
             <div className="game-management-delete__actions">
               <button

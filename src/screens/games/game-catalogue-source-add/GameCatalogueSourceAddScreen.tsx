@@ -271,6 +271,9 @@ export function GameCatalogueSourceAddScreen({
               id="catalogue-id"
               ref={idInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftId}
               onChange={(e) => setDraftId(e.target.value)}
               onFocus={() => {

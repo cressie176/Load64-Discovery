@@ -233,6 +233,9 @@ export function CompilationEditScreen({
               id="compilation-name"
               ref={nameInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {

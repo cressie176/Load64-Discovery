@@ -363,6 +363,9 @@ export function ControlEditScreen() {
               id="control-name"
               ref={controlNameInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftControlName}
               onChange={(e) => setDraftControlName(e.target.value)}
               onFocus={() => {
@@ -380,6 +383,9 @@ export function ControlEditScreen() {
                 className="form__input"
                 id="canonical-name"
                 type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
                 value={CANONICAL_CONTROL_LABELS[draftCanonicalName]}
                 readOnly
                 tabIndex={-1}
@@ -416,6 +422,9 @@ export function ControlEditScreen() {
                 id="event"
                 ref={eventInputRef}
                 type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
                 value={isCapturing ? "Waiting..." : draftEvent}
                 readOnly={isCapturing}
                 onChange={(e) => setDraftEvent(e.target.value)}

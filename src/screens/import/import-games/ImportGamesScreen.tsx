@@ -182,6 +182,9 @@ export function ImportGamesScreen() {
                 }}
                 ref={pathRef}
                 type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
                 value={path}
               />
               <button

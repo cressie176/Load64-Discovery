@@ -257,6 +257,9 @@ export function EnvironmentVariableEditScreen() {
               id="env-var-name"
               ref={nameInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {
@@ -274,6 +277,9 @@ export function EnvironmentVariableEditScreen() {
               id="env-var-value"
               ref={valueInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftValue}
               onChange={(e) => setDraftValue(e.target.value)}
               onFocus={() => {

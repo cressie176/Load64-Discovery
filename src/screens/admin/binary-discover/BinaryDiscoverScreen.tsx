@@ -219,6 +219,9 @@ export function BinaryDiscoverScreen() {
                 id="vice-path"
                 ref={vicePathRef}
                 type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
                 value={vicePath}
                 onChange={(e) => setVicePath(e.target.value)}
                 onFocus={() => {

@@ -241,6 +241,9 @@ export function ViceArgumentEditScreen() {
               id="vice-argument-name"
               ref={nameInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {
@@ -258,6 +261,9 @@ export function ViceArgumentEditScreen() {
               id="vice-argument-value"
               ref={valueInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftValue}
               onChange={(e) => setDraftValue(e.target.value)}
               onFocus={() => {

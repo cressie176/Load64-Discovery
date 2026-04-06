@@ -211,6 +211,9 @@ export function BinaryEditScreen() {
               id="binary-path"
               ref={pathInputRef}
               type="text"
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
               value={draftPath}
               onChange={(e) => setDraftPath(e.target.value)}
               onFocus={() => {
