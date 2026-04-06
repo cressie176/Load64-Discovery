@@ -18,19 +18,19 @@ export function ControllerFamilyAssignmentScreen({
   const { pop } = useRouter();
   const { store, setStore } = useStore();
 
-  const controller = store.controllerFamilies.controllers.find(
-    (c) => c.id === controllerId,
-  );
-  const deviceName =
-    store.controllers.find((c) => c.id === controllerId)?.name ?? controllerId;
+  const controllerRecord = store.controllers.find((c) => c.id === controllerId);
+  const deviceName = controllerRecord?.name ?? controllerId;
 
   const families = [...store.controllerFamilies.families].sort((a, b) =>
     a.name.localeCompare(b.name),
   );
 
-  const [draftFamilyId, setDraftFamilyId] = useState<string>(
-    controller?.familyId ?? "",
-  );
+  const currentFamilyId =
+    store.controllerFamilies.families.find(
+      (f) => f.name === controllerRecord?.familyName,
+    )?.id ?? "";
+
+  const [draftFamilyId, setDraftFamilyId] = useState<string>(currentFamilyId);
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [activeField, setActiveField] = useState<FormField>("family");
 
