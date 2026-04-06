@@ -16,7 +16,7 @@ export type AdminHubItem = ItemWithScreen | ItemWithAction;
 
 export type AdminHubRow =
   | { kind: "group-header"; label: string }
-  | { kind: "item"; item: AdminHubItem };
+  | { kind: "item"; item: AdminHubItem; ungrouped?: true };
 
 const SYSTEM_CONFIGURATION_ITEMS: readonly AdminHubItem[] = [
   { label: "General Settings", screen: "general-settings" as ScreenName },
@@ -64,7 +64,9 @@ export const ADMIN_HUB_ROWS: readonly AdminHubRow[] = [
   ),
   { kind: "group-header", label: "TOOLS" },
   ...TOOLS_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
-  ...UNGROUPED_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
+  ...UNGROUPED_ITEMS.map(
+    (item): AdminHubRow => ({ kind: "item", item, ungrouped: true }),
+  ),
 ];
 
 export const QUIT_OPTIONS = ["Yes", "No"] as const;

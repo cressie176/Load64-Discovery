@@ -26,7 +26,7 @@ export type GameManagementItem = ItemWithScreen | ItemWithAction;
 
 export type GameManagementRow =
   | { kind: "group-header"; label: string }
-  | { kind: "item"; item: GameManagementItem };
+  | { kind: "item"; item: GameManagementItem; ungrouped?: true };
 
 const GAME_ITEMS: readonly GameManagementItem[] = [
   { label: "Game Info", screen: "game-info-edit" as ScreenName },
@@ -93,7 +93,9 @@ export const GAME_MANAGEMENT_ROWS: readonly GameManagementRow[] = [
   ...CONFIGURATION_ITEMS.map(
     (item): GameManagementRow => ({ kind: "item", item }),
   ),
-  ...UNGROUPED_ITEMS.map((item): GameManagementRow => ({ kind: "item", item })),
+  ...UNGROUPED_ITEMS.map(
+    (item): GameManagementRow => ({ kind: "item", item, ungrouped: true }),
+  ),
 ];
 
 export function wrapIndex(

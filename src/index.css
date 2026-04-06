@@ -158,6 +158,10 @@ button {
   position: absolute;
 }
 
+.list__row--ungrouped {
+  margin-top: 16px;
+}
+
 .list__group-header {
   color: var(--colour-text-muted);
   font-size: 11px;

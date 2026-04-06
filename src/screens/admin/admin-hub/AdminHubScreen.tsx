@@ -122,9 +122,10 @@ export function AdminHubScreen() {
               );
             }
             const itemIndex = ADMIN_HUB_ITEMS.indexOf(row.item);
+            const ungroupedClass = row.ungrouped ? " list__row--ungrouped" : "";
             return (
               <li
-                className={`list__row${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+                className={`list__row${ungroupedClass}${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
                 key={row.item.label}
               >
                 {row.item.label}
