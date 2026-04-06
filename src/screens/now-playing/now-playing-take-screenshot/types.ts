@@ -11,3 +11,9 @@ export interface ConflictState {
   filename: string;
   focusedOption: OverlayOption;
 }
+
+export interface MediaSlots {
+  loading: boolean;
+  title: boolean;
+  gameplay: boolean;
+}

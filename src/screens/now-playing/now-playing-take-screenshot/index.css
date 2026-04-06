@@ -92,3 +92,31 @@
 .take-screenshot .form__action--active {
   color: var(--colour-text-bright);
 }
+
+.take-screenshot__media-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.take-screenshot__media-slots-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.take-screenshot__checkbox-row {
+  background: none;
+  border: none;
+  color: var(--colour-text-muted);
+  cursor: none;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 0;
+  text-align: left;
+}
+
+.take-screenshot__checkbox-row--active {
+  color: var(--colour-text-bright);
+}

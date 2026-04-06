@@ -1,19 +1,59 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
+import type { GameDetails } from "../../games/game-details/types";
 import type {
   BottomBarStatus,
   ConflictState,
+  MediaSlots,
   OverlayOption,
   ScreenMode,
 } from "./types";
 import "./index.css";
 
 type FocusRegion = "form" | "topbar";
-type FormField = "name" | "save" | "discard";
+type FormField =
+  | "name"
+  | "checkbox-loading"
+  | "checkbox-title"
+  | "checkbox-gameplay"
+  | "save"
+  | "discard";
 
-const FORM_FIELDS: FormField[] = ["name", "save", "discard"];
+const FORM_FIELDS: FormField[] = [
+  "name",
+  "checkbox-loading",
+  "checkbox-title",
+  "checkbox-gameplay",
+  "save",
+  "discard",
+];
 const OVERLAY_OPTIONS: OverlayOption[] = ["overwrite", "rename", "discard"];
+
+const CHECKBOX_FIELDS: Extract<
+  FormField,
+  "checkbox-loading" | "checkbox-title" | "checkbox-gameplay"
+>[] = ["checkbox-loading", "checkbox-title", "checkbox-gameplay"];
+
+const CHECKBOX_SLOT_MAP = {
+  "checkbox-loading": "loading",
+  "checkbox-title": "title",
+  "checkbox-gameplay": "gameplay",
+} as const;
+
+const CHECKBOX_LABEL_MAP = {
+  "checkbox-loading": "Loading Screen",
+  "checkbox-title": "Title Screen",
+  "checkbox-gameplay": "Gameplay Screen",
+} as const;
+
+function isCheckboxField(
+  field: FormField,
+): field is "checkbox-loading" | "checkbox-title" | "checkbox-gameplay" {
+  return CHECKBOX_FIELDS.includes(
+    field as "checkbox-loading" | "checkbox-title" | "checkbox-gameplay",
+  );
+}
 
 function normaliseName(name: string): string {
   return name.trim().toLowerCase();
@@ -52,6 +92,28 @@ function getOverlayOptionLabel(option: OverlayOption): string {
   }
 }
 
+export function applyMediaSlots(
+  games: GameDetails[],
+  gameId: string,
+  filename: string,
+  slots: MediaSlots,
+): GameDetails[] {
+  return games.map((game) => {
+    if (game.id !== gameId) return game;
+    const checkedSlots = (
+      Object.entries(slots) as [keyof MediaSlots, boolean][]
+    ).filter(([, checked]) => checked);
+    if (checkedSlots.length === 0) return game;
+    const updatedScreenshots = game.screenshots.filter(
+      (s) => !slots[s.slot as keyof MediaSlots],
+    );
+    for (const [slot] of checkedSlots) {
+      updatedScreenshots.push({ slot, url: filename });
+    }
+    return { ...game, screenshots: updatedScreenshots };
+  });
+}
+
 interface NowPlayingTakeScreenshotScreenProps {
   gameId: string;
 }
@@ -60,7 +122,7 @@ export function NowPlayingTakeScreenshotScreen({
   gameId,
 }: NowPlayingTakeScreenshotScreenProps) {
   const { pop } = useRouter();
-  const { store } = useStore();
+  const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
   const game = store.gameDetails.games.find((g) => g.id === gameId);
@@ -68,6 +130,11 @@ export function NowPlayingTakeScreenshotScreen({
 
   const [mode, setMode] = useState<ScreenMode>("capture");
   const [name, setName] = useState("");
+  const [mediaSlots, setMediaSlots] = useState<MediaSlots>({
+    loading: false,
+    title: false,
+    gameplay: false,
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [focusedCta] = useState<"back">("back");
   const [activeField, setActiveField] = useState<FormField>("name");
@@ -136,6 +203,12 @@ export function NowPlayingTakeScreenshotScreen({
       handleFormKey(event);
       return;
     }
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      nameInputRef.current?.blur();
+      handleFormKey(event);
+      return;
+    }
     if (event.key === "Escape") {
       event.preventDefault();
       nameInputRef.current?.blur();
@@ -155,7 +228,8 @@ export function NowPlayingTakeScreenshotScreen({
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       moveField(-1);
-    } else if (event.key === "Enter") {
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
       activateField();
     }
   }
@@ -194,9 +268,18 @@ export function NowPlayingTakeScreenshotScreen({
     }
   }
 
+  function toggleCheckbox(
+    slot: "checkbox-loading" | "checkbox-title" | "checkbox-gameplay",
+  ) {
+    const key = CHECKBOX_SLOT_MAP[slot];
+    setMediaSlots((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
   function activateField() {
     if (activeField === "name") {
       nameInputRef.current?.focus();
+    } else if (isCheckboxField(activeField)) {
+      toggleCheckbox(activeField);
     } else if (activeField === "save") {
       executeSave();
     } else if (activeField === "discard") {
@@ -245,15 +328,23 @@ export function NowPlayingTakeScreenshotScreen({
     saveScreenshot(false);
   }
 
-  function saveScreenshot(overwrite: boolean) {
+  function saveScreenshot(_overwrite: boolean) {
     const filename = toFilename(name);
     setConflict(null);
     setBottomBarStatus({ kind: "saved", filename });
-    if (overwrite) {
-      pop();
-    } else {
-      pop();
-    }
+    setStore((prev) => ({
+      ...prev,
+      gameDetails: {
+        ...prev.gameDetails,
+        games: applyMediaSlots(
+          prev.gameDetails.games,
+          gameId,
+          filename,
+          mediaSlots,
+        ),
+      },
+    }));
+    pop();
   }
 
   function executeDiscard() {
@@ -264,11 +355,7 @@ export function NowPlayingTakeScreenshotScreen({
   function toggleFocusRegion(reverse = false) {
     const TOP_BAR_CTAS = ["back"] as const;
     if (focusRegion === "form") {
-      if (reverse) {
-        backButtonRef.current?.focus();
-      } else {
-        backButtonRef.current?.focus();
-      }
+      backButtonRef.current?.focus();
       setFocusRegion("topbar");
     } else {
       const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
@@ -330,6 +417,35 @@ export function NowPlayingTakeScreenshotScreen({
                       setFocusRegion("form");
                     }}
                   />
+                </div>
+                <div className="take-screenshot__media-slots">
+                  <span className="take-screenshot__media-slots-label">
+                    Set as
+                  </span>
+                  {CHECKBOX_FIELDS.map((field) => {
+                    const slot = CHECKBOX_SLOT_MAP[field];
+                    const checked = mediaSlots[slot];
+                    const isActive =
+                      activeField === field && focusRegion === "form";
+                    return (
+                      <button
+                        key={field}
+                        type="button"
+                        className={`take-screenshot__checkbox-row${isActive ? " take-screenshot__checkbox-row--active" : ""}`}
+                        onClick={() => {
+                          setActiveField(field);
+                          setFocusRegion("form");
+                          toggleCheckbox(field);
+                        }}
+                        onFocus={() => {
+                          setActiveField(field);
+                          setFocusRegion("form");
+                        }}
+                      >
+                        {checked ? "[x]" : "[ ]"} {CHECKBOX_LABEL_MAP[field]}
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="form__actions">
                   <button
