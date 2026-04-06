@@ -354,7 +354,9 @@ export function EnvironmentVariableListScreen({
             <div className="list__header">
               <span className="env-var-list__header-name">Name</span>
               <span className="env-var-list__header-value">Value</span>
-              <span className="env-var-list__header-source">Source</span>
+              {owner?.type !== "profile" && (
+                <span className="env-var-list__header-source">Source</span>
+              )}
             </div>
             <ul className="list">
               {rows.map((row, index) => (
@@ -368,9 +370,11 @@ export function EnvironmentVariableListScreen({
                 >
                   <span className="env-var-list__row-name">{row.name}</span>
                   <span className="env-var-list__row-value">{row.value}</span>
-                  <span className="env-var-list__row-source">
-                    {row.sourceLabel}
-                  </span>
+                  {owner?.type !== "profile" && (
+                    <span className="env-var-list__row-source">
+                      {row.sourceLabel}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>

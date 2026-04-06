@@ -332,7 +332,9 @@ export function KeyMappingListScreen({
               <span className="key-mapping-list__header-machine-key">
                 Machine Key
               </span>
-              <span className="key-mapping-list__header-source">Source</span>
+              {owner?.type !== "profile" && (
+                <span className="key-mapping-list__header-source">Source</span>
+              )}
             </div>
             <ul className="list">
               {rows.map((row, index) => (
@@ -350,9 +352,11 @@ export function KeyMappingListScreen({
                   <span className="key-mapping-list__row-machine-key">
                     {row.machineKey}
                   </span>
-                  <span className="key-mapping-list__row-source">
-                    {row.sourceLabel}
-                  </span>
+                  {owner?.type !== "profile" && (
+                    <span className="key-mapping-list__row-source">
+                      {row.sourceLabel}
+                    </span>
+                  )}
                 </li>
               ))}
             </ul>
