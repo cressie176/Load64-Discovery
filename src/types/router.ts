@@ -22,7 +22,7 @@ export type ScreenName =
   | "compilation-detail"
   | "compilation-edit"
   | "compilation-membership"
-  | "controller-family-selection"
+  | "controller-family-assignment"
   | "controller-family-list"
   | "controller-family-edit"
   | "control-list"

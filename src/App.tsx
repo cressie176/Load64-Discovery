@@ -9,9 +9,9 @@ import { CompilationDetailScreen } from "./screens/compilations/compilation-deta
 import { CompilationEditScreen } from "./screens/compilations/compilation-edit/CompilationEditScreen";
 import { CompilationListScreen } from "./screens/compilations/compilation-list/CompilationListScreen";
 import { CompilationMembershipScreen } from "./screens/compilations/compilation-membership/CompilationMembershipScreen";
+import { ControllerFamilyAssignmentScreen } from "./screens/controller-families/controller-family-assignment/ControllerFamilyAssignmentScreen";
 import { ControllerFamilyEditScreen } from "./screens/controller-families/controller-family-edit/ControllerFamilyEditScreen";
 import { ControllerFamilyListScreen } from "./screens/controller-families/controller-family-list/ControllerFamilyListScreen";
-import { ControllerFamilySelectionScreen } from "./screens/controller-families/controller-family-selection/ControllerFamilySelectionScreen";
 import { ControllerDetailScreen } from "./screens/controllers/controller-detail/ControllerDetailScreen";
 import { ControllerListScreen } from "./screens/controllers/controller-list/ControllerListScreen";
 import { ControllerSelectionScreen } from "./screens/controllers/controller-selection/ControllerSelectionScreen";
@@ -173,9 +173,9 @@ function AppScreens() {
   if (currentScreen === "controller-family-edit") {
     return <ControllerFamilyEditScreen familyId={currentParams.familyId} />;
   }
-  if (currentScreen === "controller-family-selection") {
+  if (currentScreen === "controller-family-assignment") {
     return (
-      <ControllerFamilySelectionScreen
+      <ControllerFamilyAssignmentScreen
         controllerId={currentParams.controllerId ?? "controller-logitech-f310"}
       />
     );

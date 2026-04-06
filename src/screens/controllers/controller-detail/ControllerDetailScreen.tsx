@@ -114,7 +114,7 @@ export function ControllerDetailScreen({
     if (item === "family") {
       pushFrom(
         { selectedIndex: String(selectedIndex) },
-        "controller-family-selection",
+        "controller-family-assignment",
         { controllerId },
       );
     } else if (item === "controls") {
