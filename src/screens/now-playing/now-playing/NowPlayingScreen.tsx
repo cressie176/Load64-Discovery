@@ -55,7 +55,7 @@ interface NowPlayingScreenProps {
 }
 
 export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
-  const { pop, push, replace } = useRouter();
+  const { push, replace } = useRouter();
   const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -101,7 +101,6 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       return;
     }
     if (event.key === "Escape") {
-      pop();
       return;
     }
     if (focusRegion === "topbar") {
@@ -169,7 +168,6 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
   function activateAction(action: NowPlayingAction) {
     switch (action) {
       case "resume":
-        pop();
         break;
       case "view-controls":
         push("control-list", { ownerId: nowPlaying.gameId });
