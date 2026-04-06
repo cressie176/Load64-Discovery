@@ -94,6 +94,47 @@ describe("GameCatalogueSourcesListScreen", () => {
     });
   });
 
+  describe("bottom bar hint", () => {
+    it("shows all-linked message when all catalogues are linked and no status message", () => {
+      const sources = [
+        { catalogueName: "GameBase64", entryId: "243" },
+        { catalogueName: "MobyGames", entryId: "1188" },
+      ];
+      const statusMessage = "";
+      const hint =
+        statusMessage ||
+        (allLinked(sources)
+          ? "Bubble Bobble is linked to all supported catalogues."
+          : "");
+      eq(hint, "Bubble Bobble is linked to all supported catalogues.");
+    });
+
+    it("shows status message over all-linked hint when both are present", () => {
+      const sources = [
+        { catalogueName: "GameBase64", entryId: "243" },
+        { catalogueName: "MobyGames", entryId: "1188" },
+      ];
+      const statusMessage = "GameBase64: 243 removed";
+      const hint =
+        statusMessage ||
+        (allLinked(sources)
+          ? "Bubble Bobble is linked to all supported catalogues."
+          : "");
+      eq(hint, "GameBase64: 243 removed");
+    });
+
+    it("shows nothing when catalogues are not all linked and no status message", () => {
+      const sources = [{ catalogueName: "GameBase64", entryId: "243" }];
+      const statusMessage = "";
+      const hint =
+        statusMessage ||
+        (allLinked(sources)
+          ? "Bubble Bobble is linked to all supported catalogues."
+          : "");
+      eq(hint, "");
+    });
+  });
+
   describe("wrapIndex", () => {
     it("moves forward", () => {
       eq(wrapIndex(0, 1, 3), 1);

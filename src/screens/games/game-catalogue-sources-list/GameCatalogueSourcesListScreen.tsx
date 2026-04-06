@@ -337,7 +337,12 @@ export function GameCatalogueSourcesListScreen({
           </ul>
         )}
       </div>
-      <div className="screen__bottombar">{statusMessage}</div>
+      <div className="screen__bottombar">
+        {statusMessage ||
+          (allLinked
+            ? `${game.title} is linked to all supported catalogues.`
+            : "")}
+      </div>
       {overlay === "context-menu" && focusedSource && (
         <div
           className="overlay-backdrop"
