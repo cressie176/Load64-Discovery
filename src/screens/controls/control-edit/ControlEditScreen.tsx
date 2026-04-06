@@ -353,7 +353,7 @@ export function ControlEditScreen() {
         </div>
       </div>
       <div className="screen__content">
-        <div className="form">
+        <div className="form form--two-column-label-left">
           <div className="form__field">
             <label className="form__label" htmlFor="control-name">
               Control Name

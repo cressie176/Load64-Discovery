@@ -247,7 +247,7 @@ export function EnvironmentVariableEditScreen() {
         </div>
       </div>
       <div className="screen__content">
-        <div className="form">
+        <div className="form form--two-column-label-left">
           <div className="form__field">
             <label className="form__label" htmlFor="env-var-name">
               Name
