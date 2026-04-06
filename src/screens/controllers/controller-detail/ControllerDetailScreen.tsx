@@ -49,7 +49,7 @@ export function ControllerDetailScreen({
   const prevFamilyNameRef = useRef<string | undefined>(controller?.familyName);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -149,14 +149,17 @@ export function ControllerDetailScreen({
           {title}
         </span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

@@ -157,8 +157,8 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
-  const compilationsButtonRef = useRef<HTMLButtonElement>(null);
-  const adminButtonRef = useRef<HTMLButtonElement>(null);
+  const compilationsButtonRef = useRef<HTMLAnchorElement>(null);
+  const adminButtonRef = useRef<HTMLAnchorElement>(null);
 
   const safeSelectedIndex =
     games.length > 0 ? Math.min(selectedIndex, games.length - 1) : 0;
@@ -429,22 +429,28 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
       <div className="screen__topbar">
         <span className="screen__topbar-title">{compilationName}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={compilationsButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "compilations" ? " topbar-cta--focused" : ""}`}
-            onClick={navigateToCompilations}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "compilations" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToCompilations();
+            }}
           >
-            [Compilations]
-          </button>
-          <button
+            Compilations
+          </a>
+          <a
             ref={adminButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "admin" ? " topbar-cta--focused" : ""}`}
-            onClick={navigateToAdmin}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "admin" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToAdmin();
+            }}
           >
-            [Admin]
-          </button>
+            Admin
+          </a>
         </div>
       </div>
       {allGames.length === 0 ? (

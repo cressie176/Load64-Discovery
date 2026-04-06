@@ -72,7 +72,7 @@ export function CompilationMembershipScreen({
   const [activeAction, setActiveAction] = useState<ActionField>("save");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -292,14 +292,17 @@ export function CompilationMembershipScreen({
       <div className="screen__topbar">
         <span className="screen__topbar-title">{`Compilations > ${compilation?.name ?? "Compilation"} > Add`}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div
@@ -356,7 +359,7 @@ export function CompilationMembershipScreen({
                 }}
                 type="button"
               >
-                [Save]
+                Save
               </button>
               <button
                 ref={cancelButtonRef}
@@ -368,7 +371,7 @@ export function CompilationMembershipScreen({
                 }}
                 type="button"
               >
-                [Cancel]
+                Cancel
               </button>
             </div>
           </>

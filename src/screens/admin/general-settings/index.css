@@ -16,16 +16,19 @@
   flex: 1;
 }
 
-.general-settings .form__toggle {
-  color: var(--colour-text);
+.general-settings .form__checkbox {
+  accent-color: var(--colour-accent);
+  background: none;
+  border: none;
   cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: var(--font-size-base);
-  text-align: left;
+  height: 14px;
+  padding: 0;
+  width: 14px;
 }
 
-.general-settings .form__toggle--active {
-  color: var(--colour-text-bright);
+.general-settings .form__checkbox--active {
+  outline: 1px solid var(--colour-accent);
+  outline-offset: 2px;
 }
 
 .general-settings .overlay__body {

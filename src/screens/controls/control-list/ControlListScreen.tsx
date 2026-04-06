@@ -131,7 +131,7 @@ export function ControlListScreen({
   const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const safeSelectedIndex =
     rows.length > 0 ? Math.min(selectedIndex, rows.length - 1) : 0;
@@ -334,14 +334,17 @@ export function ControlListScreen({
       <div className="screen__topbar">
         <span className="screen__topbar-title">{ownerLabel}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

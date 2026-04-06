@@ -47,8 +47,8 @@ export function GameCatalogueSourcesListScreen({
   const [statusMessage, setStatusMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const addButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const addButtonRef = useRef<HTMLAnchorElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const safeSelectedIndex =
     sources.length > 0 ? Math.min(selectedIndex, sources.length - 1) : 0;
@@ -242,7 +242,7 @@ export function GameCatalogueSourcesListScreen({
 
   function ctaClassName(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
-    return `topbar-cta${focused ? " topbar-cta--focused" : ""}`;
+    return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
   }
 
   const screenTitle = deriveTitle(
@@ -257,14 +257,17 @@ export function GameCatalogueSourcesListScreen({
         <div className="screen__topbar">
           <span className="screen__topbar-title">Sources</span>
           <div className="screen__topbar-ctas">
-            <button
+            <a
               ref={backButtonRef}
-              className="topbar-cta topbar-cta--focused"
-              onClick={pop}
-              type="button"
+              href="#"
+              className="topbar-cta topbar-cta--nav topbar-cta--focused"
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
             >
-              [Back]
-            </button>
+              Back
+            </a>
           </div>
         </div>
         <div className="screen__content screen__content--empty">
@@ -290,23 +293,29 @@ export function GameCatalogueSourcesListScreen({
         <span className="screen__topbar-title">{screenTitle}</span>
         <div className="screen__topbar-ctas">
           {!allLinked && (
-            <button
+            <a
               ref={addButtonRef}
+              href="#"
               className={ctaClassName("add")}
-              onClick={navigateToAdd}
-              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                navigateToAdd();
+              }}
             >
-              [Add]
-            </button>
+              Add
+            </a>
           )}
-          <button
+          <a
             ref={backButtonRef}
+            href="#"
             className={ctaClassName("back")}
-            onClick={pop}
-            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

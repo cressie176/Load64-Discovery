@@ -144,7 +144,7 @@ export function NowPlayingTakeScreenshotScreen({
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const discardButtonRef = useRef<HTMLButtonElement>(null);
@@ -380,14 +380,17 @@ export function NowPlayingTakeScreenshotScreen({
           Now Playing &gt; {gameTitle} &gt; Take Screenshot
         </span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={() => pop()}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
 
@@ -458,7 +461,7 @@ export function NowPlayingTakeScreenshotScreen({
                     }}
                     type="button"
                   >
-                    [Save]
+                    Save
                   </button>
                   <button
                     ref={discardButtonRef}
@@ -470,7 +473,7 @@ export function NowPlayingTakeScreenshotScreen({
                     }}
                     type="button"
                   >
-                    [Discard]
+                    Cancel
                   </button>
                 </div>
               </div>

@@ -109,13 +109,35 @@ button {
    ============================================================ */
 
 .topbar-cta {
-  color: var(--colour-text-muted);
   cursor: pointer;
-  padding: 2px 8px;
-  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: inherit;
+  text-decoration: none;
 }
 
-.topbar-cta--focused {
+/* Nav link variant — navigates to a screen: plain text, no border */
+.topbar-cta--nav {
+  color: var(--colour-text-muted);
+  background: none;
+  border: none;
+  padding: 2px 8px;
+}
+
+/* Action button variant — opens overlay, triggers action, switches mode: visible button */
+.topbar-cta--action {
+  color: var(--colour-text);
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  padding: 2px 8px;
+}
+
+.topbar-cta--nav.topbar-cta--focused {
+  color: var(--colour-text-bright);
+  border-bottom: 1px solid var(--colour-accent);
+  padding-bottom: 1px;
+}
+
+.topbar-cta--action.topbar-cta--focused {
   border-color: var(--colour-accent);
   color: var(--colour-text-bright);
 }
@@ -258,12 +280,18 @@ button {
 }
 
 .form--two-column-label-left .form__action {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
   color: var(--colour-text);
   cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 2px 12px;
 }
 
 .form--two-column-label-left .form__action--active {
-  color: var(--colour-accent);
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
 }
 
 /* ============================================================
@@ -271,19 +299,24 @@ button {
    ============================================================ */
 
 .browse-button {
-  color: var(--colour-text-muted);
-  cursor: none;
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
   flex-shrink: 0;
   font-family: var(--font-mono);
   font-size: var(--font-size-base);
+  padding: 2px 12px;
 }
 
 .browse-button:hover {
-  color: var(--colour-text);
+  border-color: var(--colour-text-muted);
+  color: var(--colour-text-bright);
 }
 
 .browse-button--active {
-  color: var(--colour-accent);
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
 }
 
 /* ============================================================

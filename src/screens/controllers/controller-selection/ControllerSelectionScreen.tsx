@@ -75,7 +75,7 @@ export function ControllerSelectionScreen({
   const [activeAction, setActiveAction] = useState<ActionField>("save");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -240,14 +240,17 @@ export function ControllerSelectionScreen({
         <span className="screen__topbar-title">{title}</span>
         {!hasControllers && (
           <div className="screen__topbar-ctas">
-            <button
+            <a
               ref={backButtonRef}
-              className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-              onClick={pop}
-              type="button"
+              href="#"
+              className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
             >
-              [Back]
-            </button>
+              Back
+            </a>
           </div>
         )}
       </div>
@@ -289,7 +292,7 @@ export function ControllerSelectionScreen({
                 }}
                 type="button"
               >
-                [Save]
+                Save
               </button>
               <button
                 ref={cancelButtonRef}
@@ -301,7 +304,7 @@ export function ControllerSelectionScreen({
                 }}
                 type="button"
               >
-                [Cancel]
+                Cancel
               </button>
             </div>
           </>

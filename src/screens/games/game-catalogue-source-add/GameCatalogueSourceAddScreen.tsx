@@ -59,7 +59,7 @@ export function GameCatalogueSourceAddScreen({
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const catalogueSelectRef = useRef<HTMLSelectElement>(null);
   const idInputRef = useRef<HTMLInputElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
@@ -227,14 +227,17 @@ export function GameCatalogueSourceAddScreen({
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && topBarCtas.includes("back") ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && topBarCtas.includes("back") ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
@@ -294,7 +297,7 @@ export function GameCatalogueSourceAddScreen({
               }}
               type="button"
             >
-              [Save]
+              Save
             </button>
             <button
               ref={cancelButtonRef}
@@ -306,7 +309,7 @@ export function GameCatalogueSourceAddScreen({
               }}
               type="button"
             >
-              [Cancel]
+              Cancel
             </button>
           </div>
         </div>

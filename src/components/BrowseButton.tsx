@@ -25,7 +25,7 @@ export function BrowseButton({
       onFocus={onFocus}
       type="button"
     >
-      [Browse]
+      Browse
     </button>
   );
 }

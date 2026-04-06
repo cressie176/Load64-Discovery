@@ -27,7 +27,7 @@ export function ImportGamesScreen() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const pathRef = useRef<HTMLInputElement>(null);
   const browseButtonRef = useRef<HTMLButtonElement>(null);
   const discoverButtonRef = useRef<HTMLButtonElement>(null);
@@ -160,14 +160,17 @@ export function ImportGamesScreen() {
       <div className="screen__topbar">
         <span className="screen__topbar-title">Import Games</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
@@ -217,7 +220,7 @@ export function ImportGamesScreen() {
               ref={discoverButtonRef}
               type="button"
             >
-              [Discover]
+              Discover
             </button>
           </div>
         </div>

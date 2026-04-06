@@ -182,7 +182,7 @@ export function ImportCandidateScreen() {
 
   function ctaClassName(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
-    return `topbar-cta${focused ? " topbar-cta--focused" : ""}`;
+    return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
   }
 
   return (
@@ -196,7 +196,7 @@ export function ImportCandidateScreen() {
             onClick={handleNext}
             type="button"
           >
-            [Next]
+            Next
           </button>
           <button
             ref={skipButtonRef}
@@ -204,7 +204,7 @@ export function ImportCandidateScreen() {
             onClick={handleSkip}
             type="button"
           >
-            [Skip]
+            Skip
           </button>
           <button
             ref={abortButtonRef}
@@ -212,7 +212,7 @@ export function ImportCandidateScreen() {
             onClick={handleAbort}
             type="button"
           >
-            [Abort]
+            Abort
           </button>
         </div>
       </div>

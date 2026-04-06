@@ -35,7 +35,7 @@ export function ControllerFamilyAssignmentScreen({
   const [activeField, setActiveField] = useState<FormField>("family");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const familySelectRef = useRef<HTMLSelectElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
@@ -182,14 +182,17 @@ export function ControllerFamilyAssignmentScreen({
       <div className="screen__topbar">
         <span className="screen__topbar-title">{`Controllers > ${deviceName} > Controller Family`}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
@@ -228,7 +231,7 @@ export function ControllerFamilyAssignmentScreen({
               }}
               type="button"
             >
-              [Save]
+              Save
             </button>
             <button
               ref={cancelButtonRef}
@@ -240,7 +243,7 @@ export function ControllerFamilyAssignmentScreen({
               }}
               type="button"
             >
-              [Cancel]
+              Cancel
             </button>
           </div>
         </div>

@@ -51,8 +51,8 @@ export function BinaryListScreen() {
   });
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const discoverButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const discoverButtonRef = useRef<HTMLAnchorElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -157,27 +157,31 @@ export function BinaryListScreen() {
       <div className="screen__topbar">
         <span className="screen__topbar-title">Binaries</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={discoverButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && topbarCtaIndex === 0 ? " topbar-cta--focused" : ""}`}
-            onClick={() =>
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && topbarCtaIndex === 0 ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
               pushFrom(
                 { selectedIndex: String(selectedIndex) },
                 "binary-discover",
-              )
-            }
-            type="button"
+              );
+            }}
           >
-            [Discover]
-          </button>
-          <button
+            Discover
+          </a>
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && topbarCtaIndex === 1 ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && topbarCtaIndex === 1 ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

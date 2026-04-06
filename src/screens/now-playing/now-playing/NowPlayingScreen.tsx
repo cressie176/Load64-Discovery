@@ -257,11 +257,11 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
         <div className="screen__topbar-ctas">
           <button
             ref={quitButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "quit-game" ? " topbar-cta--focused" : ""}`}
+            className={`topbar-cta topbar-cta--action${focusRegion === "topbar" && focusedCta === "quit-game" ? " topbar-cta--focused" : ""}`}
             onClick={openQuitConfirm}
             type="button"
           >
-            [Quit Game]
+            Quit Game
           </button>
         </div>
       </div>

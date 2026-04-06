@@ -116,7 +116,7 @@ export function ControlEditScreen() {
     : `Controllers > ${ownerName} > Controls > ${canonicalLabel}`;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const controlNameInputRef = useRef<HTMLInputElement>(null);
   const canonicalNameSelectRef = useRef<HTMLSelectElement>(null);
   const eventInputRef = useRef<HTMLInputElement>(null);
@@ -332,7 +332,7 @@ export function ControlEditScreen() {
     popWith({ statusMessage: `${draftControlName.trim()} saved` });
   }
 
-  const captureButtonLabel = isCapturing ? "[Cancel]" : "[Capture]";
+  const captureButtonLabel = isCapturing ? "Cancel" : "Capture";
   const bottomBarMessage = isCapturing
     ? "Press a control to capture. Escape to cancel."
     : errorMessage;
@@ -342,14 +342,17 @@ export function ControlEditScreen() {
       <div className="screen__topbar">
         <span className="screen__topbar-title">{ownerLabel}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
@@ -460,7 +463,7 @@ export function ControlEditScreen() {
               }}
               type="button"
             >
-              [Save]
+              Save
             </button>
             <button
               ref={cancelButtonRef}
@@ -472,7 +475,7 @@ export function ControlEditScreen() {
               }}
               type="button"
             >
-              [Cancel]
+              Cancel
             </button>
           </div>
         </div>

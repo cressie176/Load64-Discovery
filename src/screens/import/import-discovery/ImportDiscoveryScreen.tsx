@@ -37,8 +37,8 @@ export function ImportDiscoveryScreen() {
   const [focusedCta, setFocusedCta] = useState<TopBarCta>(ctas[0]);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const nextButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const nextButtonRef = useRef<HTMLAnchorElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -99,7 +99,7 @@ export function ImportDiscoveryScreen() {
 
   function ctaClassName(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
-    return `topbar-cta${focused ? " topbar-cta--focused" : ""}`;
+    return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
   }
 
   return (
@@ -108,23 +108,29 @@ export function ImportDiscoveryScreen() {
         <span className="screen__topbar-title">Import Games &gt; Discover</span>
         <div className="screen__topbar-ctas">
           {hasGames && (
-            <button
+            <a
               ref={nextButtonRef}
+              href="#"
               className={ctaClassName("next")}
-              onClick={handleNext}
-              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleNext();
+              }}
             >
-              [Next]
-            </button>
+              Next
+            </a>
           )}
-          <button
+          <a
             ref={backButtonRef}
+            href="#"
             className={ctaClassName("back")}
-            onClick={pop}
-            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

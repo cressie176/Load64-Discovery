@@ -104,11 +104,11 @@ export function GeneralSettingsScreen() {
   const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const gamesDirectoryRef = useRef<HTMLInputElement>(null);
   const browseGamesDirectoryRef = useRef<HTMLButtonElement>(null);
   const catalogueUrlRef = useRef<HTMLInputElement>(null);
-  const showSplashscreenButtonRef = useRef<HTMLButtonElement>(null);
+  const showSplashscreenButtonRef = useRef<HTMLInputElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -314,14 +314,17 @@ export function GeneralSettingsScreen() {
         <span className="screen__topbar-title">General Settings</span>
         {hasSavedDirectory && (
           <div className="screen__topbar-ctas">
-            <button
+            <a
               ref={backButtonRef}
-              className={`topbar-cta${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-              onClick={pop}
-              type="button"
+              href="#"
+              className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
             >
-              [Back]
-            </button>
+              Back
+            </a>
           </div>
         )}
       </div>
@@ -389,11 +392,13 @@ export function GeneralSettingsScreen() {
             <label className="form__label" htmlFor="show-splashscreen">
               Show Splashscreen
             </label>
-            <button
+            <input
               ref={showSplashscreenButtonRef}
               id="show-splashscreen"
-              className={`form__toggle${activeField === "showSplashscreen" && focusRegion === "form" ? " form__toggle--active" : ""}`}
-              onClick={() =>
+              className={`form__checkbox${activeField === "showSplashscreen" && focusRegion === "form" ? " form__checkbox--active" : ""}`}
+              type="checkbox"
+              checked={draft.showSplashscreen}
+              onChange={() =>
                 setDraft((prev) => ({
                   ...prev,
                   showSplashscreen: !prev.showSplashscreen,
@@ -403,10 +408,7 @@ export function GeneralSettingsScreen() {
                 setActiveField("showSplashscreen");
                 setFocusRegion("form");
               }}
-              type="button"
-            >
-              {draft.showSplashscreen ? "[On]" : "[Off]"}
-            </button>
+            />
           </div>
           <div className="form__actions">
             <button
@@ -419,7 +421,7 @@ export function GeneralSettingsScreen() {
               }}
               type="button"
             >
-              [Save]
+              Save
             </button>
             {hasSavedDirectory && (
               <button
@@ -432,7 +434,7 @@ export function GeneralSettingsScreen() {
                 }}
                 type="button"
               >
-                [Cancel]
+                Cancel
               </button>
             )}
           </div>

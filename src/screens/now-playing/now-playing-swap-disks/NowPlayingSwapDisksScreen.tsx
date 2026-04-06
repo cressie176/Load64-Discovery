@@ -84,7 +84,7 @@ export function NowPlayingSwapDisksScreen({
   const [contextMenuIndex, setContextMenuIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -254,14 +254,17 @@ export function NowPlayingSwapDisksScreen({
           Now Playing &gt; {gameTitle} &gt; Swap Disks
         </span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={() => pop()}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

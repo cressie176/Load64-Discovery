@@ -31,7 +31,7 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
   const [deleteInput, setDeleteInput] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const deleteInputRef = useRef<HTMLInputElement>(null);
   const deleteButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
@@ -194,14 +194,17 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
         <div className="screen__topbar">
           <span className="screen__topbar-title">Game Management</span>
           <div className="screen__topbar-ctas">
-            <button
+            <a
               ref={backButtonRef}
-              className="topbar-cta topbar-cta--focused"
-              onClick={pop}
-              type="button"
+              href="#"
+              className="topbar-cta topbar-cta--nav topbar-cta--focused"
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
             >
-              [Back]
-            </button>
+              Back
+            </a>
           </div>
         </div>
         <div className="screen__content screen__content--empty">
@@ -217,14 +220,17 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
       <div className="screen__topbar">
         <span className="screen__topbar-title">{game.title}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
@@ -311,7 +317,7 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
                 onClick={closeDeleteOverlay}
                 type="button"
               >
-                [Cancel]
+                Cancel
               </button>
             </div>
           </div>

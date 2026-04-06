@@ -52,8 +52,8 @@ export function ControllerFamilyListScreen({
   const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const addButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const addButtonRef = useRef<HTMLAnchorElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const safeSelectedIndex =
     families.length > 0 ? Math.min(selectedIndex, families.length - 1) : 0;
@@ -285,22 +285,28 @@ export function ControllerFamilyListScreen({
       <div className="screen__topbar">
         <span className="screen__topbar-title">Controller Families</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={addButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "add" ? " topbar-cta--focused" : ""}`}
-            onClick={navigateToAdd}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "add" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToAdd();
+            }}
           >
-            [Add]
-          </button>
-          <button
+            Add
+          </a>
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">

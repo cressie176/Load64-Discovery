@@ -85,10 +85,16 @@
 }
 
 .take-snapshot .form__action {
-  color: var(--colour-text-muted);
-  cursor: none;
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 2px 12px;
 }
 
 .take-snapshot .form__action--active {
+  border-color: var(--colour-accent);
   color: var(--colour-text-bright);
 }

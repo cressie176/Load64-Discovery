@@ -25,13 +25,13 @@ const SCREENSHOT_CYCLE_MS = 3000;
 function getActionLabel(action: LaunchAction): string {
   switch (action) {
     case "quickstart":
-      return "[Quickstart]";
+      return "Quickstart";
     case "continue":
-      return "[Continue]";
+      return "Continue";
     case "load-rom":
-      return "[Load ROM]";
+      return "Load ROM";
     case "load-snapshot":
-      return "[Load Snapshot]";
+      return "Load Snapshot";
   }
 }
 
@@ -75,8 +75,8 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
   const [bottomMessage, setBottomMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const manageButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLButtonElement>(null);
+  const manageButtonRef = useRef<HTMLAnchorElement>(null);
+  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -241,14 +241,17 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
         <div className="screen__topbar">
           <span className="screen__topbar-title">Game Details</span>
           <div className="screen__topbar-ctas">
-            <button
+            <a
               ref={backButtonRef}
-              className="topbar-cta topbar-cta--focused"
-              onClick={pop}
-              type="button"
+              href="#"
+              className="topbar-cta topbar-cta--nav topbar-cta--focused"
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
             >
-              [Back]
-            </button>
+              Back
+            </a>
           </div>
         </div>
         <div className="screen__content screen__content--empty">
@@ -264,22 +267,28 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
       <div className="screen__topbar">
         <span className="screen__topbar-title">{game.title}</span>
         <div className="screen__topbar-ctas">
-          <button
+          <a
             ref={manageButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "manage" ? " topbar-cta--focused" : ""}`}
-            onClick={navigateToManage}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "manage" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              navigateToManage();
+            }}
           >
-            [Manage]
-          </button>
-          <button
+            Manage
+          </a>
+          <a
             ref={backButtonRef}
-            className={`topbar-cta${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={pop}
-            type="button"
+            href="#"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            onClick={(e) => {
+              e.preventDefault();
+              pop();
+            }}
           >
-            [Back]
-          </button>
+            Back
+          </a>
         </div>
       </div>
       <div className="screen__content">
