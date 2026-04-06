@@ -4,11 +4,6 @@ export const SEED_COMPILATIONS: CompilationsState = {
   compilations: [
     { id: "compilation-all-games", name: "All Games", kind: "all-games" },
     {
-      id: "compilation-untested",
-      name: "Untested Games",
-      kind: "untested",
-    },
-    {
       id: "compilation-favourites",
       name: "Favourites",
       kind: "user-defined",
@@ -35,11 +30,6 @@ export const SEED_COMPILATIONS: CompilationsState = {
     },
   ],
   compilationGameRefs: [
-    { compilationId: "compilation-untested", gameId: "game-monty" },
-    { compilationId: "compilation-untested", gameId: "game-iridis" },
-    { compilationId: "compilation-untested", gameId: "game-zzap" },
-    { compilationId: "compilation-untested", gameId: "game-summer" },
-    { compilationId: "compilation-untested", gameId: "game-bubble" },
     {
       compilationId: "compilation-favourites",
       gameId: "game-monty",

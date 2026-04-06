@@ -6,20 +6,17 @@ import { SEED_COMPILATIONS } from "./seed.ts";
 import type { Compilation, CompilationGameRef } from "./types.ts";
 
 function sortCompilationsForAdmin(compilations: Compilation[]): Compilation[] {
-  const untested = compilations.filter((c) => c.kind === "untested");
-  const userDefined = compilations
+  return compilations
     .filter((c) => c.kind === "user-defined")
     .sort((a, b) => a.name.localeCompare(b.name));
-  return [...untested, ...userDefined];
 }
 
 function sortCompilationsForBrowse(compilations: Compilation[]): Compilation[] {
   const allGames = compilations.filter((c) => c.kind === "all-games");
-  const untested = compilations.filter((c) => c.kind === "untested");
   const userDefined = compilations
     .filter((c) => c.kind === "user-defined")
     .sort((a, b) => a.name.localeCompare(b.name));
-  return [...allGames, ...untested, ...userDefined];
+  return [...allGames, ...userDefined];
 }
 
 function deleteCompilation(
@@ -61,9 +58,7 @@ describe("CompilationListScreen", () => {
       for (const compilation of SEED_COMPILATIONS.compilations) {
         eq(typeof compilation.id, "string");
         eq(typeof compilation.name, "string");
-        ok(
-          ["all-games", "untested", "user-defined"].includes(compilation.kind),
-        );
+        ok(["all-games", "user-defined"].includes(compilation.kind));
       }
     });
 
@@ -72,13 +67,6 @@ describe("CompilationListScreen", () => {
         (c) => c.kind === "all-games",
       );
       eq(allGames.length, 1);
-    });
-
-    it("has exactly one untested compilation", () => {
-      const untested = SEED_COMPILATIONS.compilations.filter(
-        (c) => c.kind === "untested",
-      );
-      eq(untested.length, 1);
     });
 
     it("has at least one user-defined compilation", () => {
@@ -96,23 +84,21 @@ describe("CompilationListScreen", () => {
   });
 
   describe("sortCompilationsForAdmin", () => {
-    it("places untested first, user-defined after, excludes all-games", () => {
+    it("excludes all-games and returns user-defined compilations", () => {
       const compilations: Compilation[] = [
         { id: "ud1", name: "Multiplayer", kind: "user-defined" },
         { id: "ag", name: "All Games", kind: "all-games" },
-        { id: "ut", name: "Untested Games", kind: "untested" },
         { id: "ud2", name: "Favourites", kind: "user-defined" },
       ];
       const result = sortCompilationsForAdmin(compilations);
       deep(
         result.map((c) => c.name),
-        ["Untested Games", "Favourites", "Multiplayer"],
+        ["Favourites", "Multiplayer"],
       );
     });
 
     it("sorts user-defined compilations alphabetically", () => {
       const compilations: Compilation[] = [
-        { id: "ut", name: "Untested Games", kind: "untested" },
         { id: "c", name: "Shoot-em-ups", kind: "user-defined" },
         { id: "a", name: "Favourites", kind: "user-defined" },
         { id: "b", name: "Multiplayer", kind: "user-defined" },
@@ -120,7 +106,7 @@ describe("CompilationListScreen", () => {
       const result = sortCompilationsForAdmin(compilations);
       deep(
         result.map((c) => c.name),
-        ["Untested Games", "Favourites", "Multiplayer", "Shoot-em-ups"],
+        ["Favourites", "Multiplayer", "Shoot-em-ups"],
       );
     });
 
@@ -136,24 +122,22 @@ describe("CompilationListScreen", () => {
   });
 
   describe("sortCompilationsForBrowse", () => {
-    it("places all-games first, untested second, user-defined after", () => {
+    it("places all-games first, user-defined after", () => {
       const compilations: Compilation[] = [
         { id: "ud1", name: "Multiplayer", kind: "user-defined" },
         { id: "ag", name: "All Games", kind: "all-games" },
-        { id: "ut", name: "Untested Games", kind: "untested" },
         { id: "ud2", name: "Favourites", kind: "user-defined" },
       ];
       const result = sortCompilationsForBrowse(compilations);
       deep(
         result.map((c) => c.name),
-        ["All Games", "Untested Games", "Favourites", "Multiplayer"],
+        ["All Games", "Favourites", "Multiplayer"],
       );
     });
 
     it("sorts user-defined compilations alphabetically", () => {
       const compilations: Compilation[] = [
         { id: "ag", name: "All Games", kind: "all-games" },
-        { id: "ut", name: "Untested Games", kind: "untested" },
         { id: "c", name: "Shoot-em-ups", kind: "user-defined" },
         { id: "a", name: "Favourites", kind: "user-defined" },
         { id: "b", name: "Multiplayer", kind: "user-defined" },
@@ -161,13 +145,7 @@ describe("CompilationListScreen", () => {
       const result = sortCompilationsForBrowse(compilations);
       deep(
         result.map((c) => c.name),
-        [
-          "All Games",
-          "Untested Games",
-          "Favourites",
-          "Multiplayer",
-          "Shoot-em-ups",
-        ],
+        ["All Games", "Favourites", "Multiplayer", "Shoot-em-ups"],
       );
     });
 

@@ -1,4 +1,4 @@
-export type CompilationKind = "all-games" | "untested" | "user-defined";
+export type CompilationKind = "all-games" | "user-defined";
 
 export interface Compilation {
   id: string;

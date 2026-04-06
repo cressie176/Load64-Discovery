@@ -17,20 +17,17 @@ function wrapIndex(index: number, delta: number, length: number): number {
 }
 
 function sortCompilationsForAdmin(compilations: Compilation[]): Compilation[] {
-  const untested = compilations.filter((c) => c.kind === "untested");
-  const userDefined = compilations
+  return compilations
     .filter((c) => c.kind === "user-defined")
     .sort((a, b) => a.name.localeCompare(b.name));
-  return [...untested, ...userDefined];
 }
 
 function sortCompilationsForBrowse(compilations: Compilation[]): Compilation[] {
   const allGames = compilations.filter((c) => c.kind === "all-games");
-  const untested = compilations.filter((c) => c.kind === "untested");
   const userDefined = compilations
     .filter((c) => c.kind === "user-defined")
     .sort((a, b) => a.name.localeCompare(b.name));
-  return [...allGames, ...untested, ...userDefined];
+  return [...allGames, ...userDefined];
 }
 
 function deleteCompilation(
