@@ -225,15 +225,7 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
 
   function buildBottomBarText(): string {
     if (bottomMessage) return bottomMessage;
-    if (!game) return "";
-    if (!game.hasRom) {
-      return "ROM files not found. Use Manage to repair this game.";
-    }
-    if (game.sources.length === 0) return "";
-    const sourceList = game.sources
-      .map((s) => `${s.catalogueName}: ${s.entryId}`)
-      .join(", ");
-    return `Sources: ${sourceList}`;
+    return "";
   }
 
   const currentScreenshot = sortedScreenshots[screenshotIndex];
@@ -306,6 +298,13 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
               <div className="game-details__title">{game.title}</div>
               <div className="game-details__publisher">{game.publisher}</div>
               <div className="game-details__year">{game.year}</div>
+              {game.sources.length > 0 && (
+                <div className="game-details__sources">
+                  {game.sources
+                    .map((s) => `${s.catalogueName}: ${s.entryId}`)
+                    .join(", ")}
+                </div>
+              )}
               {game.notes && (
                 <div className="game-details__notes">{game.notes}</div>
               )}

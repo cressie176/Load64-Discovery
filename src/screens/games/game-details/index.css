@@ -58,6 +58,10 @@
   color: var(--colour-text-muted);
 }
 
+.game-details__sources {
+  color: var(--colour-text-muted);
+}
+
 .game-details__notes {
   color: var(--colour-text);
   margin-top: 8px;

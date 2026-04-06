@@ -47,19 +47,9 @@ function getDisabledReason(action: LaunchAction, game: GameDetails): string {
   }
 }
 
-function buildBottomBarText(
-  game: GameDetails,
-  overrideMessage?: string,
-): string {
+function buildBottomBarText(overrideMessage?: string): string {
   if (overrideMessage) return overrideMessage;
-  if (!game.hasRom) {
-    return "ROM files not found. Use Manage to repair this game.";
-  }
-  if (game.sources.length === 0) return "";
-  const sourceList = game.sources
-    .map((s) => `${s.catalogueName}: ${s.entryId}`)
-    .join(", ");
-  return `Sources: ${sourceList}`;
+  return "";
 }
 
 describe("GameDetailsScreen", () => {
@@ -255,75 +245,12 @@ describe("GameDetailsScreen", () => {
   });
 
   describe("buildBottomBarText", () => {
-    it("shows ROM repair message when no ROM", () => {
-      const game: GameDetails = {
-        id: "g1",
-        title: "Test",
-        publisher: "P",
-        year: 1985,
-        screenshots: [],
-        sources: [],
-        hasRom: false,
-        hasQuickstart: false,
-        hasContinue: false,
-        hasAnySnapshot: false,
-      };
-      const text = buildBottomBarText(game);
-      ok(text.includes("ROM files not found"));
-    });
-
-    it("shows sources when present", () => {
-      const game: GameDetails = {
-        id: "g2",
-        title: "Test",
-        publisher: "P",
-        year: 1985,
-        screenshots: [],
-        sources: [
-          { catalogueName: "GameBase64", entryId: "243" },
-          { catalogueName: "MobyGames", entryId: "1188" },
-        ],
-        hasRom: true,
-        hasQuickstart: false,
-        hasContinue: false,
-        hasAnySnapshot: false,
-      };
-      const text = buildBottomBarText(game);
-      ok(text.includes("Sources:"));
-      ok(text.includes("GameBase64: 243"));
-      ok(text.includes("MobyGames: 1188"));
-    });
-
-    it("returns empty string when no sources and has ROM", () => {
-      const game: GameDetails = {
-        id: "g3",
-        title: "Test",
-        publisher: "P",
-        year: 1985,
-        screenshots: [],
-        sources: [],
-        hasRom: true,
-        hasQuickstart: false,
-        hasContinue: false,
-        hasAnySnapshot: false,
-      };
-      eq(buildBottomBarText(game), "");
+    it("returns empty string by default", () => {
+      eq(buildBottomBarText(), "");
     });
 
     it("shows override message when provided", () => {
-      const game: GameDetails = {
-        id: "g4",
-        title: "Test",
-        publisher: "P",
-        year: 1985,
-        screenshots: [],
-        sources: [{ catalogueName: "GameBase64", entryId: "1" }],
-        hasRom: true,
-        hasQuickstart: false,
-        hasContinue: false,
-        hasAnySnapshot: false,
-      };
-      const text = buildBottomBarText(game, "No quickstart snapshot available");
+      const text = buildBottomBarText("No quickstart snapshot available");
       eq(text, "No quickstart snapshot available");
     });
   });
