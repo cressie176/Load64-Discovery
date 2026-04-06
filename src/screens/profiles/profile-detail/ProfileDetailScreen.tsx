@@ -141,13 +141,13 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
       });
     } else if (row.key === "key-mappings") {
       pushFrom({ selectedIndex: String(selectedIndex) }, "key-mapping-list", {
-        profileId,
+        ownerId: profileId,
       });
     } else if (row.key === "environment-variables") {
       pushFrom(
         { selectedIndex: String(selectedIndex) },
         "environment-variable-list",
-        { profileId },
+        { ownerId: profileId },
       );
     }
   }

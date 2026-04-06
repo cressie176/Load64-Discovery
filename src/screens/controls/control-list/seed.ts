@@ -18,14 +18,28 @@ export const SEED_CONTROLS: ControlsState = {
       type: "family",
     },
     {
-      id: "controller-logitech-dual-action",
+      id: "ctrl-8bitdo-pro2",
+      name: "8BitDo Pro 2",
+      type: "controller",
+      familyId: undefined,
+      familyName: undefined,
+    },
+    {
+      id: "ctrl-usb-gamepad",
+      name: "USB Gamepad",
+      type: "controller",
+      familyId: undefined,
+      familyName: undefined,
+    },
+    {
+      id: "ctrl-logitech-dual-action",
       name: "Logitech Dual Action",
       type: "controller",
       familyId: "family-logitech",
       familyName: "Logitech",
     },
     {
-      id: "controller-dualshock-4",
+      id: "ctrl-dualshock4",
       name: "DualShock 4",
       type: "controller",
       familyId: "family-dualshock",
@@ -476,14 +490,14 @@ export const SEED_CONTROLS: ControlsState = {
     // Logitech Dual Action controller overrides
     {
       id: "ctrl-lda-1",
-      ownerId: "controller-logitech-dual-action",
+      ownerId: "ctrl-logitech-dual-action",
       controlName: "A",
       canonicalName: "button_south",
       event: "button_1",
     },
     {
       id: "ctrl-lda-2",
-      ownerId: "controller-logitech-dual-action",
+      ownerId: "ctrl-logitech-dual-action",
       controlName: "B",
       canonicalName: "button_east",
       event: "button_2",

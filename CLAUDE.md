@@ -175,3 +175,17 @@ Each screen's `seed.ts` file provides the initial data for that screen. Collecti
 - Import and admin data sufficient to navigate those screens
 
 Use realistic C64 game titles and publisher names.
+
+### Keeping owner lists in sync
+
+Several screens (Controls, Environment Variables, Key Mappings) resolve breadcrumb labels and inheritance by looking up an `ownerId` in their own `owners` array. If an entity is missing from that array the breadcrumb shows the raw ID and the screen renders empty.
+
+**Rule:** every entity that can navigate to one of these screens must have a matching entry in that screen's `owners` array. Concretely:
+
+- Every controller in `SEED_CONTROLLERS` must appear in `SEED_CONTROLS.owners` and `SEED_ENV_VARS.owners`.
+- Every profile in `SEED_PROFILES` must appear in `SEED_KEY_MAPPINGS.owners` and `SEED_ENV_VARS.owners`.
+- Every controller family must appear in `SEED_CONTROLS.owners` and `SEED_ENV_VARS.owners`.
+
+**IDs must match exactly.** The `id` used in the controller/profile/family seed is what gets passed as `ownerId` through navigation. If the owner list uses a different string the lookup silently fails. When adding or renaming an entity, update every owner list that references it.
+
+When adding a new controller, profile, or controller family, add the corresponding owner entry to all relevant seeds in the same change.

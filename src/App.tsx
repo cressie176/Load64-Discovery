@@ -114,9 +114,7 @@ function AppScreens() {
   if (currentScreen === "key-mapping-list") {
     return (
       <KeyMappingListScreen
-        ownerId={
-          currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
-        }
+        ownerId={currentParams.ownerId ?? "profile-default"}
         statusMessage={currentParams.statusMessage}
       />
     );
@@ -127,9 +125,7 @@ function AppScreens() {
   if (currentScreen === "environment-variable-list") {
     return (
       <EnvironmentVariableListScreen
-        ownerId={
-          currentParams.ownerId ?? currentParams.profileId ?? "profile-default"
-        }
+        ownerId={currentParams.ownerId ?? "profile-default"}
         statusMessage={currentParams.statusMessage}
       />
     );

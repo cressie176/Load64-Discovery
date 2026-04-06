@@ -9,10 +9,22 @@ export const SEED_KEY_MAPPINGS: KeyMappingsState = {
       profileIds: [],
     },
     {
+      id: "profile-multiplayer",
+      name: "Multiplayer",
+      type: "profile",
+      profileIds: ["profile-default"],
+    },
+    {
       id: "profile-sid-8580",
       name: "SID 8580",
       type: "profile",
       profileIds: [],
+    },
+    {
+      id: "profile-shmups",
+      name: "Shmups",
+      type: "profile",
+      profileIds: ["profile-default"],
     },
     {
       id: "launch-config-monty",
