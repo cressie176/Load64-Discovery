@@ -1,13 +1,6 @@
 import type { ProfileDetailState } from "./types";
 
 export const SEED_PROFILE_DETAIL: ProfileDetailState = {
-  controllerRefs: [
-    { profileId: "profile-default", controllerId: "controller-1" },
-    { profileId: "profile-default", controllerId: "controller-2" },
-    { profileId: "profile-default", controllerId: "controller-3" },
-    { profileId: "profile-multiplayer", controllerId: "controller-1" },
-    { profileId: "profile-multiplayer", controllerId: "controller-2" },
-  ],
   keyMappings: [
     {
       id: "km-1",

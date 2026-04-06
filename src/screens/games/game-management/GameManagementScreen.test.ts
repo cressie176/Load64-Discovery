@@ -9,7 +9,7 @@ import {
 describe("GameManagementScreen", () => {
   describe("GAME_MANAGEMENT_ITEMS", () => {
     it("has the correct number of items", () => {
-      eq(GAME_MANAGEMENT_ITEMS.length, 15);
+      eq(GAME_MANAGEMENT_ITEMS.length, 14);
     });
 
     it("has items in the correct order with correct labels", () => {
@@ -24,7 +24,6 @@ describe("GameManagementScreen", () => {
         "Title Screen",
         "Gameplay Screen",
         "Controls",
-        "Controllers",
         "Profiles",
         "VICE Arguments",
         "Key Mappings",
@@ -66,7 +65,6 @@ describe("GameManagementScreen", () => {
         "ROMs",
         "Snapshots",
         "Controls",
-        "Controllers",
         "Profiles",
         "VICE Arguments",
         "Key Mappings",
@@ -119,21 +117,21 @@ describe("GameManagementScreen", () => {
 
   describe("wrapIndex", () => {
     it("moves forward by delta", () => {
-      eq(wrapIndex(0, 1, 15), 1);
-      eq(wrapIndex(7, 1, 15), 8);
+      eq(wrapIndex(0, 1, 14), 1);
+      eq(wrapIndex(7, 1, 14), 8);
     });
 
     it("moves backward by delta", () => {
-      eq(wrapIndex(7, -1, 15), 6);
-      eq(wrapIndex(1, -1, 15), 0);
+      eq(wrapIndex(7, -1, 14), 6);
+      eq(wrapIndex(1, -1, 14), 0);
     });
 
     it("wraps forward past the end to 0", () => {
-      eq(wrapIndex(14, 1, 15), 0);
+      eq(wrapIndex(13, 1, 14), 0);
     });
 
     it("wraps backward before start to last index", () => {
-      eq(wrapIndex(0, -1, 15), 14);
+      eq(wrapIndex(0, -1, 14), 13);
     });
   });
 

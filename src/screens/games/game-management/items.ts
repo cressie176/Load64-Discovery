@@ -63,7 +63,6 @@ const MEDIA_ITEMS: readonly GameManagementItem[] = [
 
 const CONFIGURATION_ITEMS: readonly GameManagementItem[] = [
   { label: "Controls", screen: "game-control-list" as ScreenName },
-  { label: "Controllers", screen: "controller-selection" as ScreenName },
   { label: "Profiles", screen: "game-profiles-selection" as ScreenName },
   { label: "VICE Arguments", screen: "vice-argument-list" as ScreenName },
   { label: "Key Mappings", screen: "key-mapping-list" as ScreenName },

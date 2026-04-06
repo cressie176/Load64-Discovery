@@ -7,13 +7,6 @@ function pluralise(count: number, singular: string): string {
   return count === 1 ? `${count} ${singular}` : `${count} ${singular}s`;
 }
 
-function countControllers(
-  state: ProfileDetailState,
-  profileId: string,
-): number {
-  return state.controllerRefs.filter((r) => r.profileId === profileId).length;
-}
-
 function countKeyMappings(
   state: ProfileDetailState,
   profileId: string,
@@ -27,17 +20,6 @@ function countEnvVars(state: ProfileDetailState, profileId: string): number {
 
 describe("ProfileDetailScreen", () => {
   describe("SEED_PROFILE_DETAIL", () => {
-    it("has controller refs", () => {
-      ok(SEED_PROFILE_DETAIL.controllerRefs.length > 0);
-    });
-
-    it("each controller ref has a profileId and controllerId", () => {
-      for (const ref of SEED_PROFILE_DETAIL.controllerRefs) {
-        eq(typeof ref.profileId, "string");
-        eq(typeof ref.controllerId, "string");
-      }
-    });
-
     it("has key mappings", () => {
       ok(SEED_PROFILE_DETAIL.keyMappings.length > 0);
     });
@@ -96,31 +78,6 @@ describe("ProfileDetailScreen", () => {
       eq(pluralise(2, "argument"), "2 arguments");
       eq(pluralise(2, "mapping"), "2 mappings");
       eq(pluralise(2, "variable"), "2 variables");
-    });
-  });
-
-  describe("countControllers", () => {
-    it("counts refs for the given profile", () => {
-      const count = countControllers(SEED_PROFILE_DETAIL, "profile-default");
-      eq(count, 3);
-    });
-
-    it("returns 0 for a profile with no refs", () => {
-      const count = countControllers(SEED_PROFILE_DETAIL, "profile-unknown");
-      eq(count, 0);
-    });
-
-    it("counts refs independently per profile", () => {
-      const defaultCount = countControllers(
-        SEED_PROFILE_DETAIL,
-        "profile-default",
-      );
-      const multiCount = countControllers(
-        SEED_PROFILE_DETAIL,
-        "profile-multiplayer",
-      );
-      eq(defaultCount, 3);
-      eq(multiCount, 2);
     });
   });
 

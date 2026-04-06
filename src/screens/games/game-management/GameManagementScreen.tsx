@@ -111,10 +111,6 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
     if (item.mediaSlot) {
       params.mediaSlot = item.mediaSlot;
     }
-    if (item.screen === "controller-selection") {
-      params.ownerType = "game";
-      if (game?.title) params.ownerName = game.title;
-    }
     pushFrom({ selectedIndex: String(selectedIndex) }, item.screen, params);
   }
 

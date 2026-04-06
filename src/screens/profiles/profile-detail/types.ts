@@ -1,8 +1,3 @@
-export interface ProfileControllerRef {
-  profileId: string;
-  controllerId: string;
-}
-
 export interface ProfileKeyMapping {
   id: string;
   profileId: string;
@@ -18,7 +13,6 @@ export interface ProfileEnvVar {
 }
 
 export interface ProfileDetailState {
-  controllerRefs: ProfileControllerRef[];
   keyMappings: ProfileKeyMapping[];
   envVars: ProfileEnvVar[];
 }

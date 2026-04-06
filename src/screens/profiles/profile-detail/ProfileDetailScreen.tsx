@@ -30,10 +30,6 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
 
   const profile = store.profiles.profiles.find((p) => p.id === profileId);
 
-  const controllerCount = store.profileDetail.controllerRefs.filter(
-    (r) => r.profileId === profileId,
-  ).length;
-
   const viceArgumentCount = store.viceArguments.arguments.filter(
     (a) => a.ownerId === profileId,
   ).length;
@@ -47,12 +43,6 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
   ).length;
 
   const rows: SettingRow[] = [
-    {
-      key: "controllers",
-      label: "Controllers",
-      count: controllerCount,
-      countUnit: "controller",
-    },
     {
       key: "vice-arguments",
       label: "VICE Arguments",
@@ -129,13 +119,7 @@ export function ProfileDetailScreen({ profileId }: ProfileDetailScreenProps) {
   }
 
   function activateRow(row: SettingRow) {
-    if (row.key === "controllers") {
-      pushFrom(
-        { selectedIndex: String(selectedIndex) },
-        "controller-selection",
-        { profileId },
-      );
-    } else if (row.key === "vice-arguments") {
+    if (row.key === "vice-arguments") {
       pushFrom({ selectedIndex: String(selectedIndex) }, "vice-argument-list", {
         ownerId: profileId,
       });

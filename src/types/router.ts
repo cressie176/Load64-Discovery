@@ -13,7 +13,6 @@ export type ScreenName =
   | "profile-list"
   | "profile-detail"
   | "profile-edit"
-  | "controller-selection"
   | "key-mapping-list"
   | "key-mapping-edit"
   | "environment-variable-list"
