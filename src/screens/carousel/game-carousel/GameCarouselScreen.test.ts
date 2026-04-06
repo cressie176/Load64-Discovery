@@ -59,17 +59,18 @@ function getSectionBoundary(
   return i >= 0 ? i : 0;
 }
 
+function buildLaunchActions(game: Game): string {
+  if (!game.launchable) return game.blockingReason ?? "Unlaunchable";
+  const actions: string[] = [];
+  if (game.hasQuickstart) actions.push("Quickstart (X | Alt+Enter)");
+  if (game.hasRom) actions.push("Load (B | CTRL+Enter)");
+  if (game.hasSave) actions.push("Continue (Y | Shift+Enter)");
+  return actions.join(" ◆ ");
+}
+
 function buildStatusMessage(game: Game | undefined): string {
   if (!game) return "";
-  const meta = `${game.title} - ${game.publisher} - ${game.year}`;
-  if (!game.launchable) {
-    return `${meta}: ${game.blockingReason ?? "Unlaunchable"}`;
-  }
-  const options: string[] = ["Enter: Details"];
-  if (game.hasQuickstart) options.push("Alt+Enter: Quickstart");
-  if (game.hasRom) options.push("Ctrl+Enter: Load ROM");
-  if (game.hasSave) options.push("Shift+Enter: Continue");
-  return `${meta}: ${options.join("  ")}`;
+  return buildLaunchActions(game);
 }
 
 function wrapIndex(index: number, delta: number, length: number): number {
@@ -367,11 +368,10 @@ describe("GameCarouselScreen", () => {
         hasSave: false,
       };
       const msg = buildStatusMessage(game);
-      ok(msg.includes("No ROM configured"));
-      ok(msg.includes("Outrun"));
+      eq(msg, "No ROM configured");
     });
 
-    it("shows available launch options for launchable game with all options", () => {
+    it("shows available launch actions as diamond-separated list", () => {
       const game: Game = {
         id: "g2",
         title: "Monty on the Run",
@@ -384,13 +384,13 @@ describe("GameCarouselScreen", () => {
         hasSave: true,
       };
       const msg = buildStatusMessage(game);
-      ok(msg.includes("Enter: Details"));
-      ok(msg.includes("Alt+Enter: Quickstart"));
-      ok(msg.includes("Ctrl+Enter: Load ROM"));
-      ok(msg.includes("Shift+Enter: Continue"));
+      ok(msg.includes("Quickstart (X | Alt+Enter)"));
+      ok(msg.includes("Load (B | CTRL+Enter)"));
+      ok(msg.includes("Continue (Y | Shift+Enter)"));
+      ok(msg.includes(" ◆ "));
     });
 
-    it("omits quickstart option when hasQuickstart is false", () => {
+    it("omits quickstart action when hasQuickstart is false", () => {
       const game: Game = {
         id: "g3",
         title: "Elite",
@@ -403,12 +403,12 @@ describe("GameCarouselScreen", () => {
         hasSave: true,
       };
       const msg = buildStatusMessage(game);
-      ok(!msg.includes("Alt+Enter: Quickstart"));
-      ok(msg.includes("Ctrl+Enter: Load ROM"));
-      ok(msg.includes("Shift+Enter: Continue"));
+      ok(!msg.includes("Quickstart"));
+      ok(msg.includes("Load (B | CTRL+Enter)"));
+      ok(msg.includes("Continue (Y | Shift+Enter)"));
     });
 
-    it("omits continue option when hasSave is false", () => {
+    it("omits continue action when hasSave is false", () => {
       const game: Game = {
         id: "g4",
         title: "Iridis Alpha",
@@ -421,7 +421,7 @@ describe("GameCarouselScreen", () => {
         hasSave: false,
       };
       const msg = buildStatusMessage(game);
-      ok(!msg.includes("Shift+Enter: Continue"));
+      ok(!msg.includes("Continue"));
     });
   });
 

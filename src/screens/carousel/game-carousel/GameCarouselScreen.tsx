@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { Game } from "./types";
@@ -9,8 +9,13 @@ type TopBarCta = "compilations" | "admin";
 
 const TOP_BAR_CTAS: TopBarCta[] = ["compilations", "admin"];
 
-const VISIBLE_ITEMS = 5;
-const HALF = Math.floor(VISIBLE_ITEMS / 2);
+// Minimum and maximum number of slots visible on each side of the selected item
+const MIN_HALF = 1;
+const MAX_HALF = 4;
+
+// Cover dimensions at the base (offset 0) size
+const BASE_COVER_WIDTH = 160;
+const BASE_COVER_GAP = 24;
 
 function wrapIndex(index: number, delta: number, length: number): number {
   return (index + delta + length) % length;
@@ -73,23 +78,40 @@ function getSectionBoundary(
   return i >= 0 ? i : 0;
 }
 
+function buildLaunchActions(game: Game): string {
+  if (!game.launchable) return game.blockingReason ?? "Unlaunchable";
+  const actions: string[] = [];
+  if (game.hasQuickstart) actions.push("Quickstart (X | Alt+Enter)");
+  if (game.hasRom) actions.push("Load (B | CTRL+Enter)");
+  if (game.hasSave) actions.push("Continue (Y | Shift+Enter)");
+  return actions.join(" ◆ ");
+}
+
 function buildStatusMessage(game: Game | undefined): string {
   if (!game) return "";
-  const meta = `${game.title} - ${game.publisher} - ${game.year}`;
-  if (!game.launchable) {
-    return `${meta}: ${game.blockingReason ?? "Unlaunchable"}`;
-  }
-  const options: string[] = ["Enter: Details"];
-  if (game.hasQuickstart) options.push("Alt+Enter: Quickstart");
-  if (game.hasRom) options.push("Ctrl+Enter: Load ROM");
-  if (game.hasSave) options.push("Shift+Enter: Continue");
-  return `${meta}: ${options.join("  ")}`;
+  return buildLaunchActions(game);
 }
 
 function buildBlockedMessage(game: Game | undefined, action: string): string {
   if (!game) return "";
-  const meta = `${game.title} - ${game.publisher} - ${game.year}`;
-  return `${meta}: ${action}`;
+  return action;
+}
+
+function computeHalf(containerWidth: number): number {
+  // Each side slot needs approximately BASE_COVER_WIDTH + BASE_COVER_GAP pixels
+  // (with shrinkage applied, slots get smaller, but we reserve full-size space)
+  const sideSlotWidth = BASE_COVER_WIDTH + BASE_COVER_GAP;
+  const availableForSides = (containerWidth - BASE_COVER_WIDTH) / 2;
+  const half = Math.floor(availableForSides / sideSlotWidth);
+  return Math.max(MIN_HALF, Math.min(MAX_HALF, half));
+}
+
+function buildGameInfoLine(game: Game | undefined): string {
+  if (!game) return "";
+  const parts = [game.title];
+  if (game.publisher) parts.push(game.publisher);
+  if (game.year) parts.push(String(game.year));
+  return parts.join(" - ");
 }
 
 interface GameCarouselScreenProps {
@@ -131,14 +153,22 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
       games[Math.min(savedPosition, Math.max(0, games.length - 1))],
     ),
   );
+  const [half, setHalf] = useState(MIN_HALF);
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const compilationsButtonRef = useRef<HTMLButtonElement>(null);
   const adminButtonRef = useRef<HTMLButtonElement>(null);
 
   const safeSelectedIndex =
     games.length > 0 ? Math.min(selectedIndex, games.length - 1) : 0;
   const selectedGame = games[safeSelectedIndex];
+
+  const updateHalf = useCallback(() => {
+    if (carouselRef.current) {
+      setHalf(computeHalf(carouselRef.current.offsetWidth));
+    }
+  }, []);
 
   // Save position and update active compilation when compilationId changes
   useEffect(() => {
@@ -172,6 +202,13 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
   useEffect(() => {
     setStatusMessage(buildStatusMessage(selectedGame));
   }, [selectedGame]);
+
+  useEffect(() => {
+    updateHalf();
+    const observer = new ResizeObserver(updateHalf);
+    if (carouselRef.current) observer.observe(carouselRef.current);
+    return () => observer.disconnect();
+  }, [updateHalf]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -362,7 +399,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
   function getVisibleItems(): Array<{ game: Game; offset: number }> {
     if (games.length === 0) return [];
     const items: Array<{ game: Game; offset: number }> = [];
-    for (let offset = -HALF; offset <= HALF; offset++) {
+    for (let offset = -half; offset <= half; offset++) {
       const index = wrapIndex(safeSelectedIndex + offset, 0, games.length);
       const game = games[index];
       if (game) {
@@ -373,10 +410,10 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
   }
 
   function itemClassName(offset: number): string {
-    const base = "carousel__item";
-    const parts = [base];
+    const absOffset = Math.abs(offset);
+    const parts = ["carousel__item"];
     if (offset === 0) parts.push("carousel__item--selected");
-    else if (Math.abs(offset) === 1) parts.push("carousel__item--adjacent");
+    else if (absOffset === 1) parts.push("carousel__item--adjacent");
     else parts.push("carousel__item--far");
     if (offset === 0 && selectedGame && !selectedGame.launchable) {
       parts.push("carousel__item--unlaunchable");
@@ -385,6 +422,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
   }
 
   const compilationName = activeCompilation?.name ?? "Games";
+  const gameInfoLine = buildGameInfoLine(selectedGame);
 
   return (
     <div role="application" className="screen" ref={containerRef} tabIndex={-1}>
@@ -419,10 +457,14 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
           compilation.
         </div>
       ) : (
-        <div className="carousel">
+        <div className="carousel" ref={carouselRef}>
           <div className="carousel__track">
             {getVisibleItems().map(({ game, offset }) => (
-              <div key={offset} className={itemClassName(offset)}>
+              <div
+                key={offset}
+                className={itemClassName(offset)}
+                style={{ "--offset": Math.abs(offset) } as React.CSSProperties}
+              >
                 <div className="carousel__item-wrapper">
                   {game.coverUrl ? (
                     <img
@@ -446,6 +488,7 @@ export function GameCarouselScreen({ compilationId }: GameCarouselScreenProps) {
               </div>
             ))}
           </div>
+          <div className="carousel__game-info">{gameInfoLine}</div>
         </div>
       )}
       <div className="screen__bottombar">{statusMessage}</div>

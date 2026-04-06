@@ -6,42 +6,43 @@
   align-items: center;
   display: flex;
   flex: 1;
+  flex-direction: column;
   justify-content: center;
   overflow: hidden;
-  padding: 24px 0;
+  padding: 24px 0 16px;
+  perspective: 1200px;
   position: relative;
 }
 
 .carousel__track {
-  align-items: center;
+  align-items: flex-end;
   display: flex;
   gap: 16px;
   position: relative;
+  transform-style: preserve-3d;
 }
 
 .carousel__item {
+  --offset: 0;
+  --depth-scale: clamp(0.45, calc(1 - var(--offset) * 0.18), 1);
+  --depth-z: calc(var(--offset) * -140px);
+  --depth-opacity: clamp(0.35, calc(1 - var(--offset) * 0.2), 1);
+
   align-items: center;
   cursor: none;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  gap: 0;
+  opacity: var(--depth-opacity);
+  transform: scale(var(--depth-scale)) translateZ(var(--depth-z));
+  transform-origin: center bottom;
   transition:
-    transform 0.2s ease,
-    opacity 0.2s ease;
+    transform 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .carousel__item--selected {
-  transform: scale(1.2);
-  z-index: 1;
-}
-
-.carousel__item--adjacent {
-  opacity: 0.75;
-}
-
-.carousel__item--far {
-  opacity: 0.4;
+  z-index: 10;
 }
 
 .carousel__cover {
@@ -110,4 +111,11 @@
 
 .carousel__item-wrapper {
   position: relative;
+}
+
+.carousel__game-info {
+  color: var(--colour-text);
+  font-size: 14px;
+  margin-top: 20px;
+  text-align: center;
 }
