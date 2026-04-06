@@ -48,7 +48,7 @@ interface NowPlayingSwapDisksScreenProps {
 export function NowPlayingSwapDisksScreen({
   gameId,
 }: NowPlayingSwapDisksScreenProps) {
-  const { pop, replace } = useRouter();
+  const { pop } = useRouter();
   const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -174,7 +174,7 @@ export function NowPlayingSwapDisksScreen({
         nowPlaying: { ...prev.nowPlaying, activeDisk: null },
       }));
       setBottomBarStatus({ kind: "ejected" });
-      replace("now-playing", { gameId });
+      pop();
     }
   }
 
@@ -203,7 +203,7 @@ export function NowPlayingSwapDisksScreen({
       },
     }));
     setBottomBarStatus({ kind: "mounted-disk", diskNumber: diskIndex + 1 });
-    replace("now-playing", { gameId });
+    pop();
   }
 
   function activateOther() {
@@ -216,7 +216,7 @@ export function NowPlayingSwapDisksScreen({
       },
     }));
     setBottomBarStatus({ kind: "mounted-file", filename: simulatedFilename });
-    replace("now-playing", { gameId });
+    pop();
   }
 
   function toggleFocusRegion(reverse = false) {

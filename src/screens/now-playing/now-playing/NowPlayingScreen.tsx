@@ -55,7 +55,7 @@ interface NowPlayingScreenProps {
 }
 
 export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
-  const { pop, push } = useRouter();
+  const { pop, push, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -67,9 +67,12 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
 
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("quit-game");
-  const [focusedAction, setFocusedAction] = useState<NowPlayingAction>(
-    ACTIONS[0] as NowPlayingAction,
-  );
+  const [focusedAction, setFocusedAction] = useState<NowPlayingAction>(() => {
+    const saved = currentParams.focusedAction;
+    return (
+      ACTIONS.includes(saved as NowPlayingAction) ? saved : ACTIONS[0]
+    ) as NowPlayingAction;
+  });
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
   const [quitConfirmSelection, setQuitConfirmSelection] = useState<
     "no" | "yes"
@@ -187,13 +190,13 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
         break;
       }
       case "swap-disks":
-        push("now-playing-swap-disks", { gameId });
+        pushFrom({ focusedAction }, "now-playing-swap-disks", { gameId });
         break;
       case "take-screenshot":
-        push("now-playing-take-screenshot", { gameId });
+        pushFrom({ focusedAction }, "now-playing-take-screenshot", { gameId });
         break;
       case "take-snapshot":
-        push("now-playing-take-snapshot", { gameId });
+        pushFrom({ focusedAction }, "now-playing-take-snapshot", { gameId });
         break;
     }
   }

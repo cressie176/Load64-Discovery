@@ -59,7 +59,7 @@ interface NowPlayingTakeScreenshotScreenProps {
 export function NowPlayingTakeScreenshotScreen({
   gameId,
 }: NowPlayingTakeScreenshotScreenProps) {
-  const { pop, replace } = useRouter();
+  const { pop } = useRouter();
   const { store } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -67,7 +67,7 @@ export function NowPlayingTakeScreenshotScreen({
   const gameTitle = game?.title ?? nowPlaying.gameTitle;
 
   const [mode, setMode] = useState<ScreenMode>("capture");
-  const [name, setName] = useState("Gameplay Screen");
+  const [name, setName] = useState("");
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [focusedCta] = useState<"back">("back");
   const [activeField, setActiveField] = useState<FormField>("name");
@@ -250,15 +250,15 @@ export function NowPlayingTakeScreenshotScreen({
     setConflict(null);
     setBottomBarStatus({ kind: "saved", filename });
     if (overwrite) {
-      replace("now-playing", { gameId });
+      pop();
     } else {
-      replace("now-playing", { gameId });
+      pop();
     }
   }
 
   function executeDiscard() {
     setConflict(null);
-    replace("now-playing", { gameId });
+    pop();
   }
 
   function toggleFocusRegion(reverse = false) {
