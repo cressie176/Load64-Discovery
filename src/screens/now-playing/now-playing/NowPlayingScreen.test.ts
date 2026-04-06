@@ -17,6 +17,8 @@ function getActionLabel(action: NowPlayingAction): string {
       return "Take screenshot";
     case "take-snapshot":
       return "Take snapshot";
+    case "quit-game":
+      return "Quit Game";
   }
 }
 
@@ -98,6 +100,10 @@ describe("NowPlayingScreen", () => {
     it("returns correct label for take-snapshot", () => {
       eq(getActionLabel("take-snapshot"), "Take snapshot");
     });
+
+    it("returns correct label for quit-game", () => {
+      eq(getActionLabel("quit-game"), "Quit Game");
+    });
   });
 
   describe("buildBottomBarMessage", () => {
@@ -166,6 +172,18 @@ describe("NowPlayingScreen", () => {
       eq(
         buildBottomBarMessage(
           "take-snapshot",
+          "Controller A",
+          "Controller B",
+          null,
+        ),
+        "",
+      );
+    });
+
+    it("returns empty string for quit-game", () => {
+      eq(
+        buildBottomBarMessage(
+          "quit-game",
           "Controller A",
           "Controller B",
           null,

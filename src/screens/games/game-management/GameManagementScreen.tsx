@@ -305,7 +305,7 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
                 onClick={confirmDelete}
                 type="button"
               >
-                [Delete]
+                Delete
               </button>
               <button
                 ref={cancelButtonRef}

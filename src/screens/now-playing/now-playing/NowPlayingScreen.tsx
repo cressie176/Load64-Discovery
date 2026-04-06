@@ -4,11 +4,7 @@ import { useStore } from "../../../store/StoreContext";
 import type { NowPlayingAction } from "./types";
 import "./index.css";
 
-type FocusRegion = "list" | "topbar";
-type TopBarCta = "quit-game";
-
-const TOP_BAR_CTAS: TopBarCta[] = ["quit-game"];
-const ACTIONS: NowPlayingAction[] = [
+const MAIN_ACTIONS: NowPlayingAction[] = [
   "resume",
   "view-controls",
   "swap-joystick",
@@ -16,6 +12,8 @@ const ACTIONS: NowPlayingAction[] = [
   "take-screenshot",
   "take-snapshot",
 ];
+const DANGER_ACTIONS: NowPlayingAction[] = ["quit-game"];
+const ACTIONS: NowPlayingAction[] = [...MAIN_ACTIONS, ...DANGER_ACTIONS];
 
 function getActionLabel(action: NowPlayingAction): string {
   switch (action) {
@@ -31,6 +29,8 @@ function getActionLabel(action: NowPlayingAction): string {
       return "Take screenshot";
     case "take-snapshot":
       return "Take snapshot";
+    case "quit-game":
+      return "Quit Game";
   }
 }
 
@@ -65,8 +65,6 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
   const gameplayScreenshot =
     game?.screenshots.find((s) => s.slot === "gameplay") ?? null;
 
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
-  const [focusedCta, setFocusedCta] = useState<TopBarCta>("quit-game");
   const [focusedAction, setFocusedAction] = useState<NowPlayingAction>(() => {
     const saved = currentParams.focusedAction;
     return (
@@ -79,7 +77,6 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
   >("no");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const quitButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -98,27 +95,10 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       handleQuitConfirmKey(event);
       return;
     }
-    if (event.key === "Tab") {
-      event.preventDefault();
-      toggleFocusRegion(event.shiftKey);
-      return;
-    }
     if (event.key === "Escape") {
       return;
     }
-    if (focusRegion === "topbar") {
-      handleTopBarKey(event);
-      return;
-    }
     handleListKey(event);
-  }
-
-  function handleTopBarKey(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      if (focusedCta === "quit-game") {
-        openQuitConfirm();
-      }
-    }
   }
 
   function handleListKey(event: KeyboardEvent) {
@@ -159,7 +139,6 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
 
   function closeQuitConfirm() {
     setShowQuitConfirm(false);
-    setFocusRegion("list");
     containerRef.current?.focus();
   }
 
@@ -207,34 +186,9 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       case "take-snapshot":
         pushFrom({ focusedAction }, "now-playing-take-snapshot", { gameId });
         break;
-    }
-  }
-
-  function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "list") {
-      const cta = reverse
-        ? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
-        : TOP_BAR_CTAS[0];
-      setFocusRegion("topbar");
-      setFocusedCta(cta as TopBarCta);
-      focusCtaButton(cta as TopBarCta);
-    } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-        setFocusedCta(nextCta);
-        focusCtaButton(nextCta);
-      } else {
-        setFocusRegion("list");
-        containerRef.current?.focus();
-      }
-    }
-  }
-
-  function focusCtaButton(cta: TopBarCta) {
-    if (cta === "quit-game") {
-      quitButtonRef.current?.focus();
+      case "quit-game":
+        openQuitConfirm();
+        break;
     }
   }
 
@@ -248,40 +202,35 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
     diskLabel,
   );
 
+  function renderActionRow(action: NowPlayingAction) {
+    const selected = focusedAction === action;
+    return (
+      <li
+        key={action}
+        className={`list__row${selected ? " list__row--selected" : ""}`}
+      >
+        {getActionLabel(action)}
+      </li>
+    );
+  }
+
   return (
     <div role="application" className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">
           Now Playing &gt; {gameTitle}
         </span>
-        <div className="screen__topbar-ctas">
-          <button
-            ref={quitButtonRef}
-            className={`topbar-cta topbar-cta--action${focusRegion === "topbar" && focusedCta === "quit-game" ? " topbar-cta--focused" : ""}`}
-            onClick={openQuitConfirm}
-            type="button"
-          >
-            Quit Game
-          </button>
-        </div>
       </div>
       <div className="screen__content">
         <div className="now-playing">
           <div className="now-playing__actions">
             <div className="now-playing__actions-label">Actions</div>
             <ul className="list">
-              {ACTIONS.map((action) => {
-                const selected =
-                  focusRegion === "list" && focusedAction === action;
-                return (
-                  <li
-                    key={action}
-                    className={`list__row${selected ? " list__row--selected" : ""}`}
-                  >
-                    {getActionLabel(action)}
-                  </li>
-                );
-              })}
+              {MAIN_ACTIONS.map((action) => renderActionRow(action))}
+              <li className="list__group-header list__group-header--danger">
+                DANGER ZONE
+              </li>
+              {DANGER_ACTIONS.map((action) => renderActionRow(action))}
             </ul>
           </div>
           <div className="now-playing__preview">

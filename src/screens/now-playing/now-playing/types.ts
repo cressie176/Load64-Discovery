@@ -4,7 +4,8 @@ export type NowPlayingAction =
   | "swap-joystick"
   | "swap-disks"
   | "take-screenshot"
-  | "take-snapshot";
+  | "take-snapshot"
+  | "quit-game";
 
 export interface JoystickPorts {
   port1ControllerId: string;
