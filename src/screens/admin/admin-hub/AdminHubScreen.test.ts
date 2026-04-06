@@ -47,7 +47,12 @@ describe("AdminHubScreen", () => {
       const headers = ADMIN_HUB_ROWS.filter(
         (row) => row.kind === "group-header",
       ).map((row) => row.label);
-      deep(headers, ["SYSTEM CONFIGURATION", "GAMING CONFIGURATION", "TOOLS"]);
+      deep(headers, [
+        "SYSTEM CONFIGURATION",
+        "GAMING CONFIGURATION",
+        "TOOLS",
+        "DANGER ZONE",
+      ]);
     });
 
     it("has all items from ADMIN_HUB_ITEMS as item rows", () => {

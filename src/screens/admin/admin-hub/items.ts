@@ -15,8 +15,8 @@ type ItemWithAction = {
 export type AdminHubItem = ItemWithScreen | ItemWithAction;
 
 export type AdminHubRow =
-  | { kind: "group-header"; label: string }
-  | { kind: "item"; item: AdminHubItem; ungrouped?: true };
+  | { kind: "group-header"; label: string; danger?: true }
+  | { kind: "item"; item: AdminHubItem };
 
 const SYSTEM_CONFIGURATION_ITEMS: readonly AdminHubItem[] = [
   { label: "General Settings", screen: "general-settings" as ScreenName },
@@ -42,7 +42,7 @@ const TOOLS_ITEMS: readonly AdminHubItem[] = [
   { label: "Audit", screen: "audit" as ScreenName },
 ];
 
-const UNGROUPED_ITEMS: readonly AdminHubItem[] = [
+const DANGER_ZONE_ITEMS: readonly AdminHubItem[] = [
   { label: "Quit Load!64", action: "quit" },
 ];
 
@@ -50,7 +50,7 @@ export const ADMIN_HUB_ITEMS: readonly AdminHubItem[] = [
   ...SYSTEM_CONFIGURATION_ITEMS,
   ...GAMING_CONFIGURATION_ITEMS,
   ...TOOLS_ITEMS,
-  ...UNGROUPED_ITEMS,
+  ...DANGER_ZONE_ITEMS,
 ];
 
 export const ADMIN_HUB_ROWS: readonly AdminHubRow[] = [
@@ -64,9 +64,8 @@ export const ADMIN_HUB_ROWS: readonly AdminHubRow[] = [
   ),
   { kind: "group-header", label: "TOOLS" },
   ...TOOLS_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
-  ...UNGROUPED_ITEMS.map(
-    (item): AdminHubRow => ({ kind: "item", item, ungrouped: true }),
-  ),
+  { kind: "group-header", label: "DANGER ZONE", danger: true },
+  ...DANGER_ZONE_ITEMS.map((item): AdminHubRow => ({ kind: "item", item })),
 ];
 
 export const QUIT_OPTIONS = ["Yes", "No"] as const;

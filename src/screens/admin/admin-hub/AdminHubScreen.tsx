@@ -116,16 +116,18 @@ export function AdminHubScreen() {
           {ADMIN_HUB_ROWS.map((row) => {
             if (row.kind === "group-header") {
               return (
-                <li className="list__group-header" key={row.label}>
+                <li
+                  className={`list__group-header${row.danger ? " list__group-header--danger" : ""}`}
+                  key={row.label}
+                >
                   {row.label}
                 </li>
               );
             }
             const itemIndex = ADMIN_HUB_ITEMS.indexOf(row.item);
-            const ungroupedClass = row.ungrouped ? " list__row--ungrouped" : "";
             return (
               <li
-                className={`list__row${ungroupedClass}${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+                className={`list__row${itemIndex === selectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
                 key={row.item.label}
               >
                 {row.item.label}

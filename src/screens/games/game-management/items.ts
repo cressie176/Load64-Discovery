@@ -25,8 +25,8 @@ type ItemWithAction = {
 export type GameManagementItem = ItemWithScreen | ItemWithAction;
 
 export type GameManagementRow =
-  | { kind: "group-header"; label: string }
-  | { kind: "item"; item: GameManagementItem; ungrouped?: true };
+  | { kind: "group-header"; label: string; danger?: true }
+  | { kind: "item"; item: GameManagementItem };
 
 const GAME_ITEMS: readonly GameManagementItem[] = [
   { label: "Game Info", screen: "game-info-edit" as ScreenName },
@@ -73,7 +73,7 @@ const CONFIGURATION_ITEMS: readonly GameManagementItem[] = [
   },
 ];
 
-const UNGROUPED_ITEMS: readonly GameManagementItem[] = [
+const DANGER_ZONE_ITEMS: readonly GameManagementItem[] = [
   { label: "Delete Game", action: "delete-game" },
 ];
 
@@ -81,7 +81,7 @@ export const GAME_MANAGEMENT_ITEMS: readonly GameManagementItem[] = [
   ...GAME_ITEMS,
   ...MEDIA_ITEMS,
   ...CONFIGURATION_ITEMS,
-  ...UNGROUPED_ITEMS,
+  ...DANGER_ZONE_ITEMS,
 ];
 
 export const GAME_MANAGEMENT_ROWS: readonly GameManagementRow[] = [
@@ -93,8 +93,9 @@ export const GAME_MANAGEMENT_ROWS: readonly GameManagementRow[] = [
   ...CONFIGURATION_ITEMS.map(
     (item): GameManagementRow => ({ kind: "item", item }),
   ),
-  ...UNGROUPED_ITEMS.map(
-    (item): GameManagementRow => ({ kind: "item", item, ungrouped: true }),
+  { kind: "group-header", label: "DANGER ZONE", danger: true },
+  ...DANGER_ZONE_ITEMS.map(
+    (item): GameManagementRow => ({ kind: "item", item }),
   ),
 ];
 
