@@ -19,12 +19,14 @@ interface GameManagementScreenProps {
 }
 
 export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
-  const { pop, push, replace } = useRouter();
+  const { pop, pushFrom, replace, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(
+    Number(currentParams.selectedIndex ?? 0),
+  );
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [showDeleteOverlay, setShowDeleteOverlay] = useState(false);
@@ -112,14 +114,6 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
       params.mediaSlot = item.mediaSlot;
     }
     pushFrom({ selectedIndex: String(selectedIndex) }, item.screen, params);
-  }
-
-  function pushFrom(
-    saved: Record<string, string>,
-    screen: Parameters<typeof push>[0],
-    params?: Record<string, string>,
-  ) {
-    push(screen, { ...saved, ...params });
   }
 
   function openDeleteOverlay() {
