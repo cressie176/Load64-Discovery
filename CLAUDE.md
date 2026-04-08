@@ -155,6 +155,24 @@ All screens read from and write to the shared `StoreContext`. The store is initi
 5. Wire the screen into the router (`src/App.tsx` and `src/types/router.ts`).
 6. Screens must be appropriately styled and work well on desktop (not just controller).
 
+## CSS Conventions
+
+Read the existing CSS before adding new rules to understand established patterns. Always read `src/index.css` before writing screen CSS.
+
+- Use BEM naming: `.block__element--modifier`
+- Use the design tokens defined in `:root` (e.g. `var(--colour-accent)`, `var(--font-mono)`)
+- Add a section comment block for each new BEM block:
+
+```css
+/* ============================================================
+   <Screen name>
+   ============================================================ */
+```
+
+- Prefer reusing existing shared classes (`.list`, `.list__row`, `.form`, `.form__field`, etc.) over introducing new blocks when the layout matches. Only introduce a new BEM block when the screen has a distinct layout that shared classes cannot cover.
+- Selected list rows use `background: var(--colour-surface-2)` and a `::before` pseudo-element with `content: "›"` and `color: var(--colour-accent)`
+- Inputs use `background: var(--colour-surface)`, `border: 1px solid var(--colour-border)`, `outline: none`, and `border-color: var(--colour-accent)` on `:focus`
+
 ## Inherited Items
 
 Screens that show inherited items (e.g. Control List, Environment Variable List) must visually distinguish inherited rows from owned rows — italics or muted colour. This treatment must be consistent across all such screens. Inherited rows are read-only; activating one opens the editor pre-populated with the parent's values so the user can create a local override.
