@@ -277,6 +277,7 @@ export function GameCatalogueSourceAddScreen({
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftId}
               onChange={(e) => setDraftId(e.target.value)}
               onFocus={() => {

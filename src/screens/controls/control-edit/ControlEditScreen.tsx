@@ -369,6 +369,7 @@ export function ControlEditScreen() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftControlName}
               onChange={(e) => setDraftControlName(e.target.value)}
               onFocus={() => {
@@ -389,6 +390,7 @@ export function ControlEditScreen() {
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck={false}
                 value={CANONICAL_CONTROL_LABELS[draftCanonicalName]}
                 readOnly
                 tabIndex={-1}
@@ -428,6 +430,7 @@ export function ControlEditScreen() {
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck={false}
                 value={isCapturing ? "Waiting..." : draftEvent}
                 readOnly={isCapturing}
                 onChange={(e) => setDraftEvent(e.target.value)}

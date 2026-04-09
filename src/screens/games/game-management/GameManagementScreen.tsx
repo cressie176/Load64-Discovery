@@ -275,6 +275,7 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={deleteInput}
               onChange={(e) => setDeleteInput(e.target.value)}
               onKeyDown={(e) => {

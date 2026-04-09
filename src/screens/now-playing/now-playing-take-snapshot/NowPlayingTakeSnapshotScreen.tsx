@@ -308,6 +308,7 @@ export function NowPlayingTakeSnapshotScreen({
                     autoComplete="off"
                     autoCorrect="off"
                     autoCapitalize="off"
+                    spellCheck={false}
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     onFocus={() => {

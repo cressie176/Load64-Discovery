@@ -232,6 +232,7 @@ export function ProfileEditScreen({ profileId }: ProfileEditScreenProps) {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {

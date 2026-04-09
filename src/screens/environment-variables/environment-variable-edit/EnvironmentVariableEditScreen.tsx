@@ -263,6 +263,7 @@ export function EnvironmentVariableEditScreen() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {
@@ -283,6 +284,7 @@ export function EnvironmentVariableEditScreen() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftValue}
               onChange={(e) => setDraftValue(e.target.value)}
               onFocus={() => {

@@ -343,6 +343,7 @@ export function GeneralSettingsScreen() {
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck={false}
                 value={draft.gamesDirectory}
                 onChange={(e) =>
                   setDraft((prev) => ({
@@ -380,6 +381,7 @@ export function GeneralSettingsScreen() {
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draft.catalogueUrl}
               onChange={(e) =>
                 setDraft((prev) => ({ ...prev, catalogueUrl: e.target.value }))

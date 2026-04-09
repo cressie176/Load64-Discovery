@@ -241,6 +241,7 @@ export function ControllerFamilyEditScreen({
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
+              spellCheck={false}
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
               onFocus={() => {

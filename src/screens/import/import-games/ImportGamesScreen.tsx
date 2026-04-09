@@ -194,6 +194,7 @@ export function ImportGamesScreen() {
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck={false}
                 value={path}
               />
               <BrowseButton

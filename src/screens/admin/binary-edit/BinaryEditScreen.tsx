@@ -229,6 +229,7 @@ export function BinaryEditScreen() {
                 autoComplete="off"
                 autoCorrect="off"
                 autoCapitalize="off"
+                spellCheck={false}
                 value={draftPath}
                 onChange={(e) => setDraftPath(e.target.value)}
                 onFocus={() => {
