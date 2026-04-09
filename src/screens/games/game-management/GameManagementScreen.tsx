@@ -109,11 +109,7 @@ export function GameManagementScreen({ gameId }: GameManagementScreenProps) {
       openDeleteOverlay();
       return;
     }
-    const params: Record<string, string> = { gameId };
-    if (item.mediaSlot) {
-      params.mediaSlot = item.mediaSlot;
-    }
-    pushFrom({ selectedIndex: String(selectedIndex) }, item.screen, params);
+    pushFrom({ selectedIndex: String(selectedIndex) }, item.screen, { gameId });
   }
 
   function openDeleteOverlay() {

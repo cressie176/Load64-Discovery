@@ -1,15 +1,8 @@
 import type { ScreenName } from "../../../types/router";
 
-type MediaSlot =
-  | "cover-thumbnail"
-  | "loading-screen"
-  | "title-screen"
-  | "gameplay-screen";
-
 type ItemWithScreen = {
   label: string;
   screen: ScreenName;
-  mediaSlot?: MediaSlot;
   action?: never;
   deleteAction?: never;
 };
@@ -17,7 +10,6 @@ type ItemWithScreen = {
 type ItemWithAction = {
   label: string;
   screen?: never;
-  mediaSlot?: never;
   action: "delete-game";
   deleteAction?: never;
 };
@@ -39,26 +31,7 @@ const GAME_ITEMS: readonly GameManagementItem[] = [
 ];
 
 const MEDIA_ITEMS: readonly GameManagementItem[] = [
-  {
-    label: "Cover Thumbnail",
-    screen: "game-media-edit" as ScreenName,
-    mediaSlot: "cover-thumbnail",
-  },
-  {
-    label: "Loading Screen",
-    screen: "game-media-edit" as ScreenName,
-    mediaSlot: "loading-screen",
-  },
-  {
-    label: "Title Screen",
-    screen: "game-media-edit" as ScreenName,
-    mediaSlot: "title-screen",
-  },
-  {
-    label: "Gameplay Screen",
-    screen: "game-media-edit" as ScreenName,
-    mediaSlot: "gameplay-screen",
-  },
+  { label: "Media", screen: "game-media-slots" as ScreenName },
 ];
 
 const CONFIGURATION_ITEMS: readonly GameManagementItem[] = [

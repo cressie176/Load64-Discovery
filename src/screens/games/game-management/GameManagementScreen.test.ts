@@ -9,7 +9,7 @@ import {
 describe("GameManagementScreen", () => {
   describe("GAME_MANAGEMENT_ITEMS", () => {
     it("has the correct number of items", () => {
-      eq(GAME_MANAGEMENT_ITEMS.length, 14);
+      eq(GAME_MANAGEMENT_ITEMS.length, 11);
     });
 
     it("has items in the correct order with correct labels", () => {
@@ -19,10 +19,7 @@ describe("GameManagementScreen", () => {
         "Catalogue Sources",
         "ROMs",
         "Snapshots",
-        "Cover Thumbnail",
-        "Loading Screen",
-        "Title Screen",
-        "Gameplay Screen",
+        "Media",
         "Controls",
         "Profiles",
         "VICE Arguments",
@@ -44,41 +41,10 @@ describe("GameManagementScreen", () => {
       }
     });
 
-    it("media items have a mediaSlot", () => {
-      const mediaLabels = [
-        "Cover Thumbnail",
-        "Loading Screen",
-        "Title Screen",
-        "Gameplay Screen",
-      ];
-      for (const label of mediaLabels) {
-        const item = GAME_MANAGEMENT_ITEMS.find((i) => i.label === label);
-        ok(item, `item ${label} not found`);
-        ok("mediaSlot" in item && item.mediaSlot, `${label} missing mediaSlot`);
-      }
-    });
-
-    it("non-media navigation items do not have a mediaSlot", () => {
-      const nonMediaLabels = [
-        "Game Info",
-        "Catalogue Sources",
-        "ROMs",
-        "Snapshots",
-        "Controls",
-        "Profiles",
-        "VICE Arguments",
-        "Key Mappings",
-        "Environment Variables",
-      ];
-      for (const label of nonMediaLabels) {
-        const item = GAME_MANAGEMENT_ITEMS.find((i) => i.label === label);
-        ok(item, `item ${label} not found`);
-        eq(
-          "mediaSlot" in item ? item.mediaSlot : undefined,
-          undefined,
-          `${label} should not have mediaSlot`,
-        );
-      }
+    it("Media item navigates to game-media-slots", () => {
+      const mediaItem = GAME_MANAGEMENT_ITEMS.find((i) => i.label === "Media");
+      ok(mediaItem, "Media item not found");
+      eq(mediaItem.screen, "game-media-slots");
     });
   });
 
@@ -117,21 +83,21 @@ describe("GameManagementScreen", () => {
 
   describe("wrapIndex", () => {
     it("moves forward by delta", () => {
-      eq(wrapIndex(0, 1, 14), 1);
-      eq(wrapIndex(7, 1, 14), 8);
+      eq(wrapIndex(0, 1, 11), 1);
+      eq(wrapIndex(5, 1, 11), 6);
     });
 
     it("moves backward by delta", () => {
-      eq(wrapIndex(7, -1, 14), 6);
-      eq(wrapIndex(1, -1, 14), 0);
+      eq(wrapIndex(5, -1, 11), 4);
+      eq(wrapIndex(1, -1, 11), 0);
     });
 
     it("wraps forward past the end to 0", () => {
-      eq(wrapIndex(13, 1, 14), 0);
+      eq(wrapIndex(10, 1, 11), 0);
     });
 
     it("wraps backward before start to last index", () => {
-      eq(wrapIndex(0, -1, 14), 13);
+      eq(wrapIndex(0, -1, 11), 10);
     });
   });
 

@@ -1,0 +1,27 @@
+/* ============================================================
+   Game Media Slots Screen
+   ============================================================ */
+
+.media-slots__row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.media-slots__label {
+  flex-shrink: 0;
+}
+
+.media-slots__filename {
+  color: var(--colour-text-muted);
+  min-width: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list__row--selected .media-slots__filename {
+  color: var(--colour-text);
+}
