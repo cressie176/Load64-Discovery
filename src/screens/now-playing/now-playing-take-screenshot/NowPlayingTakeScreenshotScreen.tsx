@@ -3,7 +3,6 @@ import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { GameDetails } from "../../games/game-details/types";
 import type {
-  BottomBarStatus,
   ConflictState,
   MediaSlots,
   OverlayOption,
@@ -56,7 +55,12 @@ function isCheckboxField(
 }
 
 function normaliseName(name: string): string {
-  return name.trim().toLowerCase();
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function toFilename(name: string): string {
@@ -64,21 +68,7 @@ function toFilename(name: string): string {
 }
 
 function isNameValid(name: string): boolean {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-  if (/[/\\:*?"<>|]/.test(trimmed)) return false;
-  return true;
-}
-
-function buildBottomBarText(status: BottomBarStatus): string {
-  switch (status.kind) {
-    case "idle":
-      return "";
-    case "saved":
-      return `Screenshot saved: ${status.filename}`;
-    case "error":
-      return `Failed to save screenshot: ${status.reason}`;
-  }
+  return normaliseName(name).length > 0;
 }
 
 function getOverlayOptionLabel(option: OverlayOption): string {
@@ -121,7 +111,7 @@ interface NowPlayingTakeScreenshotScreenProps {
 export function NowPlayingTakeScreenshotScreen({
   gameId,
 }: NowPlayingTakeScreenshotScreenProps) {
-  const { pop } = useRouter();
+  const { pop, popWith } = useRouter();
   const { store, setStore } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -139,9 +129,6 @@ export function NowPlayingTakeScreenshotScreen({
   const [focusedCta] = useState<"back">("back");
   const [activeField, setActiveField] = useState<FormField>("name");
   const [conflict, setConflict] = useState<ConflictState | null>(null);
-  const [bottomBarStatus, setBottomBarStatus] = useState<BottomBarStatus>({
-    kind: "idle",
-  });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
@@ -152,10 +139,15 @@ export function NowPlayingTakeScreenshotScreen({
   useEffect(() => {
     const timer = setTimeout(() => {
       setMode("review");
-      nameInputRef.current?.focus();
     }, 600);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (mode === "review") {
+      nameInputRef.current?.focus();
+    }
+  }, [mode]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -314,10 +306,7 @@ export function NowPlayingTakeScreenshotScreen({
   }
 
   function executeSave() {
-    if (!isNameValid(name)) {
-      setBottomBarStatus({ kind: "error", reason: "Name is invalid" });
-      return;
-    }
+    if (!isNameValid(name)) return;
     const filename = toFilename(name);
     const existingSlotNames =
       game?.screenshots.map((s) => `${s.slot}.png`) ?? [];
@@ -331,7 +320,6 @@ export function NowPlayingTakeScreenshotScreen({
   function saveScreenshot(_overwrite: boolean) {
     const filename = toFilename(name);
     setConflict(null);
-    setBottomBarStatus({ kind: "saved", filename });
     setStore((prev) => ({
       ...prev,
       gameDetails: {
@@ -344,7 +332,7 @@ export function NowPlayingTakeScreenshotScreen({
         ),
       },
     }));
-    pop();
+    popWith({ outcomeMessage: `Screenshot saved: ${filename}` });
   }
 
   function executeDiscard() {
@@ -460,6 +448,7 @@ export function NowPlayingTakeScreenshotScreen({
                       setFocusRegion("form");
                     }}
                     type="button"
+                    disabled={!isNameValid(name)}
                   >
                     Save
                   </button>
@@ -489,9 +478,7 @@ export function NowPlayingTakeScreenshotScreen({
         )}
       </div>
 
-      <div className="screen__bottombar">
-        {buildBottomBarText(bottomBarStatus)}
-      </div>
+      <div className="screen__bottombar" />
 
       {conflict !== null && (
         <div className="overlay-backdrop">

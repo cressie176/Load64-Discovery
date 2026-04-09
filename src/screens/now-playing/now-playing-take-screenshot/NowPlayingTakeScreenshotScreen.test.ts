@@ -1,10 +1,15 @@
 import { deepEqual, equal as eq, ok } from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { GameDetails } from "../../../screens/games/game-details/types.ts";
-import type { BottomBarStatus, MediaSlots } from "./types.ts";
+import type { MediaSlots } from "./types.ts";
 
 function normaliseName(name: string): string {
-  return name.trim().toLowerCase();
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function toFilename(name: string): string {
@@ -12,21 +17,7 @@ function toFilename(name: string): string {
 }
 
 function isNameValid(name: string): boolean {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-  if (/[/\\:*?"<>|]/.test(trimmed)) return false;
-  return true;
-}
-
-function buildBottomBarText(status: BottomBarStatus): string {
-  switch (status.kind) {
-    case "idle":
-      return "";
-    case "saved":
-      return `Screenshot saved: ${status.filename}`;
-    case "error":
-      return `Failed to save screenshot: ${status.reason}`;
-  }
+  return normaliseName(name).length > 0;
 }
 
 function applyMediaSlots(
@@ -52,19 +43,53 @@ function applyMediaSlots(
 }
 
 describe("NowPlayingTakeScreenshotScreen", () => {
-  describe("toFilename", () => {
-    it("lowercases the name and appends .png", () => {
-      eq(toFilename("Gameplay Screen"), "gameplay screen.png");
+  describe("normaliseName", () => {
+    it("lowercases the name", () => {
+      eq(normaliseName("Gameplay"), "gameplay");
     });
 
-    it("trims whitespace before converting", () => {
-      eq(toFilename("  Loading  "), "loading.png");
+    it("trims whitespace", () => {
+      eq(normaliseName("  loading  "), "loading");
+    });
+
+    it("replaces spaces with hyphens", () => {
+      eq(normaliseName("title screen"), "title-screen");
+    });
+
+    it("collapses multiple separators into one hyphen", () => {
+      eq(normaliseName("a  b"), "a-b");
+    });
+
+    it("strips leading and trailing hyphens", () => {
+      eq(normaliseName("!shot!"), "shot");
+    });
+
+    it("preserves underscores", () => {
+      eq(normaliseName("my_shot"), "my_shot");
+    });
+
+    it("replaces invalid characters with hyphens", () => {
+      eq(normaliseName("screen/shot"), "screen-shot");
+    });
+  });
+
+  describe("toFilename", () => {
+    it("normalises the name and appends .png", () => {
+      eq(toFilename("gameplay"), "gameplay.png");
+    });
+
+    it("normalises mixed-case names with spaces", () => {
+      eq(toFilename("Title Screen"), "title-screen.png");
     });
   });
 
   describe("isNameValid", () => {
     it("returns true for a plain name", () => {
-      ok(isNameValid("Gameplay Screen"));
+      ok(isNameValid("gameplay"));
+    });
+
+    it("returns true for a name with special chars that normalise to something", () => {
+      ok(isNameValid("my shot!"));
     });
 
     it("returns false for an empty string", () => {
@@ -75,60 +100,8 @@ describe("NowPlayingTakeScreenshotScreen", () => {
       eq(isNameValid("   "), false);
     });
 
-    it("returns false when name contains a forward slash", () => {
-      eq(isNameValid("screen/shot"), false);
-    });
-
-    it("returns false when name contains a backslash", () => {
-      eq(isNameValid("screen\\shot"), false);
-    });
-
-    it("returns false when name contains a colon", () => {
-      eq(isNameValid("screen:shot"), false);
-    });
-
-    it("returns false when name contains an asterisk", () => {
-      eq(isNameValid("screen*shot"), false);
-    });
-
-    it("returns false when name contains a question mark", () => {
-      eq(isNameValid("screen?shot"), false);
-    });
-
-    it("returns false when name contains a double quote", () => {
-      eq(isNameValid('screen"shot'), false);
-    });
-
-    it("returns false when name contains a less-than sign", () => {
-      eq(isNameValid("screen<shot"), false);
-    });
-
-    it("returns false when name contains a greater-than sign", () => {
-      eq(isNameValid("screen>shot"), false);
-    });
-
-    it("returns false when name contains a pipe", () => {
-      eq(isNameValid("screen|shot"), false);
-    });
-  });
-
-  describe("buildBottomBarText", () => {
-    it("returns empty string for idle status", () => {
-      eq(buildBottomBarText({ kind: "idle" }), "");
-    });
-
-    it("returns saved message with filename", () => {
-      eq(
-        buildBottomBarText({ kind: "saved", filename: "gameplay.png" }),
-        "Screenshot saved: gameplay.png",
-      );
-    });
-
-    it("returns error message with reason", () => {
-      eq(
-        buildBottomBarText({ kind: "error", reason: "Disk full" }),
-        "Failed to save screenshot: Disk full",
-      );
+    it("returns false for a string that normalises to empty", () => {
+      eq(isNameValid("!!!"), false);
     });
   });
 

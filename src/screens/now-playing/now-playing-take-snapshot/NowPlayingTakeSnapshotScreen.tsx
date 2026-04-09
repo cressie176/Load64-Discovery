@@ -1,12 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
-import type {
-  BottomBarStatus,
-  ConflictState,
-  OverlayOption,
-  ScreenMode,
-} from "./types";
+import type { ConflictState, OverlayOption, ScreenMode } from "./types";
 import "./index.css";
 
 type FocusRegion = "form" | "topbar";
@@ -16,7 +11,12 @@ const FORM_FIELDS: FormField[] = ["name", "save", "discard"];
 const OVERLAY_OPTIONS: OverlayOption[] = ["overwrite", "rename", "discard"];
 
 function normaliseName(name: string): string {
-  return name.trim().toLowerCase();
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function toFilename(name: string, timestamp: string): string {
@@ -36,21 +36,7 @@ function formatTimestamp(date: Date): string {
 }
 
 function isNameValid(name: string): boolean {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-  if (/[/\\:*?"<>|]/.test(trimmed)) return false;
-  return true;
-}
-
-function buildBottomBarText(status: BottomBarStatus): string {
-  switch (status.kind) {
-    case "idle":
-      return "";
-    case "saved":
-      return `Snapshot saved: ${status.filename}`;
-    case "error":
-      return `Failed to save snapshot: ${status.reason}`;
-  }
+  return normaliseName(name).length > 0;
 }
 
 function getOverlayOptionLabel(option: OverlayOption): string {
@@ -71,7 +57,7 @@ interface NowPlayingTakeSnapshotScreenProps {
 export function NowPlayingTakeSnapshotScreen({
   gameId,
 }: NowPlayingTakeSnapshotScreenProps) {
-  const { pop } = useRouter();
+  const { pop, popWith } = useRouter();
   const { store } = useStore();
 
   const nowPlaying = store.nowPlaying;
@@ -84,9 +70,6 @@ export function NowPlayingTakeSnapshotScreen({
   const [focusedCta] = useState<"back">("back");
   const [activeField, setActiveField] = useState<FormField>("name");
   const [conflict, setConflict] = useState<ConflictState | null>(null);
-  const [bottomBarStatus, setBottomBarStatus] = useState<BottomBarStatus>({
-    kind: "idle",
-  });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
@@ -97,10 +80,15 @@ export function NowPlayingTakeSnapshotScreen({
   useEffect(() => {
     const timer = setTimeout(() => {
       setMode("review");
-      nameInputRef.current?.focus();
     }, 600);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (mode === "review") {
+      nameInputRef.current?.focus();
+    }
+  }, [mode]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -243,10 +231,7 @@ export function NowPlayingTakeSnapshotScreen({
   }
 
   function executeSave() {
-    if (!isNameValid(name)) {
-      setBottomBarStatus({ kind: "error", reason: "Name is invalid" });
-      return;
-    }
+    if (!isNameValid(name)) return;
     const timestamp = formatTimestamp(new Date());
     const filename = toFilename(name, timestamp);
     commitSave(filename, false);
@@ -254,8 +239,7 @@ export function NowPlayingTakeSnapshotScreen({
 
   function commitSave(filename: string, _overwrite: boolean) {
     setConflict(null);
-    setBottomBarStatus({ kind: "saved", filename });
-    pop();
+    popWith({ outcomeMessage: `Snapshot saved: ${filename}` });
   }
 
   function executeDiscard() {
@@ -342,6 +326,7 @@ export function NowPlayingTakeSnapshotScreen({
                       setFocusRegion("form");
                     }}
                     type="button"
+                    disabled={!isNameValid(name)}
                   >
                     Save
                   </button>
@@ -371,9 +356,7 @@ export function NowPlayingTakeSnapshotScreen({
         )}
       </div>
 
-      <div className="screen__bottombar">
-        {buildBottomBarText(bottomBarStatus)}
-      </div>
+      <div className="screen__bottombar" />
 
       {conflict !== null && (
         <div className="overlay-backdrop">

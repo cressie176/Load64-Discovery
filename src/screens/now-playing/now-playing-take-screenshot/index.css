@@ -99,6 +99,12 @@
   color: var(--colour-text-bright);
 }
 
+.take-screenshot .form__action:disabled {
+  color: var(--colour-text-muted);
+  cursor: default;
+  opacity: 0.5;
+}
+
 .take-screenshot__media-slots {
   display: flex;
   flex-direction: column;

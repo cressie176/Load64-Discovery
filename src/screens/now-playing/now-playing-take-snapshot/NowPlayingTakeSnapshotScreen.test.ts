@@ -1,9 +1,13 @@
 import { equal as eq, ok } from "node:assert/strict";
 import { describe, it } from "node:test";
-import type { BottomBarStatus } from "./types.ts";
 
 function normaliseName(name: string): string {
-  return name.trim().toLowerCase();
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function toFilename(name: string, timestamp: string): string {
@@ -23,36 +27,52 @@ function formatTimestamp(date: Date): string {
 }
 
 function isNameValid(name: string): boolean {
-  const trimmed = name.trim();
-  if (!trimmed) return false;
-  if (/[/\\:*?"<>|]/.test(trimmed)) return false;
-  return true;
-}
-
-function buildBottomBarText(status: BottomBarStatus): string {
-  switch (status.kind) {
-    case "idle":
-      return "";
-    case "saved":
-      return `Snapshot saved: ${status.filename}`;
-    case "error":
-      return `Failed to save snapshot: ${status.reason}`;
-  }
+  return normaliseName(name).length > 0;
 }
 
 describe("NowPlayingTakeSnapshotScreen", () => {
+  describe("normaliseName", () => {
+    it("lowercases the name", () => {
+      eq(normaliseName("Gameplay"), "gameplay");
+    });
+
+    it("trims whitespace", () => {
+      eq(normaliseName("  save  "), "save");
+    });
+
+    it("replaces spaces with hyphens", () => {
+      eq(normaliseName("my save"), "my-save");
+    });
+
+    it("collapses multiple separators into one hyphen", () => {
+      eq(normaliseName("a  b"), "a-b");
+    });
+
+    it("strips leading and trailing hyphens", () => {
+      eq(normaliseName("!save!"), "save");
+    });
+
+    it("preserves underscores", () => {
+      eq(normaliseName("my_save"), "my_save");
+    });
+
+    it("replaces invalid characters with hyphens", () => {
+      eq(normaliseName("game/play"), "game-play");
+    });
+  });
+
   describe("toFilename", () => {
-    it("lowercases the name, appends timestamp and .vsf", () => {
+    it("normalises the name, appends timestamp and .vsf", () => {
       eq(
-        toFilename("Gameplay", "2026-03-29-14-32-11"),
-        "gameplay-2026-03-29-14-32-11.vsf",
+        toFilename("save", "2026-03-29-14-32-11"),
+        "save-2026-03-29-14-32-11.vsf",
       );
     });
 
-    it("trims whitespace before converting", () => {
+    it("normalises mixed-case names with spaces", () => {
       eq(
-        toFilename("  Loading  ", "2026-03-29-14-32-11"),
-        "loading-2026-03-29-14-32-11.vsf",
+        toFilename("My Save", "2026-03-29-14-32-11"),
+        "my-save-2026-03-29-14-32-11.vsf",
       );
     });
   });
@@ -71,7 +91,11 @@ describe("NowPlayingTakeSnapshotScreen", () => {
 
   describe("isNameValid", () => {
     it("returns true for a plain name", () => {
-      ok(isNameValid("Gameplay"));
+      ok(isNameValid("save"));
+    });
+
+    it("returns true for a name with special chars that normalise to something", () => {
+      ok(isNameValid("my save!"));
     });
 
     it("returns false for an empty string", () => {
@@ -82,63 +106,8 @@ describe("NowPlayingTakeSnapshotScreen", () => {
       eq(isNameValid("   "), false);
     });
 
-    it("returns false when name contains a forward slash", () => {
-      eq(isNameValid("game/play"), false);
-    });
-
-    it("returns false when name contains a backslash", () => {
-      eq(isNameValid("game\\play"), false);
-    });
-
-    it("returns false when name contains a colon", () => {
-      eq(isNameValid("game:play"), false);
-    });
-
-    it("returns false when name contains an asterisk", () => {
-      eq(isNameValid("game*play"), false);
-    });
-
-    it("returns false when name contains a question mark", () => {
-      eq(isNameValid("game?play"), false);
-    });
-
-    it("returns false when name contains a double quote", () => {
-      eq(isNameValid('game"play'), false);
-    });
-
-    it("returns false when name contains a less-than sign", () => {
-      eq(isNameValid("game<play"), false);
-    });
-
-    it("returns false when name contains a greater-than sign", () => {
-      eq(isNameValid("game>play"), false);
-    });
-
-    it("returns false when name contains a pipe", () => {
-      eq(isNameValid("game|play"), false);
-    });
-  });
-
-  describe("buildBottomBarText", () => {
-    it("returns empty string for idle status", () => {
-      eq(buildBottomBarText({ kind: "idle" }), "");
-    });
-
-    it("returns saved message with filename", () => {
-      eq(
-        buildBottomBarText({
-          kind: "saved",
-          filename: "gameplay-2026-03-29-14-32-11.vsf",
-        }),
-        "Snapshot saved: gameplay-2026-03-29-14-32-11.vsf",
-      );
-    });
-
-    it("returns error message with reason", () => {
-      eq(
-        buildBottomBarText({ kind: "error", reason: "Disk full" }),
-        "Failed to save snapshot: Disk full",
-      );
+    it("returns false for a string that normalises to empty", () => {
+      eq(isNameValid("!!!"), false);
     });
   });
 });

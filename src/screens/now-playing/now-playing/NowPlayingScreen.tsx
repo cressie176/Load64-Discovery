@@ -71,6 +71,9 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       ACTIONS.includes(saved as NowPlayingAction) ? saved : ACTIONS[0]
     ) as NowPlayingAction;
   });
+  const [outcomeMessage, setOutcomeMessage] = useState(
+    currentParams.outcomeMessage ?? "",
+  );
   const [showQuitConfirm, setShowQuitConfirm] = useState(false);
   const [quitConfirmSelection, setQuitConfirmSelection] = useState<
     "no" | "yes"
@@ -107,11 +110,13 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
       const currentIndex = ACTIONS.indexOf(focusedAction);
       const nextIndex = (currentIndex - 1 + ACTIONS.length) % ACTIONS.length;
       setFocusedAction(ACTIONS[nextIndex] as NowPlayingAction);
+      setOutcomeMessage("");
     } else if (event.key === "ArrowDown") {
       event.preventDefault();
       const currentIndex = ACTIONS.indexOf(focusedAction);
       const nextIndex = (currentIndex + 1) % ACTIONS.length;
       setFocusedAction(ACTIONS[nextIndex] as NowPlayingAction);
+      setOutcomeMessage("");
     } else if (event.key === "Enter") {
       activateAction(focusedAction);
     }
@@ -195,12 +200,14 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
   const { port1DeviceName, port2DeviceName } = nowPlaying.joystickPorts;
   const diskLabel = nowPlaying.activeDisk?.label ?? null;
 
-  const bottomBarText = buildBottomBarMessage(
-    focusedAction,
-    port1DeviceName,
-    port2DeviceName,
-    diskLabel,
-  );
+  const bottomBarText =
+    outcomeMessage ||
+    buildBottomBarMessage(
+      focusedAction,
+      port1DeviceName,
+      port2DeviceName,
+      diskLabel,
+    );
 
   function renderActionRow(action: NowPlayingAction) {
     const selected = focusedAction === action;
