@@ -140,7 +140,12 @@ export function ImportCandidateScreen() {
   }
 
   function handleNext() {
-    push("game-catalogue-sources-list");
+    const importTitle = candidate !== null ? deriveTitle(candidate) : undefined;
+    push("game-info-edit", {
+      gameId: candidate?.id ?? "",
+      importMode: "true",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
   }
 
   function handleSkip() {
