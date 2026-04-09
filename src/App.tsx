@@ -4,6 +4,7 @@ import { BinaryDiscoverScreen } from "./screens/admin/binary-discover/BinaryDisc
 import { BinaryEditScreen } from "./screens/admin/binary-edit/BinaryEditScreen";
 import { BinaryListScreen } from "./screens/admin/binary-list/BinaryListScreen";
 import { GeneralSettingsScreen } from "./screens/admin/general-settings/GeneralSettingsScreen";
+import { Load64CatalogueUpdateScreen } from "./screens/admin/load64-catalogue-update/Load64CatalogueUpdateScreen";
 import { GameCarouselScreen } from "./screens/carousel/game-carousel/GameCarouselScreen";
 import { CompilationDetailScreen } from "./screens/compilations/compilation-detail/CompilationDetailScreen";
 import { CompilationEditScreen } from "./screens/compilations/compilation-edit/CompilationEditScreen";
@@ -228,7 +229,7 @@ function AppScreens() {
     return <Placeholder name="Audit" />;
   }
   if (currentScreen === "load64-catalogue-update") {
-    return <Placeholder name="Load!64 Catalogue Update" />;
+    return <Load64CatalogueUpdateScreen />;
   }
   if (currentScreen === "now-playing") {
     return <NowPlayingScreen gameId={currentParams.gameId ?? "game-bubble"} />;

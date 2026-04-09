@@ -1,0 +1,9 @@
+/* ============================================================
+   Load!64 Catalogue Update Screen
+   ============================================================ */
+
+.catalogue-update__url-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

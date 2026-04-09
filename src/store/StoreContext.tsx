@@ -3,6 +3,8 @@ import { SEED_BINARIES } from "../screens/admin/binary-list/seed";
 import type { BinaryList } from "../screens/admin/binary-list/types";
 import { SEED_GENERAL_SETTINGS } from "../screens/admin/general-settings/seed";
 import type { GeneralSettings } from "../screens/admin/general-settings/types";
+import { SEED_CATALOGUE_STATE } from "../screens/admin/load64-catalogue-update/seed";
+import type { CatalogueState } from "../screens/admin/load64-catalogue-update/types";
 import { SEED_CAROUSEL } from "../screens/carousel/game-carousel/seed";
 import type { CarouselState } from "../screens/carousel/game-carousel/types";
 import { SEED_COMPILATIONS } from "../screens/compilations/compilation-list/seed";
@@ -50,6 +52,7 @@ interface Store {
   importDiscovery: ImportDiscoveryState;
   importCandidate: ImportCandidateState;
   nowPlaying: NowPlayingState;
+  catalogue: CatalogueState;
 }
 
 interface StoreContextValue {
@@ -81,6 +84,7 @@ const INITIAL_STORE: Store = {
   importDiscovery: SEED_IMPORT_DISCOVERY,
   importCandidate: SEED_IMPORT_CANDIDATE,
   nowPlaying: SEED_NOW_PLAYING,
+  catalogue: SEED_CATALOGUE_STATE,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {
