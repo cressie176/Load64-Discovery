@@ -177,6 +177,19 @@ Read the existing CSS before adding new rules to understand established patterns
 
 Screens that show inherited items (e.g. Control List, Environment Variable List) must visually distinguish inherited rows from owned rows — italics or muted colour. This treatment must be consistent across all such screens. Inherited rows are read-only; activating one opens the editor pre-populated with the parent's values so the user can create a local override.
 
+## Text Inputs
+
+All text inputs in the POC contain filenames, paths, argument strings, or short identifiers. Every `<input type="text">` and `<textarea>` must carry the full set of browser-suppression attributes:
+
+```tsx
+autoComplete="off"
+autoCorrect="off"
+autoCapitalize="off"
+spellCheck={false}
+```
+
+All four are required. Omitting `spellCheck={false}` causes browsers to show spellcheck underlines and treat the field as autocomplete-eligible even when the other three are present.
+
 ## Text Truncation
 
 All multi-column list rows must truncate overflowing text with a trailing ellipsis (`…`). Text must never wrap or cause layout overflow.
