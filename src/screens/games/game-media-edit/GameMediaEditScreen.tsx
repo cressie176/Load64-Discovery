@@ -436,7 +436,6 @@ export function GameMediaEditScreen({
       <div className="screen__content">
         <div className="media-edit__layout">
           <div className="media-edit__current-panel">
-            <span className="media-edit__current-label">Current</span>
             {currentImageUrl ? (
               <img
                 src={currentImageUrl}
@@ -446,6 +445,7 @@ export function GameMediaEditScreen({
             ) : (
               <div className="media-edit__current-empty">None</div>
             )}
+            <span className="media-edit__current-label">Current</span>
           </div>
           <div className="media-edit__divider" />
           <div className="media-edit__right">

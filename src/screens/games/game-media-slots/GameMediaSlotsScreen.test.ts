@@ -19,8 +19,19 @@ function deriveFilename(url: string | undefined): string {
   if (!url) return "—";
   const lastSegment = url.split("/").pop();
   if (!lastSegment) return "—";
-  const withoutQuery = lastSegment.split("?")[0];
-  return withoutQuery || "—";
+  const [pathPart, query] = lastSegment.split("?");
+  if (pathPart && /^[0-9a-f]{6}$/i.test(pathPart) && query) {
+    const textParam = new URLSearchParams(query).get("text");
+    if (textParam) {
+      return (
+        textParam
+          .toLowerCase()
+          .replace(/\s+/g, "-")
+          .replace(/[^a-z0-9-]/g, "") + ".png"
+      );
+    }
+  }
+  return pathPart || "—";
 }
 
 function deriveMediaSlots(
@@ -78,12 +89,12 @@ describe("GameMediaSlotsScreen", () => {
       eq(deriveFilename("https://example.com/images/cover.jpg"), "cover.jpg");
     });
 
-    it("strips query string from filename", () => {
+    it("returns slug filename from placehold.co text param", () => {
       eq(
         deriveFilename(
           "https://placehold.co/160x200/1a1a2e/4040ff?text=Bubble+Bobble",
         ),
-        "4040ff",
+        "bubble-bobble.png",
       );
     });
 
