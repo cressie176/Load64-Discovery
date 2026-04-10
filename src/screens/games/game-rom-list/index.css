@@ -1,0 +1,38 @@
+/* ============================================================
+   Game ROM List Screen
+   ============================================================ */
+
+.game-rom-list__empty {
+  color: var(--colour-text-muted);
+  padding: 8px;
+}
+
+.game-rom-list__col-pos {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 32px;
+}
+
+.game-rom-list__col-label {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 160px;
+}
+
+.game-rom-list__col-filename {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-rom-list__row--reordering {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-accent);
+  color: var(--colour-text-bright);
+}

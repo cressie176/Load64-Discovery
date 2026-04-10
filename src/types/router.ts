@@ -33,6 +33,7 @@ export type ScreenName =
   | "snapshot-list"
   | "game-info-edit"
   | "game-rom-list"
+  | "game-rom-edit"
   | "game-media-slots"
   | "game-media-edit"
   | "game-media-add"

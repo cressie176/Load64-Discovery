@@ -21,6 +21,8 @@ import { SEED_GAME_DETAILS } from "../screens/games/game-details/seed";
 import type { GameDetailsState } from "../screens/games/game-details/types";
 import { SEED_GAME_MEDIA_EDIT } from "../screens/games/game-media-edit/seed";
 import type { GameMediaEditState } from "../screens/games/game-media-edit/types";
+import { SEED_GAME_ROM_LIST } from "../screens/games/game-rom-list/seed";
+import type { GameRomListState } from "../screens/games/game-rom-list/types";
 import { SEED_IMPORT_CANDIDATE } from "../screens/import/import-candidate/seed";
 import type { ImportCandidateState } from "../screens/import/import-candidate/types";
 import { SEED_IMPORT_DISCOVERY } from "../screens/import/import-discovery/seed";
@@ -56,6 +58,7 @@ interface Store {
   nowPlaying: NowPlayingState;
   catalogue: CatalogueState;
   gameMediaEdit: GameMediaEditState;
+  gameRomList: GameRomListState;
 }
 
 interface StoreContextValue {
@@ -89,6 +92,7 @@ const INITIAL_STORE: Store = {
   nowPlaying: SEED_NOW_PLAYING,
   catalogue: SEED_CATALOGUE_STATE,
   gameMediaEdit: SEED_GAME_MEDIA_EDIT,
+  gameRomList: SEED_GAME_ROM_LIST,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {
