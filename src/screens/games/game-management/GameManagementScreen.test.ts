@@ -15,7 +15,7 @@ describe("GameManagementScreen", () => {
     it("has items in the correct order with correct labels", () => {
       const labels = GAME_MANAGEMENT_ITEMS.map((item) => item.label);
       deep(labels, [
-        "Game Info",
+        "Details",
         "Catalogue Sources",
         "ROMs",
         "Snapshots",

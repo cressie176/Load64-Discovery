@@ -31,7 +31,7 @@ export type ScreenName =
   | "import-candidate"
   | "game-management"
   | "snapshot-list"
-  | "game-info-edit"
+  | "game-details-edit"
   | "game-rom-list"
   | "game-rom-edit"
   | "game-media-slots"

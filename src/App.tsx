@@ -203,8 +203,8 @@ function AppScreens() {
   if (currentScreen === "import-candidate") {
     return <ImportCandidateScreen />;
   }
-  if (currentScreen === "game-info-edit") {
-    return <Placeholder name="Game Info Edit" />;
+  if (currentScreen === "game-details-edit") {
+    return <Placeholder name="Game Details Edit" />;
   }
   if (currentScreen === "game-rom-list") {
     return (

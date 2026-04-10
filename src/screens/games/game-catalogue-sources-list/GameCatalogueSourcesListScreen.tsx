@@ -163,7 +163,7 @@ export function GameCatalogueSourcesListScreen({
 
   function navigateToGameInfoEdit(source: typeof focusedSource) {
     if (!source) return;
-    push("game-info-edit", {
+    push("game-details-edit", {
       gameId,
       catalogueName: source.catalogueName,
       entryId: source.entryId,
