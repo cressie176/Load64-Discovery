@@ -19,6 +19,8 @@ import { SEED_ENV_VARS } from "../screens/environment-variables/environment-vari
 import type { EnvVarsState } from "../screens/environment-variables/environment-variable-list/types";
 import { SEED_GAME_DETAILS } from "../screens/games/game-details/seed";
 import type { GameDetailsState } from "../screens/games/game-details/types";
+import { SEED_GAME_MEDIA_EDIT } from "../screens/games/game-media-edit/seed";
+import type { GameMediaEditState } from "../screens/games/game-media-edit/types";
 import { SEED_IMPORT_CANDIDATE } from "../screens/import/import-candidate/seed";
 import type { ImportCandidateState } from "../screens/import/import-candidate/types";
 import { SEED_IMPORT_DISCOVERY } from "../screens/import/import-discovery/seed";
@@ -53,6 +55,7 @@ interface Store {
   importCandidate: ImportCandidateState;
   nowPlaying: NowPlayingState;
   catalogue: CatalogueState;
+  gameMediaEdit: GameMediaEditState;
 }
 
 interface StoreContextValue {
@@ -85,6 +88,7 @@ const INITIAL_STORE: Store = {
   importCandidate: SEED_IMPORT_CANDIDATE,
   nowPlaying: SEED_NOW_PLAYING,
   catalogue: SEED_CATALOGUE_STATE,
+  gameMediaEdit: SEED_GAME_MEDIA_EDIT,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {

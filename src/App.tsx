@@ -23,6 +23,7 @@ import { GameCatalogueSourceAddScreen } from "./screens/games/game-catalogue-sou
 import { GameCatalogueSourcesListScreen } from "./screens/games/game-catalogue-sources-list/GameCatalogueSourcesListScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
+import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
 import { GameMediaSlotsScreen } from "./screens/games/game-media-slots/GameMediaSlotsScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
 import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
@@ -205,7 +206,22 @@ function AppScreens() {
     );
   }
   if (currentScreen === "game-media-edit") {
-    return <Placeholder name="Game Media Edit" />;
+    return (
+      <GameMediaEditScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+        catalogueName={currentParams.catalogueName}
+        entryId={currentParams.entryId}
+      />
+    );
+  }
+  if (currentScreen === "game-media-add") {
+    return <Placeholder name="Game Media Add" />;
+  }
+  if (currentScreen === "import-controls") {
+    return <Placeholder name="Import Controls" />;
   }
   if (currentScreen === "game-catalogue-sources-list") {
     return (
