@@ -1,0 +1,14 @@
+/* ============================================================
+   Game Media Add
+   ============================================================ */
+
+.media-add__file-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.media-add__file-row .form__input {
+  flex-grow: 1;
+}

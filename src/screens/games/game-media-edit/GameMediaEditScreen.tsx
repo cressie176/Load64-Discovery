@@ -132,6 +132,13 @@ export function GameMediaEditScreen({
   const [focusedGridIndex, setFocusedGridIndex] = useState(() =>
     findFirstNavigable(storeCandidates.length),
   );
+
+  useEffect(() => {
+    if (storeCandidates.length > localCandidates.length) {
+      setLocalCandidates(storeCandidates);
+      setFocusedGridIndex(storeCandidates.length - 1);
+    }
+  }, [storeCandidates, storeCandidates.length, localCandidates.length]);
   const [selectedCandidateIndex, setSelectedCandidateIndex] = useState<
     number | null
   >(null);

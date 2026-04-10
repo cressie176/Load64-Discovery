@@ -23,6 +23,7 @@ import { GameCatalogueSourceAddScreen } from "./screens/games/game-catalogue-sou
 import { GameCatalogueSourcesListScreen } from "./screens/games/game-catalogue-sources-list/GameCatalogueSourcesListScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
+import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
 import { GameMediaSlotsScreen } from "./screens/games/game-media-slots/GameMediaSlotsScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
@@ -239,7 +240,13 @@ function AppScreens() {
     );
   }
   if (currentScreen === "game-media-add") {
-    return <Placeholder name="Game Media Add" />;
+    return (
+      <GameMediaAddScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
+        source={currentParams.source ?? "file"}
+      />
+    );
   }
   if (currentScreen === "import-controls") {
     return <Placeholder name="Import Controls" />;
