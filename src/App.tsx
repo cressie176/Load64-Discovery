@@ -25,6 +25,7 @@ import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScree
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
 import { GameMediaSlotsScreen } from "./screens/games/game-media-slots/GameMediaSlotsScreen";
+import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
 import { GameRomListScreen } from "./screens/games/game-rom-list/GameRomListScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
 import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
@@ -213,7 +214,12 @@ function AppScreens() {
     );
   }
   if (currentScreen === "game-rom-edit") {
-    return <Placeholder name="Game ROM Edit" />;
+    return (
+      <GameRomEditScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        romId={currentParams.romId}
+      />
+    );
   }
   if (currentScreen === "game-media-slots") {
     return (
