@@ -39,6 +39,7 @@ import { Placeholder } from "./screens/Placeholder";
 import { ProfileDetailScreen } from "./screens/profiles/profile-detail/ProfileDetailScreen";
 import { ProfileEditScreen } from "./screens/profiles/profile-edit/ProfileEditScreen";
 import { ProfileListScreen } from "./screens/profiles/profile-list/ProfileListScreen";
+import { SnapshotListScreen } from "./screens/snapshots/snapshot-list/SnapshotListScreen";
 import { ViceArgumentEditScreen } from "./screens/vice-arguments/vice-argument-edit/ViceArgumentEditScreen";
 import { ViceArgumentListScreen } from "./screens/vice-arguments/vice-argument-list/ViceArgumentListScreen";
 import { StoreProvider } from "./store/StoreContext";
@@ -57,7 +58,12 @@ function AppScreens() {
     );
   }
   if (currentScreen === "snapshot-list") {
-    return <Placeholder name="Snapshot List" />;
+    return (
+      <SnapshotListScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        mode={currentParams.mode === "launch" ? "launch" : "manage"}
+      />
+    );
   }
   if (currentScreen === "admin-hub") {
     return <AdminHubScreen />;

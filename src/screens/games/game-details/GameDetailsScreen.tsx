@@ -183,7 +183,7 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
       return;
     }
     if (action === "load-snapshot") {
-      push("snapshot-list", { gameId });
+      push("snapshot-list", { gameId, mode: "launch" });
     } else {
       push("now-playing", { gameId });
     }

@@ -35,6 +35,8 @@ import { SEED_PROFILE_DETAIL } from "../screens/profiles/profile-detail/seed";
 import type { ProfileDetailState } from "../screens/profiles/profile-detail/types";
 import { SEED_PROFILES } from "../screens/profiles/profile-list/seed";
 import type { ProfilesState } from "../screens/profiles/profile-list/types";
+import { SEED_SNAPSHOTS } from "../screens/snapshots/snapshot-list/seed";
+import type { SnapshotsState } from "../screens/snapshots/snapshot-list/types";
 import { SEED_VICE_ARGUMENTS } from "../screens/vice-arguments/vice-argument-list/seed";
 import type { ViceArgumentsState } from "../screens/vice-arguments/vice-argument-list/types";
 
@@ -59,6 +61,7 @@ interface Store {
   catalogue: CatalogueState;
   gameMediaEdit: GameMediaEditState;
   gameRomList: GameRomListState;
+  snapshots: SnapshotsState;
 }
 
 interface StoreContextValue {
@@ -93,6 +96,7 @@ const INITIAL_STORE: Store = {
   catalogue: SEED_CATALOGUE_STATE,
   gameMediaEdit: SEED_GAME_MEDIA_EDIT,
   gameRomList: SEED_GAME_ROM_LIST,
+  snapshots: SEED_SNAPSHOTS,
 };
 
 export function StoreProvider({ children }: StoreProviderProps) {
