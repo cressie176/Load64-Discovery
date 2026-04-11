@@ -488,7 +488,7 @@ export function GameMediaEditScreen({
                         activateGridCell(gridIndex);
                       }}
                     >
-                      <span className="media-edit__add-label">[Add]</span>
+                      <span className="media-edit__add-label">Add</span>
                     </button>
                   );
                 }
