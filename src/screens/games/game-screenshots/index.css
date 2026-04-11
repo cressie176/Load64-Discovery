@@ -1,0 +1,149 @@
+/* ============================================================
+   Screenshots Screen
+   ============================================================ */
+
+.screenshots__layout {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  height: 100%;
+}
+
+.screenshots__left-panel {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 8px;
+  padding: 16px;
+  width: 220px;
+}
+
+.screenshots__slot {
+  align-items: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
+.screenshots__slot-image {
+  border: 1px solid var(--colour-border);
+  display: block;
+  height: 90px;
+  object-fit: contain;
+  width: 150px;
+}
+
+.screenshots__slot-empty {
+  border: 1px solid var(--colour-border);
+  height: 90px;
+  width: 150px;
+}
+
+.screenshots__slot-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.screenshots__slot--current .screenshots__slot-image,
+.screenshots__slot--current .screenshots__slot-empty {
+  border-color: var(--colour-accent);
+}
+
+.screenshots__slot--current .screenshots__slot-label {
+  color: var(--colour-accent);
+}
+
+.screenshots__divider {
+  background: var(--colour-border);
+  flex-shrink: 0;
+  width: 1px;
+}
+
+.screenshots__right-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.screenshots__grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 150px);
+}
+
+.screenshots__cell {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--colour-border);
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: inherit;
+  height: 90px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 150px;
+}
+
+.screenshots__cell--focused {
+  border-color: var(--colour-accent);
+}
+
+.screenshots__cell--disabled {
+  cursor: default;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.screenshots__thumbnail {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.screenshots__add-label {
+  color: var(--colour-text-muted);
+  font-size: 13px;
+}
+
+.screenshots__cell--focused .screenshots__add-label {
+  color: var(--colour-text-bright);
+}
+
+.screenshots__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.screenshots__action {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 4px 16px;
+}
+
+.screenshots__action--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
+
+.screenshots__action--disabled {
+  cursor: default;
+  opacity: 0.4;
+}

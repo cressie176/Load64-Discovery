@@ -22,15 +22,15 @@ import { EnvironmentVariableListScreen } from "./screens/environment-variables/e
 import { GameCatalogueLinkAddScreen } from "./screens/games/game-catalogue-link-add/GameCatalogueLinkAddScreen";
 import { GameCatalogueLinkEditScreen } from "./screens/games/game-catalogue-link-edit/GameCatalogueLinkEditScreen";
 import { GameCatalogueLinksScreen } from "./screens/games/game-catalogue-links/GameCatalogueLinksScreen";
+import { CoverArtScreen } from "./screens/games/game-cover-art/CoverArtScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
-import { GameMediaListScreen } from "./screens/games/game-media-list/GameMediaListScreen";
-import { GameMediaSlotsScreen } from "./screens/games/game-media-slots/GameMediaSlotsScreen";
 import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
 import { GameRomListScreen } from "./screens/games/game-rom-list/GameRomListScreen";
+import { ScreenshotsScreen } from "./screens/games/game-screenshots/ScreenshotsScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
 import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
@@ -228,20 +228,21 @@ function AppScreens() {
       />
     );
   }
-  if (currentScreen === "game-media-slots") {
+  if (currentScreen === "game-cover-art") {
     return (
-      <GameMediaSlotsScreen gameId={currentParams.gameId ?? "game-bubble"} />
-    );
-  }
-  if (currentScreen === "game-media-list") {
-    return (
-      <GameMediaListScreen
+      <CoverArtScreen
         gameId={currentParams.gameId ?? "game-bubble"}
-        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
-        catalogueName={currentParams.catalogueName}
-        entryId={currentParams.entryId}
+      />
+    );
+  }
+  if (currentScreen === "game-screenshots") {
+    return (
+      <ScreenshotsScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
       />
     );
   }

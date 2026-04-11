@@ -1,25 +1,39 @@
 /* ============================================================
-   Game Media List Screen
+   Cover Art Screen
    ============================================================ */
 
-.media-edit__layout {
+.cover-art__layout {
   display: flex;
   flex-direction: row;
   gap: 0;
   height: 100%;
 }
 
-.media-edit__current-panel {
+.cover-art__left-panel {
   align-items: center;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   justify-content: flex-start;
   padding: 16px;
-  width: 200px;
+  width: 220px;
 }
 
-.media-edit__current-label {
+.cover-art__slot-image {
+  border: 1px solid var(--colour-border);
+  display: block;
+  height: 180px;
+  object-fit: contain;
+  width: 150px;
+}
+
+.cover-art__slot-empty {
+  border: 1px solid var(--colour-border);
+  height: 180px;
+  width: 150px;
+}
+
+.cover-art__slot-label {
   color: var(--colour-text-muted);
   font-size: 11px;
   letter-spacing: 0.05em;
@@ -27,46 +41,26 @@
   text-transform: uppercase;
 }
 
-.media-edit__current-image {
-  border: 1px solid var(--colour-border);
-  display: block;
-  height: 120px;
-  object-fit: contain;
-  width: 150px;
-}
-
-.media-edit__current-empty {
-  border: 1px solid var(--colour-border);
-  color: var(--colour-text-muted);
-  display: flex;
-  font-size: 11px;
-  height: 120px;
-  align-items: center;
-  justify-content: center;
-  width: 150px;
-}
-
-.media-edit__divider {
+.cover-art__divider {
   background: var(--colour-border);
   flex-shrink: 0;
   width: 1px;
 }
 
-.media-edit__right {
+.cover-art__right-panel {
   display: flex;
   flex: 1;
   flex-direction: column;
   padding: 16px;
 }
 
-.media-edit__grid {
+.cover-art__grid {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, 150px);
-  grid-template-rows: repeat(2, 120px);
 }
 
-.media-edit__cell {
+.cover-art__cell {
   align-items: center;
   background: none;
   border: 1px solid var(--colour-border);
@@ -74,7 +68,7 @@
   display: flex;
   font-family: inherit;
   font-size: inherit;
-  height: 120px;
+  height: 180px;
   justify-content: center;
   overflow: hidden;
   padding: 0;
@@ -82,43 +76,39 @@
   width: 150px;
 }
 
-.media-edit__cell--focused {
+.cover-art__cell--focused {
   border-color: var(--colour-accent);
 }
 
-.media-edit__cell--selected {
-  border-color: var(--colour-text-bright);
-}
-
-.media-edit__cell--empty {
+.cover-art__cell--disabled {
   cursor: default;
-  opacity: 0.3;
+  opacity: 0.4;
   pointer-events: none;
 }
 
-.media-edit__thumbnail {
+.cover-art__thumbnail {
   display: block;
   height: 100%;
   object-fit: contain;
   width: 100%;
 }
 
-.media-edit__add-label {
+.cover-art__add-label {
   color: var(--colour-text-muted);
   font-size: 13px;
 }
 
-.media-edit__cell--focused .media-edit__add-label {
+.cover-art__cell--focused .cover-art__add-label {
   color: var(--colour-text-bright);
 }
 
-.media-edit__actions {
+.cover-art__actions {
   display: flex;
   gap: 12px;
   margin-top: 16px;
 }
 
-.media-edit__action {
+.cover-art__action {
   background: var(--colour-surface);
   border: 1px solid var(--colour-border);
   color: var(--colour-text);
@@ -128,7 +118,12 @@
   padding: 4px 16px;
 }
 
-.media-edit__action--active {
+.cover-art__action--active {
   border-color: var(--colour-accent);
   color: var(--colour-text-bright);
+}
+
+.cover-art__action--disabled {
+  cursor: default;
+  opacity: 0.4;
 }

@@ -28,7 +28,8 @@ const GAME_ITEMS: readonly GameManagementItem[] = [
   },
   { label: "ROMs", screen: "game-rom-list" as ScreenName },
   { label: "Snapshots", screen: "snapshot-list" as ScreenName },
-  { label: "Media", screen: "game-media-slots" as ScreenName },
+  { label: "Cover Art", screen: "game-cover-art" as ScreenName },
+  { label: "Screenshots", screen: "game-screenshots" as ScreenName },
 ];
 
 const CONFIGURATION_ITEMS: readonly GameManagementItem[] = [
