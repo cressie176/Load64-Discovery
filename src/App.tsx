@@ -25,6 +25,7 @@ import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScree
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
+import { GameMediaListScreen } from "./screens/games/game-media-list/GameMediaListScreen";
 import { GameMediaSlotsScreen } from "./screens/games/game-media-slots/GameMediaSlotsScreen";
 import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
@@ -229,6 +230,18 @@ function AppScreens() {
   if (currentScreen === "game-media-slots") {
     return (
       <GameMediaSlotsScreen gameId={currentParams.gameId ?? "game-bubble"} />
+    );
+  }
+  if (currentScreen === "game-media-list") {
+    return (
+      <GameMediaListScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+        catalogueName={currentParams.catalogueName}
+        entryId={currentParams.entryId}
+      />
     );
   }
   if (currentScreen === "game-media-edit") {

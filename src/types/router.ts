@@ -36,6 +36,7 @@ export type ScreenName =
   | "game-rom-add"
   | "game-rom-edit"
   | "game-media-slots"
+  | "game-media-list"
   | "game-media-edit"
   | "game-media-add"
   | "import-controls"
