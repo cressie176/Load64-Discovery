@@ -1,0 +1,134 @@
+/* ============================================================
+   Game Media List Screen
+   ============================================================ */
+
+.media-edit__layout {
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+  height: 100%;
+}
+
+.media-edit__current-panel {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  justify-content: flex-start;
+  padding: 16px;
+  width: 200px;
+}
+
+.media-edit__current-label {
+  color: var(--colour-text-muted);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  margin-top: 8px;
+  text-transform: uppercase;
+}
+
+.media-edit__current-image {
+  border: 1px solid var(--colour-border);
+  display: block;
+  height: 120px;
+  object-fit: contain;
+  width: 150px;
+}
+
+.media-edit__current-empty {
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text-muted);
+  display: flex;
+  font-size: 11px;
+  height: 120px;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+}
+
+.media-edit__divider {
+  background: var(--colour-border);
+  flex-shrink: 0;
+  width: 1px;
+}
+
+.media-edit__right {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.media-edit__grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, 150px);
+  grid-template-rows: repeat(2, 120px);
+}
+
+.media-edit__cell {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--colour-border);
+  cursor: pointer;
+  display: flex;
+  font-family: inherit;
+  font-size: inherit;
+  height: 120px;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  width: 150px;
+}
+
+.media-edit__cell--focused {
+  border-color: var(--colour-accent);
+}
+
+.media-edit__cell--selected {
+  border-color: var(--colour-text-bright);
+}
+
+.media-edit__cell--empty {
+  cursor: default;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.media-edit__thumbnail {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.media-edit__add-label {
+  color: var(--colour-text-muted);
+  font-size: 13px;
+}
+
+.media-edit__cell--focused .media-edit__add-label {
+  color: var(--colour-text-bright);
+}
+
+.media-edit__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.media-edit__action {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 4px 16px;
+}
+
+.media-edit__action--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
