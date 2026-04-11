@@ -1,0 +1,14 @@
+/* ============================================================
+   Game ROM Add
+   ============================================================ */
+
+.game-rom-add__input-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.game-rom-add__input-row .form__input {
+  flex: 1;
+  min-width: 0;
+}

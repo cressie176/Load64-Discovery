@@ -2,13 +2,7 @@
    Game ROM Edit
    ============================================================ */
 
-.game-rom-edit__input-row {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-}
-
-.game-rom-edit__input-row .form__input {
-  flex: 1;
-  min-width: 0;
+.game-rom-edit__readonly-value {
+  color: var(--colour-text-muted);
+  font-family: var(--font-mono);
 }

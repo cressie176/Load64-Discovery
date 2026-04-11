@@ -36,6 +36,7 @@ export function GameRomListScreen({
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
+  const [reorderOriginIndex, setReorderOriginIndex] = useState(0);
   const [statusMessage, setStatusMessage] = useState(initialStatusMessage);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -121,6 +122,7 @@ export function GameRomListScreen({
       const action = CONTEXT_MENU_ITEMS[overlayIndex];
       if (action === "Reorder") {
         setOverlay("reorder");
+        setReorderOriginIndex(safeSelectedIndex);
       } else {
         setOverlay("remove");
         setOverlayIndex(0);
@@ -155,7 +157,31 @@ export function GameRomListScreen({
       moveSelectedRom(-1);
     } else if (event.key === "Enter") {
       setOverlay(null);
+    } else if (event.key === "Escape") {
+      cancelReorder();
     }
+  }
+
+  function cancelReorder() {
+    setStore((prev) => {
+      const currentRoms = prev.gameRomList.roms[gameId] ?? [];
+      if (safeSelectedIndex === reorderOriginIndex) return prev;
+      const reordered = [...currentRoms];
+      const [moved] = reordered.splice(safeSelectedIndex, 1);
+      reordered.splice(reorderOriginIndex, 0, moved);
+      return {
+        ...prev,
+        gameRomList: {
+          ...prev.gameRomList,
+          roms: {
+            ...prev.gameRomList.roms,
+            [gameId]: renumber(reordered),
+          },
+        },
+      };
+    });
+    setSelectedIndex(reorderOriginIndex);
+    setOverlay(null);
   }
 
   function moveSelectedRom(delta: number) {
@@ -181,9 +207,8 @@ export function GameRomListScreen({
   }
 
   function navigateToAdd() {
-    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "game-rom-edit", {
+    pushFrom({ selectedIndex: String(safeSelectedIndex) }, "game-rom-add", {
       gameId,
-      mode: "add",
     });
   }
 

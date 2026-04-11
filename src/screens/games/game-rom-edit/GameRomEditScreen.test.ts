@@ -2,6 +2,26 @@ import { equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
 import { deriveLabel, isSupportedRomFile } from "./utils.ts";
 
+interface ExistingRom {
+  id: string;
+  label: string;
+}
+
+function validateEditRom(
+  label: string,
+  romId: string,
+  existing: ExistingRom[] = [],
+): string {
+  const trimmedLabel = label.trim();
+  if (!trimmedLabel) return "Label is required.";
+  const labelLower = trimmedLabel.toLowerCase();
+  if (
+    existing.some((r) => r.id !== romId && r.label.toLowerCase() === labelLower)
+  )
+    return "A ROM with this label already exists.";
+  return "";
+}
+
 describe("deriveLabel", () => {
   describe("filename pattern — disk", () => {
     it("extracts number from disk filename", () => {
@@ -105,5 +125,51 @@ describe("isSupportedRomFile", () => {
 
   it("is case-insensitive", () => {
     eq(isSupportedRomFile("game.D64"), true);
+  });
+});
+
+describe("GameRomEditScreen", () => {
+  describe("validateEditRom", () => {
+    it("returns label required error when label is empty", () => {
+      eq(validateEditRom("", "rom-1"), "Label is required.");
+    });
+
+    it("returns label required error when label is whitespace only", () => {
+      eq(validateEditRom("   ", "rom-1"), "Label is required.");
+    });
+
+    it("returns empty string when label is valid and unique", () => {
+      eq(validateEditRom("Disk 1", "rom-1"), "");
+    });
+
+    it("returns duplicate label error when another ROM has the same label", () => {
+      const existing = [
+        { id: "rom-1", label: "Disk 1" },
+        { id: "rom-2", label: "Disk 2" },
+      ];
+      eq(
+        validateEditRom("Disk 2", "rom-1", existing),
+        "A ROM with this label already exists.",
+      );
+    });
+
+    it("does not flag the current ROM's own label as a duplicate", () => {
+      const existing = [
+        { id: "rom-1", label: "Disk 1" },
+        { id: "rom-2", label: "Disk 2" },
+      ];
+      eq(validateEditRom("Disk 1", "rom-1", existing), "");
+    });
+
+    it("duplicate label check is case-insensitive", () => {
+      const existing = [
+        { id: "rom-1", label: "Disk 1" },
+        { id: "rom-2", label: "Disk 2" },
+      ];
+      eq(
+        validateEditRom("disk 2", "rom-1", existing),
+        "A ROM with this label already exists.",
+      );
+    });
   });
 });

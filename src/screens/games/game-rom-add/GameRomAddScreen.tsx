@@ -1,45 +1,57 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
+import { deriveLabel, isSupportedRomFile } from "../game-rom-edit/utils";
+import { renumber } from "../game-rom-list/utils";
 import "./index.css";
 
 type FocusRegion = "form" | "topbar";
-type FormField = "label" | "save" | "cancel";
+type FormField = "file" | "browseFile" | "label" | "save" | "cancel";
 
-const FORM_FIELDS: FormField[] = ["label", "save", "cancel"];
+const FORM_FIELDS: FormField[] = [
+  "file",
+  "browseFile",
+  "label",
+  "save",
+  "cancel",
+];
 
-interface GameRomEditScreenProps {
+interface GameRomAddScreenProps {
   gameId: string;
-  romId: string;
 }
 
-export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
+export function GameRomAddScreen({ gameId }: GameRomAddScreenProps) {
   const { pop } = useRouter();
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
   const roms = store.gameRomList.roms[gameId] ?? [];
-  const existingRom = roms.find((r) => r.id === romId);
 
-  const [draftLabel, setDraftLabel] = useState(existingRom?.label ?? "");
+  const [draftFile, setDraftFile] = useState("");
+  const [draftLabel, setDraftLabel] = useState("");
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
-  const [activeField, setActiveField] = useState<FormField>("label");
+  const [activeField, setActiveField] = useState<FormField>("file");
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const browseFileRef = useRef<HTMLButtonElement>(null);
   const labelInputRef = useRef<HTMLInputElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    labelInputRef.current?.focus();
+    fileInputRef.current?.focus();
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isLabelActive = focusRegion === "form" && activeField === "label";
-      if (isLabelActive) {
+      const isTextInputActive =
+        focusRegion === "form" &&
+        (activeField === "file" || activeField === "label");
+      if (isTextInputActive) {
         handleTextInputKey(event);
         return;
       }
@@ -51,18 +63,18 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
 
   function handleTextInputKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
-      labelInputRef.current?.blur();
+      blurActiveInput();
       handleFormKey(event);
       return;
     }
     if (event.key === "Escape") {
       event.preventDefault();
-      labelInputRef.current?.blur();
+      blurActiveInput();
       pop();
     }
     if (event.key === "Enter") {
       event.preventDefault();
-      labelInputRef.current?.blur();
+      blurActiveInput();
       handleSave();
     }
   }
@@ -72,7 +84,7 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
       event.preventDefault();
       if (focusRegion === "topbar") {
         setFocusRegion("form");
-        focusField("label");
+        focusField("file");
         return;
       }
       const delta = event.shiftKey ? -1 : 1;
@@ -108,7 +120,11 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
   function focusField(field: FormField) {
     setActiveField(field);
     setFocusRegion("form");
-    if (field === "label") {
+    if (field === "file") {
+      fileInputRef.current?.focus();
+    } else if (field === "browseFile") {
+      browseFileRef.current?.focus();
+    } else if (field === "label") {
       labelInputRef.current?.focus();
     } else if (field === "save") {
       saveButtonRef.current?.focus();
@@ -125,7 +141,11 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
   }
 
   function activateField() {
-    if (activeField === "label") {
+    if (activeField === "file") {
+      fileInputRef.current?.focus();
+    } else if (activeField === "browseFile") {
+      handleBrowseFile(`/home/user/roms/${gameId}-disk1.d64`);
+    } else if (activeField === "label") {
       labelInputRef.current?.focus();
     } else if (activeField === "save") {
       handleSave();
@@ -134,16 +154,59 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
     }
   }
 
+  function blurActiveInput() {
+    if (activeField === "file") fileInputRef.current?.blur();
+    else if (activeField === "label") labelInputRef.current?.blur();
+  }
+
+  function handleBrowseFile(selected: string) {
+    const filename = selected.includes("/")
+      ? (selected.split("/").pop() ?? selected)
+      : selected;
+    setDraftFile(selected);
+    const derived = deriveLabel(filename, roms.length === 0);
+    setDraftLabel(derived);
+    fileInputRef.current?.focus();
+    setActiveField("file");
+  }
+
+  function handleFileChange(value: string) {
+    setDraftFile(value);
+    if (value) {
+      const filename = value.includes("/")
+        ? (value.split("/").pop() ?? value)
+        : value;
+      setDraftLabel(deriveLabel(filename, roms.length === 0));
+    }
+  }
+
   function handleSave() {
+    const trimmedFile = draftFile.trim();
     const trimmedLabel = draftLabel.trim();
 
+    if (!trimmedFile) {
+      setErrorMessage("File is required.");
+      return;
+    }
+    if (!isSupportedRomFile(trimmedFile)) {
+      setErrorMessage(
+        "File must be a supported ROM type (.d64, .d71, .d81, .tap, .t64, .crt).",
+      );
+      return;
+    }
+    const basename = trimmedFile.includes("/")
+      ? (trimmedFile.split("/").pop() ?? trimmedFile)
+      : trimmedFile;
+    if (roms.some((r) => r.filename.toLowerCase() === basename.toLowerCase())) {
+      setErrorMessage("A ROM with this file already exists.");
+      return;
+    }
     if (!trimmedLabel) {
       setErrorMessage("Label is required.");
       return;
     }
-    const labelLower = trimmedLabel.toLowerCase();
     if (
-      roms.some((r) => r.id !== romId && r.label.toLowerCase() === labelLower)
+      roms.some((r) => r.label.toLowerCase() === trimmedLabel.toLowerCase())
     ) {
       setErrorMessage("A ROM with this label already exists.");
       return;
@@ -151,6 +214,7 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
 
     setErrorMessage("");
 
+    const newId = `rom-${gameId}-${Date.now()}`;
     setStore((prev) => {
       const current = prev.gameRomList.roms[gameId] ?? [];
       return {
@@ -159,9 +223,15 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
           ...prev.gameRomList,
           roms: {
             ...prev.gameRomList.roms,
-            [gameId]: current.map((r) =>
-              r.id === romId ? { ...r, label: trimmedLabel } : r,
-            ),
+            [gameId]: renumber([
+              ...current,
+              {
+                id: newId,
+                position: current.length + 1,
+                label: trimmedLabel,
+                filename: basename,
+              },
+            ]),
           },
         },
       };
@@ -171,7 +241,7 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
   }
 
   const gameTitle = game?.title ?? "Game";
-  const screenTitle = `${gameTitle} > ROMs > ${existingRom?.label ?? "Edit"}`;
+  const screenTitle = `${gameTitle} > ROMs > Add`;
 
   if (!game) {
     return (
@@ -221,10 +291,38 @@ export function GameRomEditScreen({ gameId, romId }: GameRomEditScreenProps) {
       <div className="screen__content">
         <div className="form form--two-column-label-left">
           <div className="form__field">
-            <span className="form__label">File</span>
-            <span className="game-rom-edit__readonly-value">
-              {existingRom?.filename ?? ""}
-            </span>
+            <label className="form__label" htmlFor="rom-file">
+              File
+            </label>
+            <div className="game-rom-add__input-row">
+              <input
+                className={`form__input${activeField === "file" && focusRegion === "form" ? " form__input--active" : ""}`}
+                id="rom-file"
+                ref={fileInputRef}
+                type="text"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
+                value={draftFile}
+                onChange={(e) => handleFileChange(e.target.value)}
+                onFocus={() => {
+                  setActiveField("file");
+                  setFocusRegion("form");
+                }}
+                onBlur={() => setActiveField("file")}
+              />
+              <BrowseButton
+                active={activeField === "browseFile" && focusRegion === "form"}
+                buttonRef={browseFileRef}
+                examplePath={`/home/user/roms/${gameId}-disk1.d64`}
+                onFocus={() => {
+                  setActiveField("browseFile");
+                  setFocusRegion("form");
+                }}
+                onSelect={handleBrowseFile}
+              />
+            </div>
           </div>
           <div className="form__field">
             <label className="form__label" htmlFor="rom-label">
