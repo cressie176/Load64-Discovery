@@ -15,9 +15,9 @@ function deriveTitle(
   importTitle: string | null,
 ): string {
   if (importMode) {
-    return `Import Games > ${importTitle ?? gameTitle} > Sources > Add`;
+    return `Import Games > ${importTitle ?? gameTitle} > Catalogues > Add`;
   }
-  return `${gameTitle} > Sources > Add`;
+  return `${gameTitle} > Catalogues > Add`;
 }
 
 function validate(catalogue: string, entryId: string): string | null {
@@ -26,7 +26,7 @@ function validate(catalogue: string, entryId: string): string | null {
   return null;
 }
 
-describe("GameCatalogueSourceAddScreen", () => {
+describe("GameCatalogueLinkAddScreen", () => {
   describe("deriveAvailableCatalogues", () => {
     it("returns all catalogues when none are linked", () => {
       deep(deriveAvailableCatalogues([]), ["GameBase64", "MobyGames"]);
@@ -51,21 +51,21 @@ describe("GameCatalogueSourceAddScreen", () => {
     it("returns standard title for normal mode", () => {
       eq(
         deriveTitle("Bubble Bobble", false, null),
-        "Bubble Bobble > Sources > Add",
+        "Bubble Bobble > Catalogues > Add",
       );
     });
 
     it("returns import mode title with import title", () => {
       eq(
         deriveTitle("Bubble Bobble", true, "Bubble Bobble"),
-        "Import Games > Bubble Bobble > Sources > Add",
+        "Import Games > Bubble Bobble > Catalogues > Add",
       );
     });
 
     it("falls back to gameTitle when importTitle is null in import mode", () => {
       eq(
         deriveTitle("Bubble Bobble", true, null),
-        "Import Games > Bubble Bobble > Sources > Add",
+        "Import Games > Bubble Bobble > Catalogues > Add",
       );
     });
   });

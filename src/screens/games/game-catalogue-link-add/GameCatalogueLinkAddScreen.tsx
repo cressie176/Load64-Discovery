@@ -21,9 +21,9 @@ function deriveTitle(
   importTitle: string | null,
 ): string {
   if (importMode) {
-    return `Import Games > ${importTitle ?? gameTitle} > Sources > Add`;
+    return `Import Games > ${importTitle ?? gameTitle} > Catalogues > Add`;
   }
-  return `${gameTitle} > Sources > Add`;
+  return `${gameTitle} > Catalogues > Add`;
 }
 
 function validate(catalogue: string, entryId: string): string | null {
@@ -32,17 +32,17 @@ function validate(catalogue: string, entryId: string): string | null {
   return null;
 }
 
-interface GameCatalogueSourceAddScreenProps {
+interface GameCatalogueLinkAddScreenProps {
   gameId: string;
   importMode?: boolean;
   importTitle?: string;
 }
 
-export function GameCatalogueSourceAddScreen({
+export function GameCatalogueLinkAddScreen({
   gameId,
   importMode = false,
   importTitle,
-}: GameCatalogueSourceAddScreenProps) {
+}: GameCatalogueLinkAddScreenProps) {
   const { pop } = useRouter();
   const { store, setStore } = useStore();
 
@@ -220,8 +220,6 @@ export function GameCatalogueSourceAddScreen({
     importTitle ?? null,
   );
 
-  const topBarCtas: Array<"back"> = ["back"];
-
   return (
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
@@ -230,7 +228,7 @@ export function GameCatalogueSourceAddScreen({
           <a
             ref={backButtonRef}
             href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && topBarCtas.includes("back") ? " topbar-cta--focused" : ""}`}
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
             onClick={(e) => {
               e.preventDefault();
               pop();

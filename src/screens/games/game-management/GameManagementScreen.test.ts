@@ -16,7 +16,7 @@ describe("GameManagementScreen", () => {
       const labels = GAME_MANAGEMENT_ITEMS.map((item) => item.label);
       deep(labels, [
         "Details",
-        "Catalogue Sources",
+        "Catalogues",
         "ROMs",
         "Snapshots",
         "Media",

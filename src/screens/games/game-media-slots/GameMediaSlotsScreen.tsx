@@ -30,12 +30,10 @@ export function deriveFilename(url: string | undefined): string {
   if (pathPart && /^[0-9a-f]{6}$/i.test(pathPart) && query) {
     const textParam = new URLSearchParams(query).get("text");
     if (textParam) {
-      return (
-        textParam
-          .toLowerCase()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "") + ".png"
-      );
+      return `${textParam
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "")}.png`;
     }
   }
   return pathPart || "—";

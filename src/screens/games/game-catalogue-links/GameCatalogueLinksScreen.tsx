@@ -4,55 +4,76 @@ import { useStore } from "../../../store/StoreContext";
 import "./index.css";
 
 type FocusRegion = "list" | "topbar";
-type TopBarCta = "add" | "back";
+type TopBarCta = "add" | "next" | "back";
 type Overlay = "context-menu" | "remove";
 
 const CONFIRM_OPTIONS = ["Yes", "No"] as const;
-const CONTEXT_MENU_ITEMS = ["Fetch", "Remove"] as const;
 const SUPPORTED_CATALOGUES = ["GameBase64", "MobyGames"];
 
 function wrapIndex(index: number, delta: number, length: number): number {
   return (index + delta + length) % length;
 }
 
-interface GameCatalogueSourcesListScreenProps {
+function deriveTitle(
+  gameTitle: string,
+  importMode: boolean,
+  importTitle: string | null,
+): string {
+  if (importMode) {
+    return `Import Games > ${importTitle ?? gameTitle} > Catalogues`;
+  }
+  return `${gameTitle} > Catalogues`;
+}
+
+interface GameCatalogueLinksScreenProps {
   gameId: string;
   importMode?: boolean;
   importTitle?: string;
 }
 
-export function GameCatalogueSourcesListScreen({
+export function GameCatalogueLinksScreen({
   gameId,
   importMode = false,
   importTitle,
-}: GameCatalogueSourcesListScreenProps) {
-  const { pop, push } = useRouter();
+}: GameCatalogueLinksScreenProps) {
+  const { pop, push, pushFrom, currentParams } = useRouter();
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
-  const sources = game
+  const links = game
     ? [...game.sources].sort((a, b) =>
         a.catalogueName.localeCompare(b.catalogueName),
       )
     : [];
 
-  const allLinked = sources.length >= SUPPORTED_CATALOGUES.length;
-  const topBarCtas: TopBarCta[] = allLinked ? ["back"] : ["add", "back"];
+  const allLinked = links.length >= SUPPORTED_CATALOGUES.length;
 
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const topBarCtas: TopBarCta[] = importMode
+    ? allLinked
+      ? ["next", "back"]
+      : ["add", "next", "back"]
+    : allLinked
+      ? ["back"]
+      : ["add", "back"];
+
+  const [selectedIndex, setSelectedIndex] = useState(() => {
+    const saved = Number(currentParams.selectedIndex);
+    return Number.isFinite(saved) && saved >= 0 ? saved : 0;
+  });
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
-  const [focusedCta, setFocusedCta] = useState<TopBarCta>("add");
+  const [focusedCta, setFocusedCta] = useState<TopBarCta>(topBarCtas[0]);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
   const [statusMessage, setStatusMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const addButtonRef = useRef<HTMLAnchorElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const safeSelectedIndex =
-    sources.length > 0 ? Math.min(selectedIndex, sources.length - 1) : 0;
-  const focusedSource = sources[safeSelectedIndex];
+    links.length > 0 ? Math.min(selectedIndex, links.length - 1) : 0;
+  const focusedLink = links[safeSelectedIndex];
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -95,6 +116,8 @@ export function GameCatalogueSourcesListScreen({
     if (event.key === "Enter") {
       if (focusedCta === "add") {
         navigateToAdd();
+      } else if (focusedCta === "next") {
+        navigateToNext();
       } else {
         pop();
       }
@@ -102,15 +125,15 @@ export function GameCatalogueSourcesListScreen({
   }
 
   function handleListKey(event: KeyboardEvent) {
-    if (sources.length === 0) return;
+    if (links.length === 0) return;
     if (event.key === "ArrowDown") {
-      setSelectedIndex((prev) => wrapIndex(prev, 1, sources.length));
+      setSelectedIndex((prev) => wrapIndex(prev, 1, links.length));
       setStatusMessage("");
     } else if (event.key === "ArrowUp") {
-      setSelectedIndex((prev) => wrapIndex(prev, -1, sources.length));
+      setSelectedIndex((prev) => wrapIndex(prev, -1, links.length));
       setStatusMessage("");
     } else if (event.key === "Enter") {
-      navigateToGameInfoEdit(focusedSource);
+      navigateToEdit(focusedLink);
     } else if (event.key === "Alt") {
       event.preventDefault();
       openContextMenu();
@@ -119,18 +142,12 @@ export function GameCatalogueSourcesListScreen({
 
   function handleContextMenuKey(event: KeyboardEvent) {
     if (event.key === "ArrowDown") {
-      setOverlayIndex((prev) => wrapIndex(prev, 1, CONTEXT_MENU_ITEMS.length));
+      setOverlayIndex(0);
     } else if (event.key === "ArrowUp") {
-      setOverlayIndex((prev) => wrapIndex(prev, -1, CONTEXT_MENU_ITEMS.length));
+      setOverlayIndex(0);
     } else if (event.key === "Enter") {
-      const action = CONTEXT_MENU_ITEMS[overlayIndex];
-      if (action === "Fetch") {
-        setOverlay(null);
-        navigateToGameInfoEdit(focusedSource);
-      } else if (action === "Remove") {
-        setOverlay("remove");
-        setOverlayIndex(0);
-      }
+      setOverlay("remove");
+      setOverlayIndex(0);
     } else if (event.key === "Escape") {
       setOverlay(null);
     }
@@ -155,31 +172,52 @@ export function GameCatalogueSourcesListScreen({
   }
 
   function navigateToAdd() {
-    push("game-add-catalogue-source", {
-      gameId,
-      ...(importMode && { importMode: "true", importTitle: importTitle ?? "" }),
-    });
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "game-catalogue-link-add",
+      {
+        gameId,
+        ...(importMode && {
+          importMode: "true",
+          importTitle: importTitle ?? "",
+        }),
+      },
+    );
   }
 
-  function navigateToGameInfoEdit(source: typeof focusedSource) {
-    if (!source) return;
+  function navigateToEdit(link: typeof focusedLink) {
+    if (!link) return;
+    pushFrom(
+      { selectedIndex: String(safeSelectedIndex) },
+      "game-catalogue-link-edit",
+      {
+        gameId,
+        catalogueName: link.catalogueName,
+        ...(importMode && {
+          importMode: "true",
+          importTitle: importTitle ?? "",
+        }),
+      },
+    );
+  }
+
+  function navigateToNext() {
     push("game-details-edit", {
       gameId,
-      catalogueName: source.catalogueName,
-      entryId: source.entryId,
       importMode: "true",
+      ...(importTitle !== undefined ? { importTitle } : {}),
     });
   }
 
   function openContextMenu() {
-    if (!focusedSource) return;
+    if (!focusedLink) return;
     setOverlay("context-menu");
     setOverlayIndex(0);
   }
 
   function confirmRemove() {
-    if (!focusedSource) return;
-    const removedSource = `${focusedSource.catalogueName}: ${focusedSource.entryId}`;
+    if (!focusedLink) return;
+    const removedName = focusedLink.catalogueName;
     setStore((prev) => ({
       ...prev,
       gameDetails: {
@@ -189,29 +227,21 @@ export function GameCatalogueSourcesListScreen({
             ? {
                 ...g,
                 sources: g.sources.filter(
-                  (s) =>
-                    !(
-                      s.catalogueName === focusedSource.catalogueName &&
-                      s.entryId === focusedSource.entryId
-                    ),
+                  (s) => s.catalogueName !== focusedLink.catalogueName,
                 ),
               }
             : g,
         ),
       },
     }));
-    const newSources = sources.filter(
-      (s) =>
-        !(
-          s.catalogueName === focusedSource.catalogueName &&
-          s.entryId === focusedSource.entryId
-        ),
+    const newLinks = links.filter(
+      (s) => s.catalogueName !== focusedLink.catalogueName,
     );
     setSelectedIndex(
-      Math.min(safeSelectedIndex, Math.max(0, newSources.length - 1)),
+      Math.min(safeSelectedIndex, Math.max(0, newLinks.length - 1)),
     );
     setOverlay(null);
-    setStatusMessage(`${removedSource} removed`);
+    setStatusMessage(`${removedName} removed`);
     containerRef.current?.focus();
   }
 
@@ -219,13 +249,13 @@ export function GameCatalogueSourcesListScreen({
     if (focusRegion === "list") {
       const cta = reverse ? topBarCtas[topBarCtas.length - 1] : topBarCtas[0];
       setFocusRegion("topbar");
-      setFocusedCta(cta as TopBarCta);
-      focusCtaButton(cta as TopBarCta);
+      setFocusedCta(cta);
+      focusCtaButton(cta);
     } else {
       const currentIndex = topBarCtas.indexOf(focusedCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < topBarCtas.length) {
-        const nextCta = topBarCtas[nextIndex] as TopBarCta;
+        const nextCta = topBarCtas[nextIndex];
         setFocusedCta(nextCta);
         focusCtaButton(nextCta);
       } else {
@@ -237,12 +267,18 @@ export function GameCatalogueSourcesListScreen({
 
   function focusCtaButton(cta: TopBarCta) {
     if (cta === "add") addButtonRef.current?.focus();
+    else if (cta === "next") nextButtonRef.current?.focus();
     else backButtonRef.current?.focus();
   }
 
-  function ctaClassName(cta: TopBarCta): string {
+  function ctaNavClassName(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
     return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
+  }
+
+  function ctaActionClassName(cta: TopBarCta): string {
+    const focused = focusRegion === "topbar" && focusedCta === cta;
+    return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
   }
 
   const screenTitle = deriveTitle(
@@ -251,11 +287,17 @@ export function GameCatalogueSourcesListScreen({
     importTitle ?? null,
   );
 
+  const bottomBarMessage =
+    statusMessage ||
+    (allLinked
+      ? `${game?.title ?? "Game"} is linked to all supported catalogues.`
+      : "");
+
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
-          <span className="screen__topbar-title">Sources</span>
+          <span className="screen__topbar-title">Catalogues</span>
           <div className="screen__topbar-ctas">
             <a
               ref={backButtonRef}
@@ -286,17 +328,17 @@ export function GameCatalogueSourcesListScreen({
       tabIndex={-1}
       onContextMenu={(e) => {
         e.preventDefault();
-        if (sources.length > 0) openContextMenu();
+        if (links.length > 0) openContextMenu();
       }}
     >
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
         <div className="screen__topbar-ctas">
-          {!allLinked && (
+          {topBarCtas.includes("add") && (
             <a
               ref={addButtonRef}
               href="#"
-              className={ctaClassName("add")}
+              className={ctaNavClassName("add")}
               onClick={(e) => {
                 e.preventDefault();
                 navigateToAdd();
@@ -305,10 +347,20 @@ export function GameCatalogueSourcesListScreen({
               Add
             </a>
           )}
+          {topBarCtas.includes("next") && (
+            <button
+              ref={nextButtonRef}
+              className={ctaActionClassName("next")}
+              onClick={navigateToNext}
+              type="button"
+            >
+              Next
+            </button>
+          )}
           <a
             ref={backButtonRef}
             href="#"
-            className={ctaClassName("back")}
+            className={ctaNavClassName("back")}
             onClick={(e) => {
               e.preventDefault();
               pop();
@@ -319,63 +371,64 @@ export function GameCatalogueSourcesListScreen({
         </div>
       </div>
       <div className="screen__content">
-        {sources.length === 0 ? (
-          <p className="catalogue-sources-list__empty">
-            Add a source to import metadata and media.
+        {links.length === 0 ? (
+          <p className="catalogue-links__empty">
+            Link a catalogue to enable metadata and media fetch.
           </p>
         ) : (
           <ul className="list">
-            {sources.map((source, index) => (
+            <li className="list__header">
+              <span className="catalogue-links__col catalogue-links__col--catalogue">
+                Catalogue
+              </span>
+              <span className="catalogue-links__col catalogue-links__col--id">
+                ID
+              </span>
+            </li>
+            {links.map((link, index) => (
               <li
-                key={`${source.catalogueName}-${source.entryId}`}
-                className={`list__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
+                key={link.catalogueName}
+                className={`list__row catalogue-links__row${index === safeSelectedIndex && focusRegion === "list" ? " list__row--selected" : ""}`}
                 onClick={() => {
                   setSelectedIndex(index);
-                  navigateToGameInfoEdit(source);
+                  navigateToEdit(link);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     setSelectedIndex(index);
-                    navigateToGameInfoEdit(source);
+                    navigateToEdit(link);
                   }
                 }}
               >
-                {source.catalogueName}: {source.entryId}
+                <span className="catalogue-links__col catalogue-links__col--catalogue">
+                  {link.catalogueName}
+                </span>
+                <span className="catalogue-links__col catalogue-links__col--id">
+                  {link.entryId}
+                </span>
               </li>
             ))}
           </ul>
         )}
       </div>
-      <div className="screen__bottombar">
-        {statusMessage ||
-          (allLinked
-            ? `${game.title} is linked to all supported catalogues.`
-            : "")}
-      </div>
-      {overlay === "context-menu" && focusedSource && (
+      <div className="screen__bottombar">{bottomBarMessage}</div>
+      {overlay === "context-menu" && focusedLink && (
         <div
           className="overlay-backdrop"
           style={{ alignItems: "flex-start", paddingTop: "80px" }}
         >
           <div className="overlay">
             <ul className="overlay__list">
-              {CONTEXT_MENU_ITEMS.map((item, index) => (
-                <li
-                  key={item}
-                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
-                >
-                  {item}
-                </li>
-              ))}
+              <li className="overlay__row overlay__row--selected">Remove</li>
             </ul>
           </div>
         </div>
       )}
-      {overlay === "remove" && focusedSource && (
+      {overlay === "remove" && focusedLink && (
         <div className="overlay-backdrop">
           <div className="overlay">
             <div className="overlay__title">
-              Remove {focusedSource.catalogueName}: {focusedSource.entryId}?
+              Remove {focusedLink.catalogueName}?
             </div>
             <ul className="overlay__list">
               {CONFIRM_OPTIONS.map((option, index) => (
@@ -392,15 +445,4 @@ export function GameCatalogueSourcesListScreen({
       )}
     </div>
   );
-}
-
-function deriveTitle(
-  gameTitle: string,
-  importMode: boolean,
-  importTitle: string | null,
-): string {
-  const base = importMode
-    ? `Import Games > ${importTitle ?? gameTitle} > Sources`
-    : `${gameTitle} > Sources`;
-  return base;
 }

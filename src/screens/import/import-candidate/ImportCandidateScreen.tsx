@@ -141,7 +141,7 @@ export function ImportCandidateScreen() {
 
   function handleNext() {
     const importTitle = candidate !== null ? deriveTitle(candidate) : undefined;
-    push("game-details-edit", {
+    push("game-catalogue-links", {
       gameId: candidate?.id ?? "",
       importMode: "true",
       ...(importTitle !== undefined ? { importTitle } : {}),

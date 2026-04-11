@@ -19,8 +19,9 @@ import { ControlEditScreen } from "./screens/controls/control-edit/ControlEditSc
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
-import { GameCatalogueSourceAddScreen } from "./screens/games/game-catalogue-source-add/GameCatalogueSourceAddScreen";
-import { GameCatalogueSourcesListScreen } from "./screens/games/game-catalogue-sources-list/GameCatalogueSourcesListScreen";
+import { GameCatalogueLinkAddScreen } from "./screens/games/game-catalogue-link-add/GameCatalogueLinkAddScreen";
+import { GameCatalogueLinkEditScreen } from "./screens/games/game-catalogue-link-edit/GameCatalogueLinkEditScreen";
+import { GameCatalogueLinksScreen } from "./screens/games/game-catalogue-links/GameCatalogueLinksScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
@@ -268,19 +269,29 @@ function AppScreens() {
   if (currentScreen === "import-controls") {
     return <Placeholder name="Import Controls" />;
   }
-  if (currentScreen === "game-catalogue-sources-list") {
+  if (currentScreen === "game-catalogue-links") {
     return (
-      <GameCatalogueSourcesListScreen
+      <GameCatalogueLinksScreen
         gameId={currentParams.gameId ?? "game-bubble"}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
       />
     );
   }
-  if (currentScreen === "game-add-catalogue-source") {
+  if (currentScreen === "game-catalogue-link-add") {
     return (
-      <GameCatalogueSourceAddScreen
+      <GameCatalogueLinkAddScreen
         gameId={currentParams.gameId ?? "game-bubble"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+      />
+    );
+  }
+  if (currentScreen === "game-catalogue-link-edit") {
+    return (
+      <GameCatalogueLinkEditScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        catalogueName={currentParams.catalogueName ?? ""}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
       />

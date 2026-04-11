@@ -8,78 +8,79 @@ function deriveTitle(
   importMode: boolean,
   importTitle: string | null,
 ): string {
-  const base = importMode
-    ? `Import Games > ${importTitle ?? gameTitle} > Sources`
-    : `${gameTitle} > Sources`;
-  return base;
+  if (importMode) {
+    return `Import Games > ${importTitle ?? gameTitle} > Catalogues`;
+  }
+  return `${gameTitle} > Catalogues`;
 }
 
-function sortSources(
-  sources: Array<{ catalogueName: string; entryId: string }>,
-) {
-  return [...sources].sort((a, b) =>
+function sortLinks(links: Array<{ catalogueName: string; entryId: string }>) {
+  return [...links].sort((a, b) =>
     a.catalogueName.localeCompare(b.catalogueName),
   );
 }
 
 function allLinked(
-  sources: Array<{ catalogueName: string; entryId: string }>,
+  links: Array<{ catalogueName: string; entryId: string }>,
 ): boolean {
-  return sources.length >= SUPPORTED_CATALOGUES.length;
+  return links.length >= SUPPORTED_CATALOGUES.length;
 }
 
 function wrapIndex(index: number, delta: number, length: number): number {
   return (index + delta + length) % length;
 }
 
-describe("GameCatalogueSourcesListScreen", () => {
+describe("GameCatalogueLinksScreen", () => {
   describe("deriveTitle", () => {
     it("returns standard title with game name", () => {
-      eq(deriveTitle("Bubble Bobble", false, null), "Bubble Bobble > Sources");
+      eq(
+        deriveTitle("Bubble Bobble", false, null),
+        "Bubble Bobble > Catalogues",
+      );
     });
 
     it("returns import mode title with import title", () => {
       eq(
         deriveTitle("Bubble Bobble", true, "Bubble Bobble"),
-        "Import Games > Bubble Bobble > Sources",
+        "Import Games > Bubble Bobble > Catalogues",
       );
     });
 
     it("falls back to gameTitle when importTitle is null in import mode", () => {
       eq(
         deriveTitle("Bubble Bobble", true, null),
-        "Import Games > Bubble Bobble > Sources",
+        "Import Games > Bubble Bobble > Catalogues",
       );
     });
   });
 
-  describe("sortSources", () => {
-    it("sorts sources alphabetically by catalogue name", () => {
-      const sources = [
+  describe("sortLinks", () => {
+    it("sorts links alphabetically by catalogue name", () => {
+      const links = [
         { catalogueName: "MobyGames", entryId: "1234" },
         { catalogueName: "GameBase64", entryId: "243" },
       ];
-      const sorted = sortSources(sources);
+      const sorted = sortLinks(links);
       deep(sorted[0]?.catalogueName, "GameBase64");
       deep(sorted[1]?.catalogueName, "MobyGames");
     });
 
     it("does not mutate the original array", () => {
-      const sources = [
+      const links = [
         { catalogueName: "MobyGames", entryId: "1234" },
         { catalogueName: "GameBase64", entryId: "243" },
       ];
-      sortSources(sources);
-      eq(sources[0]?.catalogueName, "MobyGames");
+      sortLinks(links);
+      eq(links[0]?.catalogueName, "MobyGames");
     });
   });
 
   describe("allLinked", () => {
-    it("returns false when no sources are linked", () => {
+    it("returns false when no links are present", () => {
       eq(allLinked([]), false);
     });
 
-    it("returns false when only one source is linked", () => {
+    it("returns false when only one catalogue is linked", () => {
       eq(allLinked([{ catalogueName: "GameBase64", entryId: "243" }]), false);
     });
 
@@ -94,44 +95,44 @@ describe("GameCatalogueSourcesListScreen", () => {
     });
   });
 
-  describe("bottom bar hint", () => {
+  describe("bottom bar message", () => {
     it("shows all-linked message when all catalogues are linked and no status message", () => {
-      const sources = [
+      const links = [
         { catalogueName: "GameBase64", entryId: "243" },
         { catalogueName: "MobyGames", entryId: "1188" },
       ];
       const statusMessage = "";
-      const hint =
+      const message =
         statusMessage ||
-        (allLinked(sources)
+        (allLinked(links)
           ? "Bubble Bobble is linked to all supported catalogues."
           : "");
-      eq(hint, "Bubble Bobble is linked to all supported catalogues.");
+      eq(message, "Bubble Bobble is linked to all supported catalogues.");
     });
 
-    it("shows status message over all-linked hint when both are present", () => {
-      const sources = [
+    it("shows status message over all-linked message when both are present", () => {
+      const links = [
         { catalogueName: "GameBase64", entryId: "243" },
         { catalogueName: "MobyGames", entryId: "1188" },
       ];
-      const statusMessage = "GameBase64: 243 removed";
-      const hint =
+      const statusMessage = "GameBase64 removed";
+      const message =
         statusMessage ||
-        (allLinked(sources)
+        (allLinked(links)
           ? "Bubble Bobble is linked to all supported catalogues."
           : "");
-      eq(hint, "GameBase64: 243 removed");
+      eq(message, "GameBase64 removed");
     });
 
     it("shows nothing when catalogues are not all linked and no status message", () => {
-      const sources = [{ catalogueName: "GameBase64", entryId: "243" }];
+      const links = [{ catalogueName: "GameBase64", entryId: "243" }];
       const statusMessage = "";
-      const hint =
+      const message =
         statusMessage ||
-        (allLinked(sources)
+        (allLinked(links)
           ? "Bubble Bobble is linked to all supported catalogues."
           : "");
-      eq(hint, "");
+      eq(message, "");
     });
   });
 

@@ -23,8 +23,8 @@ export type GameManagementRow =
 const GAME_ITEMS: readonly GameManagementItem[] = [
   { label: "Details", screen: "game-details-edit" as ScreenName },
   {
-    label: "Catalogue Sources",
-    screen: "game-catalogue-sources-list" as ScreenName,
+    label: "Catalogues",
+    screen: "game-catalogue-links" as ScreenName,
   },
   { label: "ROMs", screen: "game-rom-list" as ScreenName },
   { label: "Snapshots", screen: "snapshot-list" as ScreenName },

@@ -1,8 +1,3 @@
 /* ============================================================
-   Game Catalogue Sources List Screen
+   Game Catalogue Link Add Screen
    ============================================================ */
-
-.catalogue-sources-list__empty {
-  color: var(--colour-text-muted);
-  padding: 8px;
-}
