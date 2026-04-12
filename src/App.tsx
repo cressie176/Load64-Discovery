@@ -24,6 +24,7 @@ import { GameCatalogueLinkEditScreen } from "./screens/games/game-catalogue-link
 import { GameCatalogueLinksScreen } from "./screens/games/game-catalogue-links/GameCatalogueLinksScreen";
 import { CoverArtScreen } from "./screens/games/game-cover-art/CoverArtScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
+import { GameDetailsEditScreen } from "./screens/games/game-details-edit/GameDetailsEditScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
 import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
@@ -207,7 +208,13 @@ function AppScreens() {
     return <ImportCandidateScreen />;
   }
   if (currentScreen === "game-details-edit") {
-    return <Placeholder name="Game Details Edit" />;
+    return (
+      <GameDetailsEditScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+      />
+    );
   }
   if (currentScreen === "game-rom-list") {
     return (

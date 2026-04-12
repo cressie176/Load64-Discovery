@@ -1,0 +1,181 @@
+/* ============================================================
+   Game Details Edit
+   ============================================================ */
+
+/*
+ * Grid layout: one column by default (just the field column).
+ * When import data is present, three columns: field | copy-btn | fetched.
+ * Each row is one field. All three columns share the same row heights,
+ * so alignment is guaranteed by the grid.
+ */
+
+.game-details-edit__layout {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 50%);
+  padding: 16px;
+}
+
+.game-details-edit__layout--import {
+  align-items: start;
+  grid-template-columns: minmax(0, 50%) auto 1fr;
+}
+
+/* ── Fields (column 1) ── */
+
+.game-details-edit__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* ── Labels ── */
+
+.game-details-edit__label {
+  color: var(--colour-text);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── Inputs ── */
+
+.game-details-edit__input {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  outline: none;
+  padding: 4px 8px;
+  width: 100%;
+}
+
+.game-details-edit__input:focus,
+.game-details-edit__input--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
+
+.game-details-edit__textarea {
+  resize: vertical;
+}
+
+/* ── Copy button cells (column 2) ── */
+
+.game-details-edit__copy-cell {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Same spacer as the fetched cell — offsets past the label so the button
+   centres within the input portion of the row, not the full row height. */
+.game-details-edit__copy-cell::before {
+  content: "";
+  display: block;
+  flex-shrink: 0;
+  height: 22px;
+}
+
+/* ── Fetched value cells (column 3) ── */
+
+.game-details-edit__fetched-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Invisible spacer matching the label height in column 1,
+   so the fetched value aligns with the input beside it. */
+.game-details-edit__fetched-cell::before {
+  content: "";
+  display: block;
+  /* 12px font-size * 1.5 line-height = 18px, plus 4px gap between label and input */
+  height: 22px;
+  flex-shrink: 0;
+}
+
+/* ── Fetched value display ── */
+
+.game-details-edit__fetched-value {
+  background: var(--colour-surface-2);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text-muted);
+  display: block;
+  font-style: italic;
+  /* inputs render at a smaller height than block elements with the same padding
+     because browsers use a compressed line metric for form controls. Match it. */
+  line-height: normal;
+  overflow: hidden;
+  padding: 4px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.game-details-edit__fetched-value--multiline {
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Copy buttons ── */
+
+.game-details-edit__apply-btn {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 2px 8px;
+}
+
+.game-details-edit__apply-btn:hover,
+.game-details-edit__apply-btn--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
+
+/* ── Form action buttons (Fetch / Save / Cancel) ── */
+
+.game-details-edit__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+/* When import columns are visible, span the actions row across all 3 columns */
+.game-details-edit__actions--span {
+  grid-column: 1 / -1;
+}
+
+.game-details-edit__action-btn {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 4px 14px;
+}
+
+.game-details-edit__action-btn:hover,
+.game-details-edit__action-btn--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
+
+.game-details-edit__action-btn--disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+/* ── Fetch context menu ── */
+
+.game-details-edit__fetch-menu {
+  min-width: 220px;
+}

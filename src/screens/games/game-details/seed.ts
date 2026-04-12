@@ -7,6 +7,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Bubble Bobble",
       publisher: "Taito",
       year: 1987,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Bubble+Bobble",
       notes:
         "Classic arcade platformer. Collect all the bubbles to complete each level. Two-player simultaneous co-op.",
@@ -38,6 +40,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Elite",
       publisher: "Firebird",
       year: 1985,
+      colourEncoding: "pal",
+      trueDriveEmulation: true,
       coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Elite",
       notes:
         "Space trading and combat simulator. Reach Elite status by trading, fighting and exploring the galaxy.",
@@ -62,6 +66,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Iridis Alpha",
       publisher: "Hewson Consultants",
       year: 1986,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Iridis+Alpha",
       notes: "Shoot-em-up by Jeff Minter. Features psychedelic visuals.",
       screenshots: [
@@ -81,6 +87,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Monty on the Run",
       publisher: "Gremlin Graphics",
       year: 1985,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       coverUrl:
         "https://placehold.co/160x200/1a1a2e/4040ff?text=Monty+on+the+Run",
       notes:
@@ -109,6 +117,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Outrun",
       publisher: "U.S. Gold",
       year: 1988,
+      colourEncoding: "unknown",
+      trueDriveEmulation: false,
       notes: "Racing game. No ROM has been configured yet.",
       screenshots: [],
       sources: [{ catalogueName: "GameBase64", entryId: "2879" }],
@@ -122,6 +132,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Summer Games II",
       publisher: "Epyx",
       year: 1985,
+      colourEncoding: "ntsc",
+      trueDriveEmulation: false,
       coverUrl:
         "https://placehold.co/160x200/1a1a2e/4040ff?text=Summer+Games+II",
       screenshots: [
@@ -141,6 +153,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Turrican II: The Final Fight",
       publisher: "Rainbow Arts",
       year: 1991,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       coverUrl: "https://placehold.co/160x200/1a1a2e/4040ff?text=Turrican+II",
       notes: "Action platformer by Factor 5. One of the finest C64 titles.",
       screenshots: [
@@ -164,6 +178,8 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       title: "Zzap!64 Megatape 1",
       publisher: "Newsfield Publications",
       year: 1986,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       coverUrl:
         "https://placehold.co/160x200/1a1a2e/4040ff?text=Zzap!64+Megatape+1",
       screenshots: [],

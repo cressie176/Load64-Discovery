@@ -13,6 +13,8 @@ export interface GameDetails {
   title: string;
   publisher: string;
   year: number;
+  colourEncoding: "pal" | "ntsc" | "unknown";
+  trueDriveEmulation: boolean;
   coverUrl?: string;
   notes?: string;
   screenshots: GameScreenshot[];

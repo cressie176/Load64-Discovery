@@ -39,6 +39,8 @@ const GAME: GameDetails = {
   title: "Jet Set Willy",
   publisher: "Software Projects",
   year: 1984,
+  colourEncoding: "pal",
+  trueDriveEmulation: false,
   screenshots: [
     { slot: "loading", url: "https://example.com/loading.jpg" },
     { slot: "title", url: "https://example.com/title.jpg" },

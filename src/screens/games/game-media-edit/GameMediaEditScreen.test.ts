@@ -64,6 +64,8 @@ const GAME: GameDetails = {
   title: "Test Game",
   publisher: "Test Publisher",
   year: 1990,
+  colourEncoding: "pal",
+  trueDriveEmulation: false,
   coverUrl: "https://example.com/cover.jpg",
   screenshots: [
     { slot: "loading", url: "https://example.com/loading.jpg" },

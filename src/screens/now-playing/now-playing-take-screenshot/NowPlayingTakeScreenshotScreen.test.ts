@@ -111,6 +111,8 @@ describe("NowPlayingTakeScreenshotScreen", () => {
       title: "Test Game",
       publisher: "Test Co",
       year: 1990,
+      colourEncoding: "pal",
+      trueDriveEmulation: false,
       screenshots: [],
       sources: [],
       hasRom: true,
