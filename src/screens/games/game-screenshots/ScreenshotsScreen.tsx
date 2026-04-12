@@ -105,8 +105,8 @@ export function ScreenshotsScreen({
   const key = candidatesStoreKey(gameId);
   const storeCandidates = store.gameMediaEdit.candidates[key] ?? [];
 
-  const [localCandidates, setLocalCandidates] =
-    useState<MediaCandidate[]>(storeCandidates);
+  const [localCandidates, setLocalCandidates] = useState<MediaCandidate[]>([]);
+  const consumedStoreCountRef = useRef(0);
   const [currentSlotIndex, setCurrentSlotIndex] = useState(0);
   const [slotAssignments, setSlotAssignments] = useState<
     Partial<Record<ScreenshotSlot, string>>
@@ -128,11 +128,15 @@ export function ScreenshotsScreen({
   const currentSlot = SLOT_ORDER[currentSlotIndex] ?? "loading";
 
   useEffect(() => {
-    if (storeCandidates.length > localCandidates.length) {
-      setLocalCandidates(storeCandidates);
-      setFocusedCandidateIndex(storeCandidates.length - 1);
-    }
-  }, [storeCandidates, storeCandidates.length, localCandidates.length]);
+    const unconsumed = storeCandidates.slice(consumedStoreCountRef.current);
+    if (unconsumed.length === 0) return;
+    consumedStoreCountRef.current = storeCandidates.length;
+    setLocalCandidates((prev) => {
+      const updated = [...prev, ...unconsumed].slice(0, MAX_CANDIDATES);
+      setFocusedCandidateIndex(updated.length - 1);
+      return updated;
+    });
+  }, [storeCandidates]);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -330,16 +334,6 @@ export function ScreenshotsScreen({
     const updated = [...localCandidates, newCandidate].slice(0, MAX_CANDIDATES);
     setLocalCandidates(updated);
     setFocusedCandidateIndex(updated.length - 1);
-    setStore((prev) => ({
-      ...prev,
-      gameMediaEdit: {
-        ...prev.gameMediaEdit,
-        candidates: {
-          ...prev.gameMediaEdit.candidates,
-          [key]: updated,
-        },
-      },
-    }));
   }
 
   function handleFetch(catalogueName: string) {
@@ -358,27 +352,16 @@ export function ScreenshotsScreen({
       setLocalCandidates(updated);
       setFocusedCandidateIndex(updated.length - 1);
       setStatusMessage("");
-      setStore((prev) => ({
-        ...prev,
-        gameMediaEdit: {
-          ...prev.gameMediaEdit,
-          candidates: {
-            ...prev.gameMediaEdit.candidates,
-            [key]: updated,
-          },
-        },
-      }));
     }, 800);
   }
 
   function removeCandidate(ci: number) {
     const newCandidates = localCandidates.filter((_, i) => i !== ci);
     setLocalCandidates(newCandidates);
-    setFocusedCandidateIndex((prev) => {
-      const newTotal = newCandidates.length;
-      if (prev >= newTotal) return Math.max(0, newTotal - 1);
-      return prev;
-    });
+    const newTotal = newCandidates.length;
+    setFocusedCandidateIndex(
+      newTotal === 0 ? newTotal : Math.min(ci, newTotal - 1),
+    );
   }
 
   function handleSave() {

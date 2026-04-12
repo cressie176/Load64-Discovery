@@ -90,8 +90,8 @@ export function CoverArtScreen({
   const key = storeKey(gameId);
   const storeCandidates = store.gameMediaEdit.candidates[key] ?? [];
 
-  const [localCandidates, setLocalCandidates] =
-    useState<MediaCandidate[]>(storeCandidates);
+  const [localCandidates, setLocalCandidates] = useState<MediaCandidate[]>([]);
+  const consumedStoreCountRef = useRef(0);
   const [selectedCoverUrl, setSelectedCoverUrl] = useState<string | undefined>(
     undefined,
   );
@@ -111,11 +111,15 @@ export function CoverArtScreen({
   const sources = game?.sources ?? [];
 
   useEffect(() => {
-    if (storeCandidates.length > localCandidates.length) {
-      setLocalCandidates(storeCandidates);
-      setFocusedCandidateIndex(storeCandidates.length - 1);
-    }
-  }, [storeCandidates, storeCandidates.length, localCandidates.length]);
+    const unconsumed = storeCandidates.slice(consumedStoreCountRef.current);
+    if (unconsumed.length === 0) return;
+    consumedStoreCountRef.current = storeCandidates.length;
+    setLocalCandidates((prev) => {
+      const updated = [...prev, ...unconsumed].slice(0, MAX_CANDIDATES);
+      setFocusedCandidateIndex(updated.length - 1);
+      return updated;
+    });
+  }, [storeCandidates]);
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -292,16 +296,6 @@ export function CoverArtScreen({
     );
     setLocalCandidates(updated);
     setFocusedCandidateIndex(updated.length - 1);
-    setStore((prev) => ({
-      ...prev,
-      gameMediaEdit: {
-        ...prev.gameMediaEdit,
-        candidates: {
-          ...prev.gameMediaEdit.candidates,
-          [key]: updated,
-        },
-      },
-    }));
   }
 
   function handleFetch(catalogueName: string) {
@@ -320,27 +314,16 @@ export function CoverArtScreen({
       setLocalCandidates(updated);
       setFocusedCandidateIndex(updated.length - 1);
       setStatusMessage("");
-      setStore((prev) => ({
-        ...prev,
-        gameMediaEdit: {
-          ...prev.gameMediaEdit,
-          candidates: {
-            ...prev.gameMediaEdit.candidates,
-            [key]: updated,
-          },
-        },
-      }));
     }, 800);
   }
 
   function removeCandidate(ci: number) {
     const newCandidates = localCandidates.filter((_, i) => i !== ci);
     setLocalCandidates(newCandidates);
-    setFocusedCandidateIndex((prev: number) => {
-      const newTotal = newCandidates.length;
-      if (prev >= newTotal) return Math.max(0, newTotal - 1);
-      return prev;
-    });
+    const newTotal = newCandidates.length;
+    setFocusedCandidateIndex(
+      newTotal === 0 ? newTotal : Math.min(ci, newTotal - 1),
+    );
   }
 
   function handleSave() {
