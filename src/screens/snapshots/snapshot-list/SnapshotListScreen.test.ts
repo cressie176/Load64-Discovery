@@ -132,7 +132,22 @@ describe("SnapshotListScreen", () => {
       eq(items.includes("Delete Older"), true);
     });
 
-    it("includes both Delete Others and Delete Older when applicable", () => {
+    it("omits Delete Newer when focused snapshot is the first in the group", () => {
+      const items = buildContextMenuItems(3, 0);
+      eq(items.includes("Delete Newer"), false);
+    });
+
+    it("includes Delete Newer when there are newer snapshots above", () => {
+      const items = buildContextMenuItems(3, 1);
+      eq(items.includes("Delete Newer"), true);
+    });
+
+    it("includes all four actions when focused snapshot is in the middle", () => {
+      const items = buildContextMenuItems(3, 1);
+      deq(items, ["Delete", "Delete Others", "Delete Newer", "Delete Older"]);
+    });
+
+    it("includes both Delete Others and Delete Older but not Delete Newer when focused is first", () => {
       const items = buildContextMenuItems(3, 0);
       deq(items, ["Delete", "Delete Others", "Delete Older"]);
     });

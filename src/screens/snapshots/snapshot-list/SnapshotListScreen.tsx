@@ -11,6 +11,7 @@ type OverlayKind =
   | { kind: "delete-group"; groupName: string }
   | { kind: "delete-snapshot"; snapshot: Snapshot }
   | { kind: "delete-others"; count: number; snapshot: Snapshot }
+  | { kind: "delete-newer"; count: number; snapshot: Snapshot }
   | { kind: "delete-older"; count: number; snapshot: Snapshot };
 
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
@@ -202,6 +203,8 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       openSnapshotDeleteOverlay();
     } else if (action === "Delete Others") {
       openDeleteOthersOverlay();
+    } else if (action === "Delete Newer") {
+      openDeleteNewerOverlay();
     } else if (action === "Delete Older") {
       openDeleteOlderOverlay();
     }
@@ -257,6 +260,17 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
     setOverlayIndex(0);
   }
 
+  function openDeleteNewerOverlay() {
+    if (!focusedSnapshot || !focusedGroup) return;
+    const newerCount = safeSnapshotIndex;
+    setOverlay({
+      kind: "delete-newer",
+      count: newerCount,
+      snapshot: focusedSnapshot,
+    });
+    setOverlayIndex(0);
+  }
+
   function openDeleteOlderOverlay() {
     if (!focusedSnapshot || !focusedGroup) return;
     const olderCount = focusedGroup.snapshots.length - 1 - safeSnapshotIndex;
@@ -276,6 +290,8 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       deleteSnapshot(overlay.snapshot);
     } else if (overlay.kind === "delete-others") {
       deleteOtherSnapshots(overlay.snapshot);
+    } else if (overlay.kind === "delete-newer") {
+      deleteNewerSnapshots(overlay.snapshot);
     } else if (overlay.kind === "delete-older") {
       deleteOlderSnapshots(overlay.snapshot);
     }
@@ -343,6 +359,33 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       const updatedGame = updateGameFlags(prev, gameId, remaining);
       const message = `${othersCount} snapshot(s) deleted`;
       setBottomMessage(message);
+      return {
+        ...prev,
+        snapshots: { snapshots: updatedSnapshots },
+        gameDetails: updatedGame,
+      };
+    });
+    setSelectedSnapshotIndex(0);
+  }
+
+  function deleteNewerSnapshots(from: Snapshot) {
+    setStore((prev) => {
+      const all = prev.snapshots.snapshots[gameId] ?? [];
+      const groupSnapshots = all
+        .filter((s) => s.groupName === from.groupName)
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+      const fromIndex = groupSnapshots.findIndex((s) => s.id === from.id);
+      const toDeleteIds = new Set(
+        groupSnapshots.slice(0, fromIndex).map((s) => s.id),
+      );
+      const deletedCount = toDeleteIds.size;
+      const remaining = all.filter((s) => !toDeleteIds.has(s.id));
+      const updatedSnapshots = {
+        ...prev.snapshots.snapshots,
+        [gameId]: remaining,
+      };
+      const updatedGame = updateGameFlags(prev, gameId, remaining);
+      setBottomMessage(`${deletedCount} snapshot(s) deleted`);
       return {
         ...prev,
         snapshots: { snapshots: updatedSnapshots },
@@ -657,6 +700,40 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
               <>
                 <div className="overlay__title">
                   Delete {overlay.count} other snapshot(s)?
+                </div>
+                <ul className="overlay__list">
+                  {OVERLAY_OPTIONS.map((opt, index) => (
+                    <li
+                      key={opt}
+                      className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                      onClick={() => {
+                        if (index === 0) {
+                          confirmOverlay();
+                        } else {
+                          closeOverlay();
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (index === 0) {
+                            confirmOverlay();
+                          } else {
+                            closeOverlay();
+                          }
+                        }
+                      }}
+                    >
+                      {opt}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {overlay.kind === "delete-newer" && (
+              <>
+                <div className="overlay__title">
+                  Delete {overlay.count} newer snapshot(s)?
                 </div>
                 <ul className="overlay__list">
                   {OVERLAY_OPTIONS.map((opt, index) => (
