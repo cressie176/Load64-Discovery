@@ -66,18 +66,28 @@ Screens are rendered by a central router component that maintains the navigation
 | Context menu        | Button West   | Option / Right-click |
 | Cycle focus regions | Button North  | Tab / Shift+Tab  |
 
-Tab moves between focus regions and top-bar CTAs — never through list items.
+Tab moves between focus regions and CTAs — never through list items or form fields.
 
 On entering any screen, focus lands on the primary content region, not the top-bar CTAs.
 
-**Tab cycling implementation:** When Tab is pressed in the topbar, step through each CTA individually before returning to the content region. A common bug is toggling directly between `"list"` and `"topbar"` as a binary flip — this skips CTAs after the first. The correct pattern:
-- Tab from content → topbar, focus first CTA (or last if Shift+Tab)
-- Tab within topbar → move to next CTA; if no next CTA, return to content
+**Tab order:** content region → form-area CTAs (if any) → top-bar CTAs → back to content. Shift+Tab reverses. This ensures [Fetch], [Save], [Cancel] and similar form buttons are reachable by Tab before the user reaches the top bar.
+
+**Tab cycling implementation:** When Tab is pressed in the topbar, step through each CTA individually before returning to the content region. A common bug is toggling directly between `"form"` and `"topbar"` as a binary flip — this skips CTAs after the first and skips form-area CTAs entirely. The correct pattern:
+- Tab from content → first form-area CTA if any (or last if Shift+Tab); if none, first top-bar CTA
+- Tab within form-area CTAs → move to next; if no next, move to first top-bar CTA (or back to content if Shift+Tab)
+- Tab within topbar → move to next CTA; if no next, return to content
 - Always pass `event.shiftKey` to the toggle function to support reverse traversal
 
-The correct implementation of `toggleFocusRegion` and its call site:
+For screens with no form-area CTAs, the pattern collapses to the simpler content ↔ topbar cycle.
+
+The correct implementation of `toggleFocusRegion` for a screen with form-area CTAs:
 
 ```ts
+// FocusRegion includes "form-actions" for screens with form CTAs
+type FocusRegion = "form" | "form-actions" | "topbar";
+const FORM_ACTION_CTAS = ["fetch", "save", "cancel"] as const;
+const TOP_BAR_CTAS = ["back"] as const;
+
 // In handleMainKey:
 if (event.key === "Tab") {
   event.preventDefault();
@@ -87,29 +97,54 @@ if (event.key === "Tab") {
 
 // toggleFocusRegion:
 function toggleFocusRegion(reverse = false) {
-  if (focusRegion === "list") {
-    const cta = reverse
-      ? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
-      : TOP_BAR_CTAS[0];
-    setFocusRegion("topbar");
-    setFocusedCta(cta as TopBarCta);
-    focusCtaButton(cta as TopBarCta);
+  if (focusRegion === "form") {
+    if (!reverse) {
+      // Tab forward: go to form-actions first (if any), else topbar
+      if (FORM_ACTION_CTAS.length > 0) {
+        setFocusRegion("form-actions");
+        focusFormActionCta(FORM_ACTION_CTAS[0]);
+      } else {
+        setFocusRegion("topbar");
+        focusTopBarCta(TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]);
+      }
+    } else {
+      // Shift+Tab backward: go to last topbar CTA
+      setFocusRegion("topbar");
+      focusTopBarCta(TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]);
+    }
+  } else if (focusRegion === "form-actions") {
+    const currentIndex = FORM_ACTION_CTAS.indexOf(focusedFormCta);
+    const nextIndex = currentIndex + (reverse ? -1 : 1);
+    if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
+      focusFormActionCta(FORM_ACTION_CTAS[nextIndex]);
+    } else if (!reverse) {
+      setFocusRegion("topbar");
+      focusTopBarCta(TOP_BAR_CTAS[0]);
+    } else {
+      setFocusRegion("form");
+      containerRef.current?.focus();
+    }
   } else {
-    const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+    // focusRegion === "topbar"
+    const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
     const nextIndex = currentIndex + (reverse ? -1 : 1);
     if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-      const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-      setFocusedCta(nextCta);
-      focusCtaButton(nextCta);
+      focusTopBarCta(TOP_BAR_CTAS[nextIndex]);
+    } else if (!reverse) {
+      setFocusRegion("form");
+      containerRef.current?.focus();
+    } else if (FORM_ACTION_CTAS.length > 0) {
+      setFocusRegion("form-actions");
+      focusFormActionCta(FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1]);
     } else {
-      setFocusRegion("list");
+      setFocusRegion("form");
       containerRef.current?.focus();
     }
   }
 }
 ```
 
-Use the screen-specific CTA array (e.g. `topBarCtas` when it varies by mode) in place of `TOP_BAR_CTAS` where appropriate.
+For screens without form-area CTAs (lists, simple nav screens), use the simpler two-region pattern with `"list"` / `"topbar"` and `TOP_BAR_CTAS` only.
 
 ## Screen Anatomy
 
