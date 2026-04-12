@@ -11,7 +11,7 @@ type OverlayKind =
   | { kind: "delete-group"; groupName: string }
   | { kind: "delete-snapshot"; snapshot: Snapshot }
   | { kind: "delete-others"; count: number; snapshot: Snapshot }
-  | { kind: "delete-subsequent"; count: number; snapshot: Snapshot };
+  | { kind: "delete-older"; count: number; snapshot: Snapshot };
 
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 const OVERLAY_OPTIONS = ["Yes", "No"] as const;
@@ -202,8 +202,8 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       openSnapshotDeleteOverlay();
     } else if (action === "Delete Others") {
       openDeleteOthersOverlay();
-    } else if (action === "Delete Subsequent") {
-      openDeleteSubsequentOverlay();
+    } else if (action === "Delete Older") {
+      openDeleteOlderOverlay();
     }
   }
 
@@ -257,13 +257,12 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
     setOverlayIndex(0);
   }
 
-  function openDeleteSubsequentOverlay() {
+  function openDeleteOlderOverlay() {
     if (!focusedSnapshot || !focusedGroup) return;
-    const subsequentCount =
-      focusedGroup.snapshots.length - 1 - safeSnapshotIndex;
+    const olderCount = focusedGroup.snapshots.length - 1 - safeSnapshotIndex;
     setOverlay({
-      kind: "delete-subsequent",
-      count: subsequentCount,
+      kind: "delete-older",
+      count: olderCount,
       snapshot: focusedSnapshot,
     });
     setOverlayIndex(0);
@@ -277,8 +276,8 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       deleteSnapshot(overlay.snapshot);
     } else if (overlay.kind === "delete-others") {
       deleteOtherSnapshots(overlay.snapshot);
-    } else if (overlay.kind === "delete-subsequent") {
-      deleteSubsequentSnapshots(overlay.snapshot);
+    } else if (overlay.kind === "delete-older") {
+      deleteOlderSnapshots(overlay.snapshot);
     }
     setOverlay(null);
   }
@@ -353,7 +352,7 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
     setSelectedSnapshotIndex(0);
   }
 
-  function deleteSubsequentSnapshots(from: Snapshot) {
+  function deleteOlderSnapshots(from: Snapshot) {
     setStore((prev) => {
       const all = prev.snapshots.snapshots[gameId] ?? [];
       const groupSnapshots = all
@@ -688,10 +687,10 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
               </>
             )}
 
-            {overlay.kind === "delete-subsequent" && (
+            {overlay.kind === "delete-older" && (
               <>
                 <div className="overlay__title">
-                  Delete {overlay.count} subsequent snapshot(s)?
+                  Delete {overlay.count} older snapshot(s)?
                 </div>
                 <ul className="overlay__list">
                   {OVERLAY_OPTIONS.map((opt, index) => (

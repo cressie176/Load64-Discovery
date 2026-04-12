@@ -122,19 +122,19 @@ describe("SnapshotListScreen", () => {
       eq(items.includes("Delete Others"), true);
     });
 
-    it("omits Delete Subsequent when focused snapshot is the last in the group", () => {
+    it("omits Delete Older when focused snapshot is the last in the group", () => {
       const items = buildContextMenuItems(3, 2);
-      eq(items.includes("Delete Subsequent"), false);
+      eq(items.includes("Delete Older"), false);
     });
 
-    it("includes Delete Subsequent when there are older snapshots below", () => {
+    it("includes Delete Older when there are older snapshots below", () => {
       const items = buildContextMenuItems(3, 1);
-      eq(items.includes("Delete Subsequent"), true);
+      eq(items.includes("Delete Older"), true);
     });
 
-    it("includes both Delete Others and Delete Subsequent when applicable", () => {
+    it("includes both Delete Others and Delete Older when applicable", () => {
       const items = buildContextMenuItems(3, 0);
-      deq(items, ["Delete", "Delete Others", "Delete Subsequent"]);
+      deq(items, ["Delete", "Delete Others", "Delete Older"]);
     });
   });
 

@@ -4,6 +4,6 @@ export function buildContextMenuItems(
 ): string[] {
   const items: string[] = ["Delete"];
   if (groupSize > 1) items.push("Delete Others");
-  if (snapshotIndex < groupSize - 1) items.push("Delete Subsequent");
+  if (snapshotIndex < groupSize - 1) items.push("Delete Older");
   return items;
 }
