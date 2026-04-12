@@ -64,7 +64,7 @@ describe("GameManagementScreen", () => {
       const headers = GAME_MANAGEMENT_ROWS.filter(
         (row) => row.kind === "group-header",
       ).map((row) => row.label);
-      deep(headers, ["GAME", "CONFIGURATION", "DANGER ZONE"]);
+      deep(headers, ["GAME", "MEDIA", "CONFIGURATION", "DANGER ZONE"]);
     });
 
     it("has all items from GAME_MANAGEMENT_ITEMS as item rows", () => {

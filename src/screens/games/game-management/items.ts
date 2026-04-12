@@ -28,6 +28,9 @@ const GAME_ITEMS: readonly GameManagementItem[] = [
   },
   { label: "ROMs", screen: "game-rom-list" as ScreenName },
   { label: "Snapshots", screen: "snapshot-list" as ScreenName },
+];
+
+const MEDIA_ITEMS: readonly GameManagementItem[] = [
   { label: "Cover Art", screen: "game-cover-art" as ScreenName },
   { label: "Screenshots", screen: "game-screenshots" as ScreenName },
 ];
@@ -49,6 +52,7 @@ const DANGER_ZONE_ITEMS: readonly GameManagementItem[] = [
 
 export const GAME_MANAGEMENT_ITEMS: readonly GameManagementItem[] = [
   ...GAME_ITEMS,
+  ...MEDIA_ITEMS,
   ...CONFIGURATION_ITEMS,
   ...DANGER_ZONE_ITEMS,
 ];
@@ -56,6 +60,8 @@ export const GAME_MANAGEMENT_ITEMS: readonly GameManagementItem[] = [
 export const GAME_MANAGEMENT_ROWS: readonly GameManagementRow[] = [
   { kind: "group-header", label: "GAME" },
   ...GAME_ITEMS.map((item): GameManagementRow => ({ kind: "item", item })),
+  { kind: "group-header", label: "MEDIA" },
+  ...MEDIA_ITEMS.map((item): GameManagementRow => ({ kind: "item", item })),
   { kind: "group-header", label: "CONFIGURATION" },
   ...CONFIGURATION_ITEMS.map(
     (item): GameManagementRow => ({ kind: "item", item }),
