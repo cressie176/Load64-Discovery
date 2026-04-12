@@ -1,6 +1,7 @@
 import { deepEqual as deq, equal as eq } from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Snapshot, SnapshotGroup } from "./types.ts";
+import { buildContextMenuItems } from "./utils.ts";
 
 function groupsFromSnapshots(snapshots: Snapshot[]): SnapshotGroup[] {
   const map = new Map<string, Snapshot[]>();
@@ -102,6 +103,38 @@ describe("SnapshotListScreen", () => {
 
     it("handles empty array", () => {
       deq(sortGroups([]), []);
+    });
+  });
+
+  describe("buildContextMenuItems", () => {
+    it("always includes Delete", () => {
+      const items = buildContextMenuItems(1, 0);
+      eq(items.includes("Delete"), true);
+    });
+
+    it("omits Delete Others when group has only one snapshot", () => {
+      const items = buildContextMenuItems(1, 0);
+      eq(items.includes("Delete Others"), false);
+    });
+
+    it("includes Delete Others when group has two or more snapshots", () => {
+      const items = buildContextMenuItems(2, 0);
+      eq(items.includes("Delete Others"), true);
+    });
+
+    it("omits Delete Subsequent when focused snapshot is the last in the group", () => {
+      const items = buildContextMenuItems(3, 2);
+      eq(items.includes("Delete Subsequent"), false);
+    });
+
+    it("includes Delete Subsequent when there are older snapshots below", () => {
+      const items = buildContextMenuItems(3, 1);
+      eq(items.includes("Delete Subsequent"), true);
+    });
+
+    it("includes both Delete Others and Delete Subsequent when applicable", () => {
+      const items = buildContextMenuItems(3, 0);
+      deq(items, ["Delete", "Delete Others", "Delete Subsequent"]);
     });
   });
 

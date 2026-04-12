@@ -44,9 +44,9 @@
 .snapshot-list__thumbnail {
   border: 1px solid var(--colour-border);
   flex-shrink: 0;
-  height: 40px;
+  height: 90px;
   object-fit: cover;
-  width: 64px;
+  width: 150px;
 }
 
 .snapshot-list__thumbnail--placeholder {

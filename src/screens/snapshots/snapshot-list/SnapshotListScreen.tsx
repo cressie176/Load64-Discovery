@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { Snapshot, SnapshotGroup, SnapshotListMode } from "./types";
+import { buildContextMenuItems } from "./utils";
 import "./index.css";
 
 type FocusRegion = "groups" | "snapshots" | "topbar";
@@ -9,10 +10,10 @@ type TopBarCta = "back";
 type OverlayKind =
   | { kind: "delete-group"; groupName: string }
   | { kind: "delete-snapshot"; snapshot: Snapshot }
-  | { kind: "delete-others"; count: number; snapshot: Snapshot };
+  | { kind: "delete-others"; count: number; snapshot: Snapshot }
+  | { kind: "delete-subsequent"; count: number; snapshot: Snapshot };
 
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
-const SNAPSHOT_CONTEXT_MENU_ITEMS = ["Delete", "Delete Others"] as const;
 const OVERLAY_OPTIONS = ["Yes", "No"] as const;
 
 export function groupsFromSnapshots(snapshots: Snapshot[]): SnapshotGroup[] {
@@ -68,9 +69,6 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
   const groups = buildGroups(rawSnapshots);
 
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("groups");
-  const [activePanel, setActivePanel] = useState<"groups" | "snapshots">(
-    "groups",
-  );
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [selectedGroupIndex, setSelectedGroupIndex] = useState(0);
   const [selectedSnapshotIndex, setSelectedSnapshotIndex] = useState(0);
@@ -92,6 +90,11 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       ? Math.min(selectedSnapshotIndex, currentSnapshots.length - 1)
       : 0;
   const focusedSnapshot = currentSnapshots[safeSnapshotIndex];
+
+  const visibleContextMenuItems = buildContextMenuItems(
+    currentSnapshots.length,
+    safeSnapshotIndex,
+  );
 
   useEffect(() => {
     containerRef.current?.focus();
@@ -149,8 +152,6 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       setSelectedGroupIndex((prev) => wrapIndex(prev, -1, groups.length));
       setSelectedSnapshotIndex(0);
       setBottomMessage("");
-    } else if (event.key === "Enter") {
-      setActivePanel("groups");
     } else if (event.code === "AltLeft" && mode === "manage") {
       event.preventDefault();
       openGroupContextMenu();
@@ -169,7 +170,7 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       );
       setBottomMessage("");
     } else if (event.key === "Enter") {
-      if (mode === "launch" && focusedSnapshot) {
+      if (focusedSnapshot) {
         push("now-playing", { gameId });
       }
     } else if (event.code === "AltLeft" && mode === "manage") {
@@ -181,22 +182,28 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
   function handleContextMenuKey(event: KeyboardEvent) {
     if (event.key === "ArrowDown") {
       setContextMenuIndex((prev) =>
-        wrapIndex(prev, 1, SNAPSHOT_CONTEXT_MENU_ITEMS.length),
+        wrapIndex(prev, 1, visibleContextMenuItems.length),
       );
     } else if (event.key === "ArrowUp") {
       setContextMenuIndex((prev) =>
-        wrapIndex(prev, -1, SNAPSHOT_CONTEXT_MENU_ITEMS.length),
+        wrapIndex(prev, -1, visibleContextMenuItems.length),
       );
     } else if (event.key === "Enter") {
-      const action = SNAPSHOT_CONTEXT_MENU_ITEMS[contextMenuIndex];
+      const action = visibleContextMenuItems[contextMenuIndex];
       setShowContextMenu(false);
-      if (action === "Delete") {
-        openSnapshotDeleteOverlay();
-      } else if (action === "Delete Others") {
-        openDeleteOthersOverlay();
-      }
+      activateContextMenuItem(action);
     } else if (event.key === "Escape") {
       setShowContextMenu(false);
+    }
+  }
+
+  function activateContextMenuItem(action: string | undefined) {
+    if (action === "Delete") {
+      openSnapshotDeleteOverlay();
+    } else if (action === "Delete Others") {
+      openDeleteOthersOverlay();
+    } else if (action === "Delete Subsequent") {
+      openDeleteSubsequentOverlay();
     }
   }
 
@@ -250,6 +257,18 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
     setOverlayIndex(0);
   }
 
+  function openDeleteSubsequentOverlay() {
+    if (!focusedSnapshot || !focusedGroup) return;
+    const subsequentCount =
+      focusedGroup.snapshots.length - 1 - safeSnapshotIndex;
+    setOverlay({
+      kind: "delete-subsequent",
+      count: subsequentCount,
+      snapshot: focusedSnapshot,
+    });
+    setOverlayIndex(0);
+  }
+
   function confirmOverlay() {
     if (!overlay) return;
     if (overlay.kind === "delete-group") {
@@ -258,6 +277,8 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
       deleteSnapshot(overlay.snapshot);
     } else if (overlay.kind === "delete-others") {
       deleteOtherSnapshots(overlay.snapshot);
+    } else if (overlay.kind === "delete-subsequent") {
+      deleteSubsequentSnapshots(overlay.snapshot);
     }
     setOverlay(null);
   }
@@ -332,6 +353,32 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
     setSelectedSnapshotIndex(0);
   }
 
+  function deleteSubsequentSnapshots(from: Snapshot) {
+    setStore((prev) => {
+      const all = prev.snapshots.snapshots[gameId] ?? [];
+      const groupSnapshots = all
+        .filter((s) => s.groupName === from.groupName)
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
+      const fromIndex = groupSnapshots.findIndex((s) => s.id === from.id);
+      const toDeleteIds = new Set(
+        groupSnapshots.slice(fromIndex + 1).map((s) => s.id),
+      );
+      const deletedCount = toDeleteIds.size;
+      const remaining = all.filter((s) => !toDeleteIds.has(s.id));
+      const updatedSnapshots = {
+        ...prev.snapshots.snapshots,
+        [gameId]: remaining,
+      };
+      const updatedGame = updateGameFlags(prev, gameId, remaining);
+      setBottomMessage(`${deletedCount} snapshot(s) deleted`);
+      return {
+        ...prev,
+        snapshots: { snapshots: updatedSnapshots },
+        gameDetails: updatedGame,
+      };
+    });
+  }
+
   function updateGameFlags(
     prev: typeof store,
     id: string,
@@ -350,12 +397,24 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
   }
 
   function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "groups" || focusRegion === "snapshots") {
-      const panel = focusRegion;
-      setActivePanel(panel);
-      setFocusRegion("topbar");
-      setFocusedCta("back");
-      backButtonRef.current?.focus();
+    if (focusRegion === "groups") {
+      if (reverse) {
+        setFocusRegion("topbar");
+        setFocusedCta("back");
+        backButtonRef.current?.focus();
+      } else {
+        setFocusRegion("snapshots");
+        containerRef.current?.focus();
+      }
+    } else if (focusRegion === "snapshots") {
+      if (reverse) {
+        setFocusRegion("groups");
+        containerRef.current?.focus();
+      } else {
+        setFocusRegion("topbar");
+        setFocusedCta("back");
+        backButtonRef.current?.focus();
+      }
     } else {
       const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
@@ -363,7 +422,11 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
         setFocusedCta(TOP_BAR_CTAS[nextIndex] as TopBarCta);
         backButtonRef.current?.focus();
       } else {
-        setFocusRegion(activePanel);
+        if (reverse) {
+          setFocusRegion("snapshots");
+        } else {
+          setFocusRegion("groups");
+        }
         containerRef.current?.focus();
       }
     }
@@ -404,7 +467,6 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
                     className={`list__row${index === safeGroupIndex && focusRegion === "groups" ? " list__row--selected" : ""}`}
                     onClick={() => {
                       setFocusRegion("groups");
-                      setActivePanel("groups");
                       setSelectedGroupIndex(index);
                       setSelectedSnapshotIndex(0);
                       containerRef.current?.focus();
@@ -412,7 +474,6 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         setFocusRegion("groups");
-                        setActivePanel("groups");
                         setSelectedGroupIndex(index);
                         setSelectedSnapshotIndex(0);
                         containerRef.current?.focus();
@@ -422,7 +483,6 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
                       e.preventDefault();
                       if (mode === "manage") {
                         setFocusRegion("groups");
-                        setActivePanel("groups");
                         setSelectedGroupIndex(index);
                         openGroupDeleteOverlay();
                       }
@@ -447,29 +507,20 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
                     className={`list__row snapshot-list__snapshot-row${index === safeSnapshotIndex && focusRegion === "snapshots" ? " list__row--selected" : ""}`}
                     onClick={() => {
                       setFocusRegion("snapshots");
-                      setActivePanel("snapshots");
                       setSelectedSnapshotIndex(index);
-                      if (mode === "launch") {
-                        push("now-playing", { gameId });
-                      }
-                      containerRef.current?.focus();
+                      push("now-playing", { gameId });
                     }}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         setFocusRegion("snapshots");
-                        setActivePanel("snapshots");
                         setSelectedSnapshotIndex(index);
-                        if (mode === "launch") {
-                          push("now-playing", { gameId });
-                        }
-                        containerRef.current?.focus();
+                        push("now-playing", { gameId });
                       }
                     }}
                     onContextMenu={(e) => {
                       e.preventDefault();
                       if (mode === "manage") {
                         setFocusRegion("snapshots");
-                        setActivePanel("snapshots");
                         setSelectedSnapshotIndex(index);
                         setContextMenuIndex(0);
                         setShowContextMenu(true);
@@ -505,26 +556,18 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
         >
           <div className="overlay">
             <ul className="overlay__list">
-              {SNAPSHOT_CONTEXT_MENU_ITEMS.map((item, index) => (
+              {visibleContextMenuItems.map((item, index) => (
                 <li
                   key={item}
                   className={`overlay__row${index === contextMenuIndex ? " overlay__row--selected" : ""}`}
                   onClick={() => {
                     setShowContextMenu(false);
-                    if (item === "Delete") {
-                      openSnapshotDeleteOverlay();
-                    } else {
-                      openDeleteOthersOverlay();
-                    }
+                    activateContextMenuItem(item);
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       setShowContextMenu(false);
-                      if (item === "Delete") {
-                        openSnapshotDeleteOverlay();
-                      } else {
-                        openDeleteOthersOverlay();
-                      }
+                      activateContextMenuItem(item);
                     }
                   }}
                 >
@@ -615,6 +658,40 @@ export function SnapshotListScreen({ gameId, mode }: SnapshotListScreenProps) {
               <>
                 <div className="overlay__title">
                   Delete {overlay.count} other snapshot(s)?
+                </div>
+                <ul className="overlay__list">
+                  {OVERLAY_OPTIONS.map((opt, index) => (
+                    <li
+                      key={opt}
+                      className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                      onClick={() => {
+                        if (index === 0) {
+                          confirmOverlay();
+                        } else {
+                          closeOverlay();
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          if (index === 0) {
+                            confirmOverlay();
+                          } else {
+                            closeOverlay();
+                          }
+                        }
+                      }}
+                    >
+                      {opt}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+
+            {overlay.kind === "delete-subsequent" && (
+              <>
+                <div className="overlay__title">
+                  Delete {overlay.count} subsequent snapshot(s)?
                 </div>
                 <ul className="overlay__list">
                   {OVERLAY_OPTIONS.map((opt, index) => (
