@@ -111,7 +111,7 @@ export function ScreenshotsScreen({
   const [slotAssignments, setSlotAssignments] = useState<
     Partial<Record<ScreenshotSlot, string>>
   >({});
-  const [focusPanel, setFocusPanel] = useState<FocusPanel>("candidates");
+  const [focusPanel, setFocusPanel] = useState<FocusPanel>("slots");
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
@@ -166,7 +166,7 @@ export function ScreenshotsScreen({
       handleSlotsKey(event);
     } else if (focusPanel === "candidates") {
       handleCandidatesKey(event);
-    } else {
+    } else if (focusPanel === "actions") {
       handleActionsKey(event);
     }
   }
@@ -237,19 +237,12 @@ export function ScreenshotsScreen({
 
   function activateAction(index: number) {
     if (sources.length > 0) {
-      if (index === 0) {
-        openFetchOverlay();
-      } else if (index === 1) {
-        handleSave();
-      } else {
-        handleCancel();
-      }
+      if (index === 0) openFetchOverlay();
+      else if (index === 1) handleSave();
+      else handleCancel();
     } else {
-      if (index === 0) {
-        handleSave();
-      } else {
-        handleCancel();
-      }
+      if (index === 0) handleSave();
+      else handleCancel();
     }
   }
 

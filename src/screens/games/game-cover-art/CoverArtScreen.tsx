@@ -92,6 +92,9 @@ export function CoverArtScreen({
 
   const [localCandidates, setLocalCandidates] =
     useState<MediaCandidate[]>(storeCandidates);
+  const [selectedCoverUrl, setSelectedCoverUrl] = useState<string | undefined>(
+    undefined,
+  );
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("candidates");
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
@@ -144,7 +147,7 @@ export function CoverArtScreen({
       handleTopBarKey(event);
     } else if (focusRegion === "candidates") {
       handleCandidatesKey(event);
-    } else {
+    } else if (focusRegion === "actions") {
       handleActionsKey(event);
     }
   }
@@ -193,19 +196,12 @@ export function CoverArtScreen({
 
   function activateAction(index: number) {
     if (sources.length > 0) {
-      if (index === 0) {
-        openFetchOverlay();
-      } else if (index === 1) {
-        handleSave();
-      } else {
-        handleCancel();
-      }
+      if (index === 0) openFetchOverlay();
+      else if (index === 1) handleSave();
+      else handleCancel();
     } else {
-      if (index === 0) {
-        handleSave();
-      } else {
-        handleCancel();
-      }
+      if (index === 0) handleSave();
+      else handleCancel();
     }
   }
 
@@ -260,6 +256,11 @@ export function CoverArtScreen({
     if (isAddIndex(index, candidateCount)) {
       setOverlay("add");
       setOverlayIndex(0);
+    } else {
+      const candidate = localCandidates[index];
+      if (candidate) {
+        setSelectedCoverUrl(candidate.url);
+      }
     }
   }
 
@@ -343,20 +344,16 @@ export function CoverArtScreen({
   }
 
   function handleSave() {
-    const focusedIsAdd = isAddIndex(focusedCandidateIndex, candidateCount);
-    if (!focusedIsAdd && focusedCandidateIndex < candidateCount) {
-      const candidate = localCandidates[focusedCandidateIndex];
-      if (candidate) {
-        setStore((prev) => ({
-          ...prev,
-          gameDetails: {
-            ...prev.gameDetails,
-            games: prev.gameDetails.games.map((g) =>
-              g.id === gameId ? { ...g, coverUrl: candidate.url } : g,
-            ),
-          },
-        }));
-      }
+    if (selectedCoverUrl !== undefined) {
+      setStore((prev) => ({
+        ...prev,
+        gameDetails: {
+          ...prev.gameDetails,
+          games: prev.gameDetails.games.map((g) =>
+            g.id === gameId ? { ...g, coverUrl: selectedCoverUrl } : g,
+          ),
+        },
+      }));
     }
     if (importMode) {
       replace("game-screenshots", {
@@ -425,6 +422,8 @@ export function CoverArtScreen({
     importTitle,
   );
 
+  const previewUrl = selectedCoverUrl ?? game?.coverUrl;
+
   const fetchHint =
     focusRegion === "actions" && sources.length === 0
       ? "No catalogues linked. Add a catalogue link to enable fetch."
@@ -490,9 +489,9 @@ export function CoverArtScreen({
       <div className="screen__content">
         <div className="cover-art__layout">
           <div className="cover-art__left-panel">
-            {game.coverUrl ? (
+            {previewUrl ? (
               <img
-                src={game.coverUrl}
+                src={previewUrl}
                 alt="Cover Art"
                 className="cover-art__slot-image"
               />
@@ -516,6 +515,7 @@ export function CoverArtScreen({
                     onClick={() => {
                       setFocusRegion("candidates");
                       setFocusedCandidateIndex(index);
+                      setSelectedCoverUrl(candidate.url);
                     }}
                     onContextMenu={(e) => {
                       e.stopPropagation();
@@ -563,9 +563,6 @@ export function CoverArtScreen({
                   type="button"
                   className="cover-art__action cover-art__action--disabled"
                   disabled
-                  onFocus={() => {
-                    setFocusRegion("actions");
-                  }}
                 >
                   Fetch
                 </button>

@@ -17,6 +17,13 @@ function deriveCoverArtUrl(coverUrl: string | undefined): string | undefined {
   return coverUrl;
 }
 
+function derivePreviewUrl(
+  selectedUrl: string | undefined,
+  savedUrl: string | undefined,
+): string | undefined {
+  return selectedUrl ?? savedUrl;
+}
+
 describe("CoverArtScreen", () => {
   describe("deriveScreenTitle", () => {
     it("returns standard mode title", () => {
@@ -51,6 +58,29 @@ describe("CoverArtScreen", () => {
 
     it("returns undefined when coverUrl is absent", () => {
       eq(deriveCoverArtUrl(undefined), undefined);
+    });
+  });
+
+  describe("derivePreviewUrl", () => {
+    it("returns selected url when a candidate has been selected", () => {
+      eq(
+        derivePreviewUrl(
+          "https://example.com/candidate.jpg",
+          "https://example.com/saved.jpg",
+        ),
+        "https://example.com/candidate.jpg",
+      );
+    });
+
+    it("returns saved url when no candidate has been selected", () => {
+      eq(
+        derivePreviewUrl(undefined, "https://example.com/saved.jpg"),
+        "https://example.com/saved.jpg",
+      );
+    });
+
+    it("returns undefined when no candidate selected and no saved url", () => {
+      eq(derivePreviewUrl(undefined, undefined), undefined);
     });
   });
 });
