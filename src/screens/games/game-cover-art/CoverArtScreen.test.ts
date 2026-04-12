@@ -8,9 +8,9 @@ function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Cover Art`;
+    return `Import Games > ${title} > Media > Cover Art`;
   }
-  return `${gameTitle} > Cover Art`;
+  return `${gameTitle} > Media > Cover Art`;
 }
 
 function deriveCoverArtUrl(coverUrl: string | undefined): string | undefined {
@@ -29,21 +29,21 @@ describe("CoverArtScreen", () => {
     it("returns standard mode title", () => {
       eq(
         deriveScreenTitle(false, "Bubble Bobble"),
-        "Bubble Bobble > Cover Art",
+        "Bubble Bobble > Media > Cover Art",
       );
     });
 
     it("returns import mode title using game title", () => {
       eq(
         deriveScreenTitle(true, "Bubble Bobble"),
-        "Import Games > Bubble Bobble > Cover Art",
+        "Import Games > Bubble Bobble > Media > Cover Art",
       );
     });
 
     it("returns import mode title using importTitle override", () => {
       eq(
         deriveScreenTitle(true, "Bubble Bobble", "BUBBLE BOBBLE"),
-        "Import Games > BUBBLE BOBBLE > Cover Art",
+        "Import Games > BUBBLE BOBBLE > Media > Cover Art",
       );
     });
   });

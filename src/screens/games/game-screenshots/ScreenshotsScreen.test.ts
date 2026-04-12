@@ -11,9 +11,9 @@ function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Screenshots`;
+    return `Import Games > ${title} > Media > Screenshots`;
   }
-  return `${gameTitle} > Screenshots`;
+  return `${gameTitle} > Media > Screenshots`;
 }
 
 function deriveSlotLabel(slot: ScreenshotSlot): string {
@@ -58,21 +58,21 @@ describe("ScreenshotsScreen", () => {
     it("returns standard mode title", () => {
       eq(
         deriveScreenTitle(false, "Jet Set Willy"),
-        "Jet Set Willy > Screenshots",
+        "Jet Set Willy > Media > Screenshots",
       );
     });
 
     it("returns import mode title using game title", () => {
       eq(
         deriveScreenTitle(true, "Jet Set Willy"),
-        "Import Games > Jet Set Willy > Screenshots",
+        "Import Games > Jet Set Willy > Media > Screenshots",
       );
     });
 
     it("returns import mode title using importTitle override", () => {
       eq(
         deriveScreenTitle(true, "Jet Set Willy", "JET SET WILLY"),
-        "Import Games > JET SET WILLY > Screenshots",
+        "Import Games > JET SET WILLY > Media > Screenshots",
       );
     });
   });

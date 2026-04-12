@@ -9,14 +9,13 @@ import {
 describe("GameManagementScreen", () => {
   describe("GAME_MANAGEMENT_ITEMS", () => {
     it("has the correct number of items", () => {
-      eq(GAME_MANAGEMENT_ITEMS.length, 12);
+      eq(GAME_MANAGEMENT_ITEMS.length, 11);
     });
 
     it("has items in the correct order with correct labels", () => {
       const labels = GAME_MANAGEMENT_ITEMS.map((item) => item.label);
       deep(labels, [
         "Details",
-        "Catalogues",
         "ROMs",
         "Snapshots",
         "Cover Art",
@@ -94,21 +93,21 @@ describe("GameManagementScreen", () => {
 
   describe("wrapIndex", () => {
     it("moves forward by delta", () => {
-      eq(wrapIndex(0, 1, 12), 1);
-      eq(wrapIndex(5, 1, 12), 6);
+      eq(wrapIndex(0, 1, 11), 1);
+      eq(wrapIndex(5, 1, 11), 6);
     });
 
     it("moves backward by delta", () => {
-      eq(wrapIndex(5, -1, 12), 4);
-      eq(wrapIndex(1, -1, 12), 0);
+      eq(wrapIndex(5, -1, 11), 4);
+      eq(wrapIndex(1, -1, 11), 0);
     });
 
     it("wraps forward past the end to 0", () => {
-      eq(wrapIndex(11, 1, 12), 0);
+      eq(wrapIndex(10, 1, 11), 0);
     });
 
     it("wraps backward before start to last index", () => {
-      eq(wrapIndex(0, -1, 12), 11);
+      eq(wrapIndex(0, -1, 11), 10);
     });
   });
 

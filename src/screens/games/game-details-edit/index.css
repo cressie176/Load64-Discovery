@@ -3,22 +3,20 @@
    ============================================================ */
 
 /*
- * Grid layout: one column by default (just the field column).
- * When import data is present, three columns: field | copy-btn | fetched.
+ * Grid layout: three columns — field | copy-btn | fetched.
+ * The second column is always visible. Before a fetch, the fetched
+ * column shows a prompt in the Title row. After a fetch, it shows
+ * fetched values for fields that differ from current values.
  * Each row is one field. All three columns share the same row heights,
  * so alignment is guaranteed by the grid.
  */
 
 .game-details-edit__layout {
+  align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 50%);
-  padding: 16px;
-}
-
-.game-details-edit__layout--import {
-  align-items: start;
   grid-template-columns: minmax(0, 50%) auto 1fr;
+  padding: 16px;
 }
 
 /* ── Fields (column 1) ── */
@@ -98,6 +96,16 @@
   flex-shrink: 0;
 }
 
+/* ── Prompt message (shown before first fetch) ── */
+
+.game-details-edit__prompt {
+  color: var(--colour-text-muted);
+  display: block;
+  font-style: italic;
+  line-height: normal;
+  padding: 4px 8px;
+}
+
 /* ── Fetched value display ── */
 
 .game-details-edit__fetched-value {
@@ -140,7 +148,7 @@
   color: var(--colour-text-bright);
 }
 
-/* ── Form action buttons (Fetch / Save / Cancel) ── */
+/* ── Form action buttons (Save / Cancel / Get Details) ── */
 
 .game-details-edit__actions {
   display: flex;
@@ -148,9 +156,14 @@
   margin-top: 4px;
 }
 
-/* When import columns are visible, span the actions row across all 3 columns */
+/* Span the actions row across all 3 columns */
 .game-details-edit__actions--span {
   grid-column: 1 / -1;
+}
+
+/* [Get Details] is right-aligned within the actions row */
+.game-details-edit__action-btn--get-details {
+  margin-left: auto;
 }
 
 .game-details-edit__action-btn {
@@ -167,15 +180,4 @@
 .game-details-edit__action-btn--active {
   border-color: var(--colour-accent);
   color: var(--colour-text-bright);
-}
-
-.game-details-edit__action-btn--disabled {
-  cursor: default;
-  opacity: 0.4;
-}
-
-/* ── Fetch context menu ── */
-
-.game-details-edit__fetch-menu {
-  min-width: 220px;
 }

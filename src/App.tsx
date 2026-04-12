@@ -19,14 +19,10 @@ import { ControlEditScreen } from "./screens/controls/control-edit/ControlEditSc
 import { ControlListScreen } from "./screens/controls/control-list/ControlListScreen";
 import { EnvironmentVariableEditScreen } from "./screens/environment-variables/environment-variable-edit/EnvironmentVariableEditScreen";
 import { EnvironmentVariableListScreen } from "./screens/environment-variables/environment-variable-list/EnvironmentVariableListScreen";
-import { GameCatalogueLinkAddScreen } from "./screens/games/game-catalogue-link-add/GameCatalogueLinkAddScreen";
-import { GameCatalogueLinkEditScreen } from "./screens/games/game-catalogue-link-edit/GameCatalogueLinkEditScreen";
-import { GameCatalogueLinksScreen } from "./screens/games/game-catalogue-links/GameCatalogueLinksScreen";
 import { CoverArtScreen } from "./screens/games/game-cover-art/CoverArtScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameDetailsEditScreen } from "./screens/games/game-details-edit/GameDetailsEditScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
-import { GameMediaAddScreen } from "./screens/games/game-media-add/GameMediaAddScreen";
 import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
 import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
@@ -265,45 +261,17 @@ function AppScreens() {
       />
     );
   }
-  if (currentScreen === "game-media-add") {
-    return (
-      <GameMediaAddScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
-        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
-        source={currentParams.source ?? "file"}
-      />
-    );
-  }
   if (currentScreen === "import-controls") {
     return <Placeholder name="Import Controls" />;
   }
-  if (currentScreen === "game-catalogue-links") {
-    return (
-      <GameCatalogueLinksScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
-        importMode={currentParams.importMode === "true"}
-        importTitle={currentParams.importTitle}
-      />
-    );
+  if (currentScreen === "get-from-catalogue") {
+    return <Placeholder name="Get from Catalogue" />;
   }
-  if (currentScreen === "game-catalogue-link-add") {
-    return (
-      <GameCatalogueLinkAddScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
-        importMode={currentParams.importMode === "true"}
-        importTitle={currentParams.importTitle}
-      />
-    );
+  if (currentScreen === "get-from-url") {
+    return <Placeholder name="Get from URL" />;
   }
-  if (currentScreen === "game-catalogue-link-edit") {
-    return (
-      <GameCatalogueLinkEditScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
-        catalogueName={currentParams.catalogueName ?? ""}
-        importMode={currentParams.importMode === "true"}
-        importTitle={currentParams.importTitle}
-      />
-    );
+  if (currentScreen === "get-from-file") {
+    return <Placeholder name="Get from File" />;
   }
   if (currentScreen === "game-control-list") {
     return <Placeholder name="Game Control List" />;

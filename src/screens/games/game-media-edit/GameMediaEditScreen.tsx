@@ -291,10 +291,12 @@ export function GameMediaEditScreen({
       event.preventDefault();
       setAddOverlayIndex((prev) => Math.min(ADD_OPTIONS.length - 1, prev + 1));
     } else if (event.key === "Enter") {
-      const source =
-        ADD_OPTIONS[addOverlayIndex] === "From file" ? "file" : "url";
+      const screen =
+        ADD_OPTIONS[addOverlayIndex] === "From file"
+          ? "get-from-file"
+          : "get-from-url";
       setShowAddOverlay(false);
-      push("game-media-add", { gameId, mediaSlot: slot, source });
+      push(screen, { gameId, mediaSlot: slot });
     } else if (event.key === "Escape") {
       setShowAddOverlay(false);
     }
@@ -556,19 +558,19 @@ export function GameMediaEditScreen({
                   key={option}
                   className={`overlay__row${index === addOverlayIndex ? " overlay__row--selected" : ""}`}
                   onClick={() => {
-                    const source = option === "From file" ? "file" : "url";
+                    const screen =
+                      option === "From file" ? "get-from-file" : "get-from-url";
                     setShowAddOverlay(false);
-                    push("game-media-add", { gameId, mediaSlot: slot, source });
+                    push(screen, { gameId, mediaSlot: slot });
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      const source = option === "From file" ? "file" : "url";
+                      const screen =
+                        option === "From file"
+                          ? "get-from-file"
+                          : "get-from-url";
                       setShowAddOverlay(false);
-                      push("game-media-add", {
-                        gameId,
-                        mediaSlot: slot,
-                        source,
-                      });
+                      push(screen, { gameId, mediaSlot: slot });
                     }
                   }}
                 >
