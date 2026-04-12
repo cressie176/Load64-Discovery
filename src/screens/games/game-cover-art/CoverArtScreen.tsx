@@ -6,11 +6,11 @@ import "./index.css";
 
 const MAX_CANDIDATES = 8;
 const COLS = 3;
-const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
+const ADD_OPTIONS = ["From file", "From URL"] as const;
 
 type FocusRegion = "candidates" | "actions" | "topbar";
 type TopBarCta = "back";
-type Overlay = "get-media" | "context-menu";
+type Overlay = "add" | "context-menu";
 
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 
@@ -21,9 +21,9 @@ export function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Media > Cover Art`;
+    return `Import Games > ${title} > Cover Art`;
   }
-  return `${gameTitle} > Media > Cover Art`;
+  return `${gameTitle} > Cover Art`;
 }
 
 export function deriveCoverArtUrl(
@@ -36,15 +36,24 @@ function storeKey(gameId: string): string {
   return `${gameId}-cover-thumbnail`;
 }
 
+function totalCells(candidateCount: number): number {
+  return candidateCount + 1;
+}
+
+function isAddIndex(index: number, candidateCount: number): boolean {
+  return index === candidateCount;
+}
+
 function findNextInRow(
   current: number,
   delta: number,
   candidateCount: number,
 ): number {
+  const total = totalCells(candidateCount);
   let next = current + delta;
   if (next < 0) next = 0;
-  if (next >= candidateCount) next = candidateCount - 1;
-  return next < 0 ? 0 : next;
+  if (next >= total) next = total - 1;
+  return next;
 }
 
 function findNextVertical(
@@ -52,13 +61,13 @@ function findNextVertical(
   delta: number,
   candidateCount: number,
 ): number {
-  if (candidateCount === 0) return 0;
+  const total = totalCells(candidateCount);
   const row = Math.floor(current / COLS);
   const col = current % COLS;
   const newRow = row + delta;
   const newIndex = newRow * COLS + col;
   if (newIndex < 0) return current;
-  if (newIndex >= candidateCount) return current;
+  if (newIndex >= total) return current;
   return newIndex;
 }
 
@@ -97,6 +106,7 @@ export function CoverArtScreen({
   const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const candidateCount = localCandidates.length;
+  const sources = game?.sources ?? [];
 
   useEffect(() => {
     const unconsumed = storeCandidates.slice(consumedStoreCountRef.current);
@@ -151,7 +161,6 @@ export function CoverArtScreen({
   }
 
   function handleCandidatesKey(event: KeyboardEvent) {
-    if (candidateCount === 0) return;
     if (event.key === "ArrowRight") {
       event.preventDefault();
       const next = findNextInRow(focusedCandidateIndex, 1, candidateCount);
@@ -169,31 +178,33 @@ export function CoverArtScreen({
       const next = findNextVertical(focusedCandidateIndex, -1, candidateCount);
       setFocusedCandidateIndex(next);
     } else if (event.key === "Enter") {
-      const candidate = localCandidates[focusedCandidateIndex];
-      if (candidate) {
-        setSelectedCoverUrl(candidate.url);
-      }
+      activateCandidateCell(focusedCandidateIndex);
     } else if (event.key === "Alt") {
       event.preventDefault();
       openContextMenu();
     }
   }
 
-  // Actions: 0=Get Media, 1=Save, 2=Cancel
   function handleActionsKey(event: KeyboardEvent) {
+    const actionCount = 2 + (sources.length > 0 ? 1 : 0);
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
-      setFocusedActionIndex((prev) => Math.min(2, prev + 1));
+      setFocusedActionIndex((prev) => Math.min(actionCount - 1, prev + 1));
     } else if (event.key === "Enter") {
       activateAction(focusedActionIndex);
     }
   }
 
   function activateAction(index: number) {
-    if (index === 0) openGetMediaOverlay();
-    else if (index === 1) handleSave();
-    else handleCancel();
+    if (sources.length > 0) {
+      if (index === 0) handleFetch();
+      else if (index === 1) handleSave();
+      else handleCancel();
+    } else {
+      if (index === 0) handleSave();
+      else handleCancel();
+    }
   }
 
   function handleOverlayKey(event: KeyboardEvent) {
@@ -201,19 +212,21 @@ export function CoverArtScreen({
       setOverlay(null);
       return;
     }
-    if (overlay === "get-media") {
+    if (overlay === "add") {
       if (event.key === "ArrowUp") {
         event.preventDefault();
         setOverlayIndex((prev) => Math.max(0, prev - 1));
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        setOverlayIndex((prev) =>
-          Math.min(GET_MEDIA_OPTIONS.length - 1, prev + 1),
-        );
+        setOverlayIndex((prev) => Math.min(ADD_OPTIONS.length - 1, prev + 1));
       } else if (event.key === "Enter") {
-        const option = GET_MEDIA_OPTIONS[overlayIndex];
+        const option = ADD_OPTIONS[overlayIndex];
         setOverlay(null);
-        handleGetMediaOption(option);
+        if (option === "From file") {
+          navigateToGetFromFile();
+        } else {
+          navigateToGetFromUrl();
+        }
       }
     } else if (overlay === "context-menu") {
       if (event.key === "Enter") {
@@ -223,34 +236,61 @@ export function CoverArtScreen({
     }
   }
 
-  function handleGetMediaOption(option: (typeof GET_MEDIA_OPTIONS)[number]) {
-    if (option === "From catalogue") {
-      push("get-from-catalogue", { gameId });
-    } else if (option === "From URL") {
-      push("get-from-url", { gameId });
+  function activateCandidateCell(index: number) {
+    if (isAddIndex(index, candidateCount)) {
+      setOverlay("add");
+      setOverlayIndex(0);
     } else {
-      push("get-from-file", { gameId });
+      const candidate = localCandidates[index];
+      if (candidate) {
+        setSelectedCoverUrl(candidate.url);
+      }
     }
-  }
-
-  function openGetMediaOverlay() {
-    if (candidateCount >= MAX_CANDIDATES) return;
-    setOverlay("get-media");
-    setOverlayIndex(0);
   }
 
   function openContextMenu() {
-    if (candidateCount > 0) {
+    if (!isAddIndex(focusedCandidateIndex, candidateCount)) {
       setOverlay("context-menu");
       setOverlayIndex(0);
     }
+  }
+
+  function handleFetch() {
+    if (sources.length === 0) return;
+    push("game-get-from-catalogue", {
+      gameId,
+      flow: "cover-art",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
+  }
+
+  function navigateToGetFromFile() {
+    if (candidateCount >= MAX_CANDIDATES) return;
+    push("game-get-from-file", {
+      gameId,
+      flow: "cover-art",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
+  }
+
+  function navigateToGetFromUrl() {
+    push("game-get-from-url", {
+      gameId,
+      flow: "cover-art",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
   }
 
   function removeCandidate(ci: number) {
     const newCandidates = localCandidates.filter((_, i) => i !== ci);
     setLocalCandidates(newCandidates);
     const newTotal = newCandidates.length;
-    setFocusedCandidateIndex(newTotal === 0 ? 0 : Math.min(ci, newTotal - 1));
+    setFocusedCandidateIndex(
+      newTotal === 0 ? newTotal : Math.min(ci, newTotal - 1),
+    );
   }
 
   function handleSave() {
@@ -334,11 +374,17 @@ export function CoverArtScreen({
 
   const previewUrl = selectedCoverUrl ?? game?.coverUrl;
 
+  const fetchHint =
+    focusRegion === "actions" && sources.length === 0
+      ? "No catalogues linked. Add a catalogue link to enable fetch."
+      : "";
+  const bottomBarText = fetchHint;
+
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
-          <span className="screen__topbar-title">Media &gt; Cover Art</span>
+          <span className="screen__topbar-title">Cover Art</span>
           <div className="screen__topbar-ctas">
             <a
               ref={backButtonRef}
@@ -435,30 +481,50 @@ export function CoverArtScreen({
                   </button>
                 );
               })}
-            </div>
-            <div className="cover-art__actions">
               <button
                 type="button"
-                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 0 ? " cover-art__action--active" : ""}${candidateCount >= MAX_CANDIDATES ? " cover-art__action--disabled" : ""}`}
+                className={`cover-art__cell${focusRegion === "candidates" && focusedCandidateIndex === candidateCount ? " cover-art__cell--focused" : ""}${candidateCount >= MAX_CANDIDATES ? " cover-art__cell--disabled" : ""}`}
                 disabled={candidateCount >= MAX_CANDIDATES}
                 onClick={() => {
-                  setFocusRegion("actions");
-                  setFocusedActionIndex(0);
-                  openGetMediaOverlay();
+                  if (candidateCount >= MAX_CANDIDATES) return;
+                  setFocusRegion("candidates");
+                  setFocusedCandidateIndex(candidateCount);
+                  setOverlay("add");
+                  setOverlayIndex(0);
                 }}
               >
-                Get Media
+                <span className="cover-art__add-label">Add</span>
               </button>
+            </div>
+            <div className="cover-art__actions">
+              {sources.length > 0 && (
+                <button
+                  type="button"
+                  className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 0 ? " cover-art__action--active" : ""}`}
+                  onClick={handleFetch}
+                >
+                  Fetch
+                </button>
+              )}
+              {sources.length === 0 && (
+                <button
+                  type="button"
+                  className="cover-art__action cover-art__action--disabled"
+                  disabled
+                >
+                  Fetch
+                </button>
+              )}
               <button
                 type="button"
-                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 1 ? " cover-art__action--active" : ""}`}
+                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === (sources.length > 0 ? 1 : 0) ? " cover-art__action--active" : ""}`}
                 onClick={handleSave}
               >
                 Save
               </button>
               <button
                 type="button"
-                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 2 ? " cover-art__action--active" : ""}`}
+                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === (sources.length > 0 ? 2 : 1) ? " cover-art__action--active" : ""}`}
                 onClick={handleCancel}
               >
                 Cancel
@@ -467,24 +533,32 @@ export function CoverArtScreen({
           </div>
         </div>
       </div>
-      <div className="screen__bottombar" />
-      {overlay === "get-media" && (
+      <div className="screen__bottombar">{bottomBarText}</div>
+      {overlay === "add" && (
         <div className="overlay-backdrop">
           <div className="overlay">
-            <div className="overlay__title">Get media</div>
+            <div className="overlay__title">Add image</div>
             <ul className="overlay__list">
-              {GET_MEDIA_OPTIONS.map((option, index) => (
+              {ADD_OPTIONS.map((option, index) => (
                 <li
                   key={option}
                   className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
                   onClick={() => {
                     setOverlay(null);
-                    handleGetMediaOption(option);
+                    if (option === "From file") {
+                      navigateToGetFromFile();
+                    } else {
+                      navigateToGetFromUrl();
+                    }
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       setOverlay(null);
-                      handleGetMediaOption(option);
+                      if (option === "From file") {
+                        navigateToGetFromFile();
+                      } else {
+                        navigateToGetFromUrl();
+                      }
                     }
                   }}
                 >

@@ -28,6 +28,11 @@ import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen"
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
 import { GameRomListScreen } from "./screens/games/game-rom-list/GameRomListScreen";
 import { ScreenshotsScreen } from "./screens/games/game-screenshots/ScreenshotsScreen";
+import type { CatalogueFlow } from "./screens/games/get-from-catalogue/GetFromCatalogueScreen";
+import { GetFromCatalogueScreen } from "./screens/games/get-from-catalogue/GetFromCatalogueScreen";
+import type { MediaFlow } from "./screens/games/get-from-file/GetFromFileScreen";
+import { GetFromFileScreen } from "./screens/games/get-from-file/GetFromFileScreen";
+import { GetFromURLScreen } from "./screens/games/get-from-url/GetFromURLScreen";
 import { ImportCandidateScreen } from "./screens/import/import-candidate/ImportCandidateScreen";
 import { ImportDiscoveryScreen } from "./screens/import/import-discovery/ImportDiscoveryScreen";
 import { ImportGamesScreen } from "./screens/import/import-games/ImportGamesScreen";
@@ -306,6 +311,39 @@ function AppScreens() {
     return (
       <NowPlayingTakeSnapshotScreen
         gameId={currentParams.gameId ?? "game-bubble"}
+      />
+    );
+  }
+  if (currentScreen === "game-get-from-catalogue") {
+    const flow = (currentParams.flow ?? "cover-art") as CatalogueFlow;
+    return (
+      <GetFromCatalogueScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        flow={flow}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+      />
+    );
+  }
+  if (currentScreen === "game-get-from-file") {
+    const flow = (currentParams.flow ?? "cover-art") as MediaFlow;
+    return (
+      <GetFromFileScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        flow={flow}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
+      />
+    );
+  }
+  if (currentScreen === "game-get-from-url") {
+    const flow = (currentParams.flow ?? "cover-art") as MediaFlow;
+    return (
+      <GetFromURLScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+        flow={flow}
+        importMode={currentParams.importMode === "true"}
+        importTitle={currentParams.importTitle}
       />
     );
   }

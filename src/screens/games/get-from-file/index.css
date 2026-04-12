@@ -1,0 +1,17 @@
+/* ============================================================
+   Get from File Screen
+   ============================================================ */
+
+.get-from-file__file-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.get-from-file__file-input {
+  flex: 1;
+}
+
+.get-from-file__browse-btn {
+  flex-shrink: 0;
+}

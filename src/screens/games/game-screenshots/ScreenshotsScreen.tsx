@@ -7,12 +7,12 @@ import "./index.css";
 
 const MAX_CANDIDATES = 8;
 const COLS = 3;
-const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
+const ADD_OPTIONS = ["From file", "From URL"] as const;
 
 type ScreenshotSlot = "loading" | "title" | "gameplay";
 type FocusPanel = "slots" | "candidates" | "actions" | "topbar";
 type TopBarCta = "back";
-type Overlay = "get-media" | "context-menu";
+type Overlay = "add" | "context-menu";
 
 const SLOT_ORDER: ScreenshotSlot[] = ["loading", "title", "gameplay"];
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
@@ -24,9 +24,9 @@ export function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Media > Screenshots`;
+    return `Import Games > ${title} > Screenshots`;
   }
-  return `${gameTitle} > Media > Screenshots`;
+  return `${gameTitle} > Screenshots`;
 }
 
 export function deriveSlotLabel(slot: ScreenshotSlot): string {
@@ -51,15 +51,24 @@ function candidatesStoreKey(gameId: string): string {
   return `${gameId}-screenshots`;
 }
 
+function totalCells(candidateCount: number): number {
+  return candidateCount + 1;
+}
+
+function isAddIndex(index: number, candidateCount: number): boolean {
+  return index === candidateCount;
+}
+
 function findNextInRow(
   current: number,
   delta: number,
   candidateCount: number,
 ): number {
+  const total = totalCells(candidateCount);
   let next = current + delta;
   if (next < 0) next = 0;
-  if (next >= candidateCount) next = candidateCount - 1;
-  return next < 0 ? 0 : next;
+  if (next >= total) next = total - 1;
+  return next;
 }
 
 function findNextVertical(
@@ -67,13 +76,13 @@ function findNextVertical(
   delta: number,
   candidateCount: number,
 ): number {
-  if (candidateCount === 0) return 0;
+  const total = totalCells(candidateCount);
   const row = Math.floor(current / COLS);
   const col = current % COLS;
   const newRow = row + delta;
   const newIndex = newRow * COLS + col;
   if (newIndex < 0) return current;
-  if (newIndex >= candidateCount) return current;
+  if (newIndex >= total) return current;
   return newIndex;
 }
 
@@ -113,6 +122,7 @@ export function ScreenshotsScreen({
   const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const candidateCount = localCandidates.length;
+  const sources = game?.sources ?? [];
   const currentSlot = SLOT_ORDER[currentSlotIndex] ?? "loading";
 
   useEffect(() => {
@@ -188,7 +198,6 @@ export function ScreenshotsScreen({
   }
 
   function handleCandidatesKey(event: KeyboardEvent) {
-    if (candidateCount === 0) return;
     if (event.key === "ArrowRight") {
       event.preventDefault();
       setFocusedCandidateIndex((prev) =>
@@ -210,35 +219,33 @@ export function ScreenshotsScreen({
         findNextVertical(prev, -1, candidateCount),
       );
     } else if (event.key === "Enter") {
-      const candidate = localCandidates[focusedCandidateIndex];
-      if (candidate) {
-        setSlotAssignments((prev) => ({
-          ...prev,
-          [currentSlot]: candidate.url,
-        }));
-      }
+      activateCandidateCell(focusedCandidateIndex);
     } else if (event.key === "Alt") {
       event.preventDefault();
       openContextMenu();
     }
   }
 
-  // Actions: 0=Get Media, 1=Save, 2=Cancel
   function handleActionsKey(event: KeyboardEvent) {
+    const actionCount = 2 + (sources.length > 0 ? 1 : 0);
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
-      setFocusedActionIndex((prev) => Math.min(2, prev + 1));
+      setFocusedActionIndex((prev) => Math.min(actionCount - 1, prev + 1));
     } else if (event.key === "Enter") {
       activateAction(focusedActionIndex);
     }
   }
 
   function activateAction(index: number) {
-    if (index === 0) openGetMediaOverlay();
-    else if (index === 1) {
-      if (Object.keys(slotAssignments).length > 0) handleSave();
-    } else handleCancel();
+    if (sources.length > 0) {
+      if (index === 0) handleFetch();
+      else if (index === 1) handleSave();
+      else handleCancel();
+    } else {
+      if (index === 0) handleSave();
+      else handleCancel();
+    }
   }
 
   function handleOverlayKey(event: KeyboardEvent) {
@@ -246,19 +253,21 @@ export function ScreenshotsScreen({
       setOverlay(null);
       return;
     }
-    if (overlay === "get-media") {
+    if (overlay === "add") {
       if (event.key === "ArrowUp") {
         event.preventDefault();
         setOverlayIndex((prev) => Math.max(0, prev - 1));
       } else if (event.key === "ArrowDown") {
         event.preventDefault();
-        setOverlayIndex((prev) =>
-          Math.min(GET_MEDIA_OPTIONS.length - 1, prev + 1),
-        );
+        setOverlayIndex((prev) => Math.min(ADD_OPTIONS.length - 1, prev + 1));
       } else if (event.key === "Enter") {
-        const option = GET_MEDIA_OPTIONS[overlayIndex];
+        const option = ADD_OPTIONS[overlayIndex];
         setOverlay(null);
-        handleGetMediaOption(option);
+        if (option === "From file") {
+          navigateToGetFromFile();
+        } else {
+          navigateToGetFromUrl();
+        }
       }
     } else if (overlay === "context-menu") {
       if (event.key === "Enter") {
@@ -268,34 +277,64 @@ export function ScreenshotsScreen({
     }
   }
 
-  function handleGetMediaOption(option: (typeof GET_MEDIA_OPTIONS)[number]) {
-    if (option === "From catalogue") {
-      push("get-from-catalogue", { gameId });
-    } else if (option === "From URL") {
-      push("get-from-url", { gameId });
+  function activateCandidateCell(index: number) {
+    if (isAddIndex(index, candidateCount)) {
+      setOverlay("add");
+      setOverlayIndex(0);
     } else {
-      push("get-from-file", { gameId });
+      const candidate = localCandidates[index];
+      if (candidate) {
+        setSlotAssignments((prev) => ({
+          ...prev,
+          [currentSlot]: candidate.url,
+        }));
+      }
     }
-  }
-
-  function openGetMediaOverlay() {
-    if (candidateCount >= MAX_CANDIDATES) return;
-    setOverlay("get-media");
-    setOverlayIndex(0);
   }
 
   function openContextMenu() {
-    if (candidateCount > 0) {
+    if (!isAddIndex(focusedCandidateIndex, candidateCount)) {
       setOverlay("context-menu");
       setOverlayIndex(0);
     }
+  }
+
+  function handleFetch() {
+    if (sources.length === 0) return;
+    push("game-get-from-catalogue", {
+      gameId,
+      flow: "screenshots",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
+  }
+
+  function navigateToGetFromFile() {
+    if (candidateCount >= MAX_CANDIDATES) return;
+    push("game-get-from-file", {
+      gameId,
+      flow: "screenshots",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
+  }
+
+  function navigateToGetFromUrl() {
+    push("game-get-from-url", {
+      gameId,
+      flow: "screenshots",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
   }
 
   function removeCandidate(ci: number) {
     const newCandidates = localCandidates.filter((_, i) => i !== ci);
     setLocalCandidates(newCandidates);
     const newTotal = newCandidates.length;
-    setFocusedCandidateIndex(newTotal === 0 ? 0 : Math.min(ci, newTotal - 1));
+    setFocusedCandidateIndex(
+      newTotal === 0 ? newTotal : Math.min(ci, newTotal - 1),
+    );
   }
 
   function handleSave() {
@@ -344,12 +383,9 @@ export function ScreenshotsScreen({
         setFocusPanel("topbar");
         setFocusedCta(cta);
         focusCtaButton(cta);
-      } else if (candidateCount > 0) {
+      } else {
         setFocusPanel("candidates");
         containerRef.current?.focus();
-      } else {
-        setFocusPanel("actions");
-        setFocusedActionIndex(0);
       }
     } else if (focusPanel === "candidates") {
       if (reverse) {
@@ -398,11 +434,17 @@ export function ScreenshotsScreen({
     importTitle,
   );
 
+  const fetchHint =
+    focusPanel === "actions" && sources.length === 0
+      ? "No catalogues linked. Add a catalogue link to enable fetch."
+      : "";
+  const bottomBarText = fetchHint;
+
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
-          <span className="screen__topbar-title">Media &gt; Screenshots</span>
+          <span className="screen__topbar-title">Screenshots</span>
           <div className="screen__topbar-ctas">
             <a
               ref={backButtonRef}
@@ -531,31 +573,50 @@ export function ScreenshotsScreen({
                   </button>
                 );
               })}
-            </div>
-            <div className="screenshots__actions">
               <button
                 type="button"
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 0 ? " screenshots__action--active" : ""}${candidateCount >= MAX_CANDIDATES ? " screenshots__action--disabled" : ""}`}
+                className={`screenshots__cell${focusPanel === "candidates" && focusedCandidateIndex === candidateCount ? " screenshots__cell--focused" : ""}${candidateCount >= MAX_CANDIDATES ? " screenshots__cell--disabled" : ""}`}
                 disabled={candidateCount >= MAX_CANDIDATES}
                 onClick={() => {
-                  setFocusPanel("actions");
-                  setFocusedActionIndex(0);
-                  openGetMediaOverlay();
+                  if (candidateCount >= MAX_CANDIDATES) return;
+                  setFocusPanel("candidates");
+                  setFocusedCandidateIndex(candidateCount);
+                  setOverlay("add");
+                  setOverlayIndex(0);
                 }}
               >
-                Get Media
+                <span className="screenshots__add-label">Add</span>
               </button>
+            </div>
+            <div className="screenshots__actions">
+              {sources.length > 0 && (
+                <button
+                  type="button"
+                  className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 0 ? " screenshots__action--active" : ""}`}
+                  onClick={handleFetch}
+                >
+                  Fetch
+                </button>
+              )}
+              {sources.length === 0 && (
+                <button
+                  type="button"
+                  className="screenshots__action screenshots__action--disabled"
+                  disabled
+                >
+                  Fetch
+                </button>
+              )}
               <button
                 type="button"
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 1 ? " screenshots__action--active" : ""}${Object.keys(slotAssignments).length === 0 ? " screenshots__action--disabled" : ""}`}
-                disabled={Object.keys(slotAssignments).length === 0}
+                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 1 : 0) ? " screenshots__action--active" : ""}`}
                 onClick={handleSave}
               >
                 Save
               </button>
               <button
                 type="button"
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 2 ? " screenshots__action--active" : ""}`}
+                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 2 : 1) ? " screenshots__action--active" : ""}`}
                 onClick={handleCancel}
               >
                 Cancel
@@ -564,24 +625,32 @@ export function ScreenshotsScreen({
           </div>
         </div>
       </div>
-      <div className="screen__bottombar" />
-      {overlay === "get-media" && (
+      <div className="screen__bottombar">{bottomBarText}</div>
+      {overlay === "add" && (
         <div className="overlay-backdrop">
           <div className="overlay">
-            <div className="overlay__title">Get media</div>
+            <div className="overlay__title">Add image</div>
             <ul className="overlay__list">
-              {GET_MEDIA_OPTIONS.map((option, index) => (
+              {ADD_OPTIONS.map((option, index) => (
                 <li
                   key={option}
                   className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
                   onClick={() => {
                     setOverlay(null);
-                    handleGetMediaOption(option);
+                    if (option === "From file") {
+                      navigateToGetFromFile();
+                    } else {
+                      navigateToGetFromUrl();
+                    }
                   }}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       setOverlay(null);
-                      handleGetMediaOption(option);
+                      if (option === "From file") {
+                        navigateToGetFromFile();
+                      } else {
+                        navigateToGetFromUrl();
+                      }
                     }
                   }}
                 >

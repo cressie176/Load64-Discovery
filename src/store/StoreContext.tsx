@@ -23,6 +23,7 @@ import { SEED_GAME_MEDIA_EDIT } from "../screens/games/game-media-edit/seed";
 import type { GameMediaEditState } from "../screens/games/game-media-edit/types";
 import { SEED_GAME_ROM_LIST } from "../screens/games/game-rom-list/seed";
 import type { GameRomListState } from "../screens/games/game-rom-list/types";
+import type { FetchedGameDetails } from "../screens/games/get-from-catalogue/catalogue";
 import { SEED_IMPORT_CANDIDATE } from "../screens/import/import-candidate/seed";
 import type { ImportCandidateState } from "../screens/import/import-candidate/types";
 import { SEED_IMPORT_DISCOVERY } from "../screens/import/import-discovery/seed";
@@ -62,6 +63,11 @@ interface Store {
   gameMediaEdit: GameMediaEditState;
   gameRomList: GameRomListState;
   snapshots: SnapshotsState;
+  getCatalogueResult?: {
+    catalogueName: string;
+    entryId: string;
+    fetched: FetchedGameDetails;
+  };
 }
 
 interface StoreContextValue {

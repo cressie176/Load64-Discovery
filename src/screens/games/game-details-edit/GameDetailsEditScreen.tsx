@@ -18,16 +18,9 @@ type FormField =
   | "trueDriveEmulation"
   | "notes"
   | "apply-notes"
-  | "get-details"
+  | "fetch"
   | "save"
   | "cancel";
-
-interface FetchedGameDetails {
-  title?: string;
-  publisher?: string;
-  year?: string;
-  notes?: string;
-}
 
 export function deriveScreenTitle(
   importMode: boolean,
@@ -38,98 +31,11 @@ export function deriveScreenTitle(
   const label = importTitle ?? gameTitle;
   if (importMode) {
     if (fetchSource) {
-      return `Import Games > ${label} > Details > ${fetchSource}`;
+      return `Import Games > ${label} > Game Details > ${fetchSource}`;
     }
-    return `Import Games > ${label} > Details`;
+    return `Import Games > ${label} > Game Details`;
   }
-  if (fetchSource) {
-    return `${label} > Details > ${fetchSource}`;
-  }
-  return `${label} > Details`;
-}
-
-export function simulateFetch(
-  _gameId: string,
-  catalogueName: string,
-  entryId: string,
-): Promise<FetchedGameDetails> {
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-      if (catalogueName === "GameBase64") {
-        const results: Record<string, FetchedGameDetails> = {
-          "243": {
-            title: "Bubble Bobble (Taito, 1987)",
-            publisher: "Taito Corporation",
-            notes:
-              "Classic arcade conversion. Bubble Bobble was developed by Taito and released for the C64 in 1987. Features all 100 levels from the original arcade release.",
-          },
-          "881": {
-            title: "Elite",
-            publisher: "Firebird Software",
-            year: "1985",
-            notes:
-              "Space trading and combat game. Originally developed by David Braben and Ian Bell. The C64 version was published by Firebird in 1985.",
-          },
-          "1654": {
-            title: "Iridis Alpha",
-            publisher: "Llamasoft",
-            notes:
-              "A vertically scrolling shoot-em-up by Jeff Minter, published by Hewson Consultants. Features psychedelic visuals and soundtrack.",
-          },
-          "2301": {
-            title: "Monty on the Run",
-            publisher: "Gremlin Graphics Software",
-            notes:
-              "Monty Mole escapes from prison and must reach Europe. Features a Rob Hubbard soundtrack.",
-          },
-          "2879": {
-            title: "Out Run",
-            publisher: "U.S. Gold Ltd.",
-            year: "1987",
-            notes:
-              "Driving game based on the Sega arcade original. Published by U.S. Gold.",
-          },
-          "3847": {
-            title: "Turrican II: The Final Fight",
-            publisher: "Rainbow Arts Software",
-            notes:
-              "Platform action game developed by Factor 5. Features music by Chris Hülsbeck. One of the most technically impressive C64 titles.",
-          },
-        };
-        const result = results[entryId];
-        if (result) {
-          resolve(result);
-        } else {
-          reject(new Error(`No entry found for ${catalogueName}: ${entryId}`));
-        }
-      } else if (catalogueName === "MobyGames") {
-        const results: Record<string, FetchedGameDetails> = {
-          "1188": {
-            title: "Bubble Bobble",
-            publisher: "Taito",
-            year: "1987",
-            notes:
-              "Bubble Bobble is a platform game where players control dragons Bub and Bob. Trap enemies in bubbles then burst them.",
-          },
-          "7823": {
-            title: "Monty on the Run",
-            publisher: "Gremlin Graphics",
-            year: "1985",
-            notes:
-              "Side-scrolling platform game featuring Monty the mole. Escape from prison across multiple screens.",
-          },
-        };
-        const result = results[entryId];
-        if (result) {
-          resolve(result);
-        } else {
-          reject(new Error(`No entry found for ${catalogueName}: ${entryId}`));
-        }
-      } else {
-        reject(new Error(`Unknown catalogue: ${catalogueName}`));
-      }
-    }, 800);
-  });
+  return `${label} > Game Details`;
 }
 
 interface GameDetailsEditScreenProps {
@@ -165,7 +71,7 @@ export function GameDetailsEditScreen({
   const [activeField, setActiveField] = useState<FormField>("title");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
 
-  const [fetchSource] = useState<string | null>(null);
+  const [fetchSource, setFetchSource] = useState<string | null>(null);
   const [importedValues, setImportedValues] = useState<
     Partial<Record<ImportableField, string>>
   >({});
@@ -185,11 +91,12 @@ export function GameDetailsEditScreen({
   const trueDriveSelectRef = useRef<HTMLSelectElement>(null);
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
   const applyNotesRef = useRef<HTMLButtonElement>(null);
-  const getDetailsButtonRef = useRef<HTMLButtonElement>(null);
+  const fetchButtonRef = useRef<HTMLButtonElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
-  const hasImportedValues = Object.keys(importedValues).length > 0;
+  const sources = game?.sources ?? [];
+  const hasCatalogues = sources.length > 0;
 
   // Build the form field order dynamically based on which imported values are present
   function buildFormFields(): FormField[] {
@@ -201,19 +108,58 @@ export function GameDetailsEditScreen({
     if (importedValues.year) fields.push("apply-year");
     fields.push("colourEncoding", "trueDriveEmulation", "notes");
     if (importedValues.notes) fields.push("apply-notes");
+    fields.push("fetch");
     if (!importMode) fields.push("save", "cancel");
-    fields.push("get-details");
     return fields;
   }
 
   const topBarCtas: TopBarCta[] = importMode ? ["next", "back"] : ["back"];
-  const formActionFields: FormField[] = importMode
-    ? ["get-details"]
-    : ["save", "cancel", "get-details"];
 
   useEffect(() => {
     titleInputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    const result = store.getCatalogueResult;
+    if (!result) return;
+    setStore((prev) => ({ ...prev, getCatalogueResult: undefined }));
+    const newImported: Partial<Record<ImportableField, string>> = {};
+    if (
+      result.fetched.title !== undefined &&
+      result.fetched.title !== draftTitle
+    ) {
+      newImported.title = result.fetched.title;
+    }
+    if (
+      result.fetched.publisher !== undefined &&
+      result.fetched.publisher !== draftPublisher
+    ) {
+      newImported.publisher = result.fetched.publisher;
+    }
+    if (
+      result.fetched.year !== undefined &&
+      result.fetched.year !== draftYear
+    ) {
+      newImported.year = result.fetched.year;
+    }
+    if (
+      result.fetched.notes !== undefined &&
+      result.fetched.notes !== draftNotes
+    ) {
+      newImported.notes = result.fetched.notes;
+    }
+    setImportedValues(newImported);
+    setFetchSource(`${result.catalogueName}: ${result.entryId}`);
+    setBottomMessage("");
+    containerRef.current?.focus();
+  }, [
+    store.getCatalogueResult,
+    draftTitle,
+    draftPublisher,
+    draftYear,
+    draftNotes,
+    setStore,
+  ]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -222,6 +168,8 @@ export function GameDetailsEditScreen({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
+
+  const formActionFields: FormField[] = ["fetch", "save", "cancel"];
 
   function handleMainKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
@@ -370,8 +318,8 @@ export function GameDetailsEditScreen({
       applyYearRef.current?.focus();
     } else if (field === "apply-notes") {
       applyNotesRef.current?.focus();
-    } else if (field === "get-details") {
-      getDetailsButtonRef.current?.focus();
+    } else if (field === "fetch") {
+      fetchButtonRef.current?.focus();
     } else if (field === "save") {
       saveButtonRef.current?.focus();
     } else if (field === "cancel") {
@@ -391,8 +339,8 @@ export function GameDetailsEditScreen({
       handleSaveOrNext();
     } else if (activeField === "cancel") {
       pop();
-    } else if (activeField === "get-details") {
-      handleGetDetails();
+    } else if (activeField === "fetch") {
+      openFetchMenu();
     } else if (activeField === "apply-title") {
       applyImported("title");
     } else if (activeField === "apply-publisher") {
@@ -407,11 +355,17 @@ export function GameDetailsEditScreen({
   }
 
   function toggleFocusRegion(reverse = false) {
+    const formActionCtas: FormField[] = importMode
+      ? ["fetch"]
+      : ["fetch", "save", "cancel"];
+
     if (focusRegion === "form") {
       if (!reverse) {
+        // Tab forward: go to first form-action CTA
         setFocusRegion("form");
-        focusField(formActionFields[0] as FormField);
+        focusField(formActionCtas[0] as FormField);
       } else {
+        // Shift+Tab backward: go to last top-bar CTA
         const cta = topBarCtas[topBarCtas.length - 1];
         setFocusRegion("topbar");
         setFocusedCta(cta);
@@ -425,26 +379,33 @@ export function GameDetailsEditScreen({
         setFocusedCta(nextCta);
         focusCtaButton(nextCta);
       } else if (!reverse) {
+        // Tab past last topbar CTA → back to form content
         setFocusRegion("form");
         focusField("title");
       } else {
+        // Shift+Tab before first topbar CTA → last form-action CTA
         setFocusRegion("form");
-        focusField(formActionFields[formActionFields.length - 1] as FormField);
+        focusField(formActionCtas[formActionCtas.length - 1] as FormField);
       }
     }
   }
 
   function advanceFromFormAction(currentCta: FormField, reverse: boolean) {
-    const currentIndex = formActionFields.indexOf(currentCta);
+    const formActionCtas: FormField[] = importMode
+      ? ["fetch"]
+      : ["fetch", "save", "cancel"];
+    const currentIndex = formActionCtas.indexOf(currentCta);
     const nextIndex = currentIndex + (reverse ? -1 : 1);
-    if (nextIndex >= 0 && nextIndex < formActionFields.length) {
-      focusField(formActionFields[nextIndex] as FormField);
+    if (nextIndex >= 0 && nextIndex < formActionCtas.length) {
+      focusField(formActionCtas[nextIndex] as FormField);
     } else if (!reverse) {
+      // Tab past last form-action → first topbar CTA
       const cta = topBarCtas[0];
       setFocusRegion("topbar");
       setFocusedCta(cta);
       focusCtaButton(cta);
     } else {
+      // Shift+Tab before first form-action → back to form content
       setFocusRegion("form");
       focusField("title");
     }
@@ -455,8 +416,14 @@ export function GameDetailsEditScreen({
     else backButtonRef.current?.focus();
   }
 
-  function handleGetDetails() {
-    push("get-from-catalogue", { gameId });
+  function openFetchMenu() {
+    if (!hasCatalogues) return;
+    push("game-get-from-catalogue", {
+      gameId,
+      flow: "details",
+      importMode: importMode ? "true" : "false",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    });
   }
 
   function applyImported(field: ImportableField) {
@@ -548,11 +515,18 @@ export function GameDetailsEditScreen({
     importTitle,
   );
 
+  const fetchHint =
+    focusRegion === "form" && activeField === "fetch" && !hasCatalogues
+      ? "No catalogues linked. Add a catalogue link to enable fetch."
+      : "";
+
+  const effectiveBottomMessage = fetchHint || bottomMessage;
+
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
-          <span className="screen__topbar-title">Details</span>
+          <span className="screen__topbar-title">Game Details</span>
           <div className="screen__topbar-ctas">
             <a
               ref={backButtonRef}
@@ -585,6 +559,8 @@ export function GameDetailsEditScreen({
     return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
   }
 
+  const hasImport = Object.keys(importedValues).length > 0;
+
   function fieldActive(field: FormField): boolean {
     return focusRegion === "form" && activeField === field;
   }
@@ -595,7 +571,8 @@ export function GameDetailsEditScreen({
 
   function actionBtnClass(field: FormField): string {
     const active = fieldActive(field);
-    return `game-details-edit__action-btn${active ? " game-details-edit__action-btn--active" : ""}`;
+    const disabled = field === "fetch" && !hasCatalogues;
+    return `game-details-edit__action-btn${active ? " game-details-edit__action-btn--active" : ""}${disabled ? " game-details-edit__action-btn--disabled" : ""}`;
   }
 
   return (
@@ -642,7 +619,9 @@ export function GameDetailsEditScreen({
       </div>
 
       <div className="screen__content">
-        <div className="game-details-edit__layout">
+        <div
+          className={`game-details-edit__layout${hasImport ? " game-details-edit__layout--import" : ""}`}
+        >
           {/* Title */}
           <div className="game-details-edit__field">
             <label className="game-details-edit__label" htmlFor="gde-title">
@@ -665,38 +644,36 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          <div className="game-details-edit__copy-cell">
-            {importedValues.title !== undefined && (
-              <button
-                ref={applyTitleRef}
-                className={applyBtnClass("apply-title")}
-                type="button"
-                onClick={() => applyImported("title")}
-                onFocus={() => {
-                  setActiveField("apply-title");
-                  setFocusRegion("form");
-                }}
-              >
-                {"<"}
-              </button>
-            )}
-          </div>
-          <div className="game-details-edit__fetched-cell">
-            {importedValues.title !== undefined ? (
-              <span
-                className="game-details-edit__fetched-value"
-                title={importedValues.title}
-              >
-                {importedValues.title}
-              </span>
-            ) : (
-              !hasImportedValues && (
-                <span className="game-details-edit__prompt">
-                  Use [Get Details] to fetch catalogue values.
+          {hasImport && (
+            <div className="game-details-edit__copy-cell">
+              {importedValues.title !== undefined && (
+                <button
+                  ref={applyTitleRef}
+                  className={applyBtnClass("apply-title")}
+                  type="button"
+                  onClick={() => applyImported("title")}
+                  onFocus={() => {
+                    setActiveField("apply-title");
+                    setFocusRegion("form");
+                  }}
+                >
+                  {"<"}
+                </button>
+              )}
+            </div>
+          )}
+          {hasImport && (
+            <div className="game-details-edit__fetched-cell">
+              {importedValues.title !== undefined && (
+                <span
+                  className="game-details-edit__fetched-value"
+                  title={importedValues.title}
+                >
+                  {importedValues.title}
                 </span>
-              )
-            )}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* Publisher */}
           <div className="game-details-edit__field">
@@ -720,32 +697,36 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          <div className="game-details-edit__copy-cell">
-            {importedValues.publisher !== undefined && (
-              <button
-                ref={applyPublisherRef}
-                className={applyBtnClass("apply-publisher")}
-                type="button"
-                onClick={() => applyImported("publisher")}
-                onFocus={() => {
-                  setActiveField("apply-publisher");
-                  setFocusRegion("form");
-                }}
-              >
-                {"<"}
-              </button>
-            )}
-          </div>
-          <div className="game-details-edit__fetched-cell">
-            {importedValues.publisher !== undefined && (
-              <span
-                className="game-details-edit__fetched-value"
-                title={importedValues.publisher}
-              >
-                {importedValues.publisher}
-              </span>
-            )}
-          </div>
+          {hasImport && (
+            <div className="game-details-edit__copy-cell">
+              {importedValues.publisher !== undefined && (
+                <button
+                  ref={applyPublisherRef}
+                  className={applyBtnClass("apply-publisher")}
+                  type="button"
+                  onClick={() => applyImported("publisher")}
+                  onFocus={() => {
+                    setActiveField("apply-publisher");
+                    setFocusRegion("form");
+                  }}
+                >
+                  {"<"}
+                </button>
+              )}
+            </div>
+          )}
+          {hasImport && (
+            <div className="game-details-edit__fetched-cell">
+              {importedValues.publisher !== undefined && (
+                <span
+                  className="game-details-edit__fetched-value"
+                  title={importedValues.publisher}
+                >
+                  {importedValues.publisher}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Year */}
           <div className="game-details-edit__field">
@@ -769,32 +750,36 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          <div className="game-details-edit__copy-cell">
-            {importedValues.year !== undefined && (
-              <button
-                ref={applyYearRef}
-                className={applyBtnClass("apply-year")}
-                type="button"
-                onClick={() => applyImported("year")}
-                onFocus={() => {
-                  setActiveField("apply-year");
-                  setFocusRegion("form");
-                }}
-              >
-                {"<"}
-              </button>
-            )}
-          </div>
-          <div className="game-details-edit__fetched-cell">
-            {importedValues.year !== undefined && (
-              <span
-                className="game-details-edit__fetched-value"
-                title={importedValues.year}
-              >
-                {importedValues.year}
-              </span>
-            )}
-          </div>
+          {hasImport && (
+            <div className="game-details-edit__copy-cell">
+              {importedValues.year !== undefined && (
+                <button
+                  ref={applyYearRef}
+                  className={applyBtnClass("apply-year")}
+                  type="button"
+                  onClick={() => applyImported("year")}
+                  onFocus={() => {
+                    setActiveField("apply-year");
+                    setFocusRegion("form");
+                  }}
+                >
+                  {"<"}
+                </button>
+              )}
+            </div>
+          )}
+          {hasImport && (
+            <div className="game-details-edit__fetched-cell">
+              {importedValues.year !== undefined && (
+                <span
+                  className="game-details-edit__fetched-value"
+                  title={importedValues.year}
+                >
+                  {importedValues.year}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Colour Encoding — no fetched counterpart */}
           <div className="game-details-edit__field">
@@ -824,8 +809,8 @@ export function GameDetailsEditScreen({
               <option value="unknown">Unknown</option>
             </select>
           </div>
-          <div className="game-details-edit__copy-cell" />
-          <div className="game-details-edit__fetched-cell" />
+          {hasImport && <div className="game-details-edit__copy-cell" />}
+          {hasImport && <div className="game-details-edit__fetched-cell" />}
 
           {/* True Drive Emulation — no fetched counterpart */}
           <div className="game-details-edit__field">
@@ -849,8 +834,8 @@ export function GameDetailsEditScreen({
               <option value="false">No</option>
             </select>
           </div>
-          <div className="game-details-edit__copy-cell" />
-          <div className="game-details-edit__fetched-cell" />
+          {hasImport && <div className="game-details-edit__copy-cell" />}
+          {hasImport && <div className="game-details-edit__fetched-cell" />}
 
           {/* Notes */}
           <div className="game-details-edit__field">
@@ -874,35 +859,54 @@ export function GameDetailsEditScreen({
               rows={4}
             />
           </div>
-          <div className="game-details-edit__copy-cell">
-            {importedValues.notes !== undefined && (
-              <button
-                ref={applyNotesRef}
-                className={applyBtnClass("apply-notes")}
-                type="button"
-                onClick={() => applyImported("notes")}
-                onFocus={() => {
-                  setActiveField("apply-notes");
-                  setFocusRegion("form");
-                }}
-              >
-                {"<"}
-              </button>
-            )}
-          </div>
-          <div className="game-details-edit__fetched-cell">
-            {importedValues.notes !== undefined && (
-              <span
-                className="game-details-edit__fetched-value game-details-edit__fetched-value--multiline"
-                title={importedValues.notes}
-              >
-                {importedValues.notes}
-              </span>
-            )}
-          </div>
+          {hasImport && (
+            <div className="game-details-edit__copy-cell">
+              {importedValues.notes !== undefined && (
+                <button
+                  ref={applyNotesRef}
+                  className={applyBtnClass("apply-notes")}
+                  type="button"
+                  onClick={() => applyImported("notes")}
+                  onFocus={() => {
+                    setActiveField("apply-notes");
+                    setFocusRegion("form");
+                  }}
+                >
+                  {"<"}
+                </button>
+              )}
+            </div>
+          )}
+          {hasImport && (
+            <div className="game-details-edit__fetched-cell">
+              {importedValues.notes !== undefined && (
+                <span
+                  className="game-details-edit__fetched-value game-details-edit__fetched-value--multiline"
+                  title={importedValues.notes}
+                >
+                  {importedValues.notes}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Form actions — span all columns */}
-          <div className="game-details-edit__actions game-details-edit__actions--span">
+          <div
+            className={`game-details-edit__actions${hasImport ? " game-details-edit__actions--span" : ""}`}
+          >
+            <button
+              ref={fetchButtonRef}
+              className={actionBtnClass("fetch")}
+              type="button"
+              disabled={!hasCatalogues}
+              onClick={openFetchMenu}
+              onFocus={() => {
+                setActiveField("fetch");
+                setFocusRegion("form");
+              }}
+            >
+              Fetch
+            </button>
             {!importMode && (
               <>
                 <button
@@ -931,23 +935,11 @@ export function GameDetailsEditScreen({
                 </button>
               </>
             )}
-            <button
-              ref={getDetailsButtonRef}
-              className={`${actionBtnClass("get-details")} game-details-edit__action-btn--get-details`}
-              type="button"
-              onClick={handleGetDetails}
-              onFocus={() => {
-                setActiveField("get-details");
-                setFocusRegion("form");
-              }}
-            >
-              Get Details
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="screen__bottombar">{bottomMessage}</div>
+      <div className="screen__bottombar">{effectiveBottomMessage}</div>
     </div>
   );
 }

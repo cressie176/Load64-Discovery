@@ -49,4 +49,7 @@ export type ScreenName =
   | "now-playing"
   | "now-playing-swap-disks"
   | "now-playing-take-screenshot"
-  | "now-playing-take-snapshot";
+  | "now-playing-take-snapshot"
+  | "game-get-from-catalogue"
+  | "game-get-from-file"
+  | "game-get-from-url";
