@@ -4,10 +4,14 @@ import { useStore } from "../../../store/StoreContext";
 import type { ConflictState, OverlayOption, ScreenMode } from "./types";
 import "./index.css";
 
-type FocusRegion = "form" | "topbar";
+type FocusRegion = "form" | "form-actions" | "topbar";
 type FormField = "name" | "save" | "discard";
+type FormActionCta = "save" | "discard";
+type TopBarCta = "back";
 
 const FORM_FIELDS: FormField[] = ["name", "save", "discard"];
+const FORM_ACTION_CTAS: FormActionCta[] = ["save", "discard"];
+const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 const OVERLAY_OPTIONS: OverlayOption[] = ["overwrite", "rename", "discard"];
 
 function normaliseName(name: string): string {
@@ -67,7 +71,8 @@ export function NowPlayingTakeSnapshotScreen({
   const [mode, setMode] = useState<ScreenMode>("capture");
   const [name, setName] = useState("");
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
-  const [focusedCta] = useState<"back">("back");
+  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
+  const [focusedFormCta, setFocusedFormCta] = useState<FormActionCta>("save");
   const [activeField, setActiveField] = useState<FormField>("name");
   const [conflict, setConflict] = useState<ConflictState | null>(null);
 
@@ -117,6 +122,10 @@ export function NowPlayingTakeSnapshotScreen({
       handleTopBarKey(event);
       return;
     }
+    if (focusRegion === "form-actions") {
+      handleFormActionsKey(event);
+      return;
+    }
     if (activeField === "name") {
       handleNameInputKey(event);
     } else {
@@ -125,8 +134,18 @@ export function NowPlayingTakeSnapshotScreen({
   }
 
   function handleTopBarKey(event: KeyboardEvent) {
-    if (event.key === "Enter" && focusedCta === "back") {
+    if (event.key === "Enter" && focusedTopBarCta === "back") {
       pop();
+    }
+  }
+
+  function handleFormActionsKey(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      if (focusedFormCta === "save") {
+        executeSave();
+      } else if (focusedFormCta === "discard") {
+        executeDiscard();
+      }
     }
   }
 
@@ -247,19 +266,52 @@ export function NowPlayingTakeSnapshotScreen({
     pop();
   }
 
-  function toggleFocusRegion(reverse = false) {
-    const TOP_BAR_CTAS = ["back"] as const;
-    if (focusRegion === "form") {
-      backButtonRef.current?.focus();
-      setFocusRegion("topbar");
+  function focusFormActionCta(cta: FormActionCta) {
+    setFocusedFormCta(cta);
+    if (cta === "save") {
+      saveButtonRef.current?.focus();
     } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
+      discardButtonRef.current?.focus();
+    }
+  }
+
+  function focusTopBarCta(cta: TopBarCta) {
+    setFocusedTopBarCta(cta);
+    backButtonRef.current?.focus();
+  }
+
+  function toggleFocusRegion(reverse = false) {
+    if (focusRegion === "form") {
+      if (!reverse) {
+        setFocusRegion("form-actions");
+        focusFormActionCta(FORM_ACTION_CTAS[0]);
+      } else {
+        setFocusRegion("topbar");
+        focusTopBarCta(TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]);
+      }
+    } else if (focusRegion === "form-actions") {
+      const currentIndex = FORM_ACTION_CTAS.indexOf(focusedFormCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        backButtonRef.current?.focus();
+      if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
+        focusFormActionCta(FORM_ACTION_CTAS[nextIndex]);
+      } else if (!reverse) {
+        setFocusRegion("topbar");
+        focusTopBarCta(TOP_BAR_CTAS[0]);
       } else {
         setFocusRegion("form");
-        focusField("name");
+        containerRef.current?.focus();
+      }
+    } else {
+      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+        focusTopBarCta(TOP_BAR_CTAS[nextIndex]);
+      } else if (!reverse) {
+        setFocusRegion("form");
+        containerRef.current?.focus();
+      } else {
+        setFocusRegion("form-actions");
+        focusFormActionCta(FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1]);
       }
     }
   }
@@ -278,7 +330,7 @@ export function NowPlayingTakeSnapshotScreen({
           <a
             ref={backButtonRef}
             href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
             onClick={(e) => {
               e.preventDefault();
               pop();
@@ -320,7 +372,7 @@ export function NowPlayingTakeSnapshotScreen({
                 <div className="form__actions">
                   <button
                     ref={saveButtonRef}
-                    className={`form__action${activeField === "save" && focusRegion === "form" ? " form__action--active" : ""}`}
+                    className={`form__action${(activeField === "save" && focusRegion === "form") || (focusRegion === "form-actions" && focusedFormCta === "save") ? " form__action--active" : ""}`}
                     onClick={executeSave}
                     onFocus={() => {
                       setActiveField("save");
@@ -333,7 +385,7 @@ export function NowPlayingTakeSnapshotScreen({
                   </button>
                   <button
                     ref={discardButtonRef}
-                    className={`form__action${activeField === "discard" && focusRegion === "form" ? " form__action--active" : ""}`}
+                    className={`form__action${(activeField === "discard" && focusRegion === "form") || (focusRegion === "form-actions" && focusedFormCta === "discard") ? " form__action--active" : ""}`}
                     onClick={executeDiscard}
                     onFocus={() => {
                       setActiveField("discard");
