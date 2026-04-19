@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowseButton } from "../../../components/BrowseButton";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { MediaCandidate } from "../game-media-edit/types";
@@ -13,7 +14,7 @@ function mediaStoreKey(gameId: string, flow: MediaFlow): string {
   return `${gameId}-screenshots`;
 }
 
-type FocusRegion = "form" | "form-actions";
+type FocusRegion = "form" | "form-browse" | "form-actions";
 type FormActionCta = "select" | "cancel";
 
 const FORM_ACTION_CTAS: FormActionCta[] = ["select", "cancel"];
@@ -45,7 +46,7 @@ export function GetFromFileScreen({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const filePickerRef = useRef<HTMLInputElement>(null);
+  const browseBtnRef = useRef<HTMLButtonElement>(null);
   const selectButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -74,6 +75,13 @@ export function GetFromFileScreen({
     }
     if (focusRegion === "form-actions") {
       handleFormActionsKey(event);
+      return;
+    }
+    if (focusRegion === "form-browse") {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        handleBrowseSelect("/home/user/images/cover.png");
+      }
       return;
     }
     // focusRegion === "form"
@@ -109,38 +117,9 @@ export function GetFromFileScreen({
     else cancelButtonRef.current?.focus();
   }
 
-  function handleBrowse() {
-    filePickerRef.current?.click();
-  }
-
-  function handleFilePickerChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-    const names = Array.from(files)
-      .map((f) => f.name)
-      .join(", ");
-    setFilePath(names);
+  function handleBrowseSelect(selected: string) {
+    setFilePath(selected);
     setBottomMessage("");
-    // Add each selected file as a candidate (simulated with placeholder)
-    const key = mediaStoreKey(gameId, flow);
-    const newCandidates: MediaCandidate[] = Array.from(files).map((f, i) => ({
-      id: crypto.randomUUID(),
-      url: `https://placehold.co/270x360/1a1a2e/4040ff?text=${encodeURIComponent(f.name || `File ${i + 1}`)}`,
-    }));
-    setStore((prev) => ({
-      ...prev,
-      gameMediaEdit: {
-        ...prev.gameMediaEdit,
-        candidates: {
-          ...prev.gameMediaEdit.candidates,
-          [key]: [
-            ...(prev.gameMediaEdit.candidates[key] ?? []),
-            ...newCandidates,
-          ],
-        },
-      },
-    }));
-    pop();
   }
 
   function handleSelect() {
@@ -171,11 +150,19 @@ export function GetFromFileScreen({
   function toggleFocusRegion(reverse = false) {
     if (focusRegion === "form") {
       if (!reverse) {
-        focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
+        setFocusRegion("form-browse");
+        browseBtnRef.current?.focus();
       } else {
         focusFormActionCta(
           FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
         );
+      }
+    } else if (focusRegion === "form-browse") {
+      if (!reverse) {
+        focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
+      } else {
+        setFocusRegion("form");
+        fileInputRef.current?.focus();
       }
     } else {
       // form-actions
@@ -183,9 +170,12 @@ export function GetFromFileScreen({
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex] as FormActionCta);
-      } else {
+      } else if (!reverse) {
         setFocusRegion("form");
         fileInputRef.current?.focus();
+      } else {
+        setFocusRegion("form-browse");
+        browseBtnRef.current?.focus();
       }
     }
   }
@@ -231,24 +221,15 @@ export function GetFromFileScreen({
                   setFocusRegion("form");
                 }}
               />
-              <button
-                type="button"
-                className="form__action get-from-file__browse-btn"
-                onClick={handleBrowse}
-              >
-                Browse
-              </button>
+              <BrowseButton
+                active={focusRegion === "form-browse"}
+                examplePath="/home/user/images/cover.png"
+                onSelect={handleBrowseSelect}
+                onFocus={() => setFocusRegion("form-browse")}
+                buttonRef={browseBtnRef}
+              />
             </div>
           </div>
-          {/* Hidden real file picker */}
-          <input
-            ref={filePickerRef}
-            type="file"
-            accept="image/jpeg,image/png"
-            multiple
-            style={{ display: "none" }}
-            onChange={handleFilePickerChange}
-          />
           <div className="form__actions">
             <button
               ref={selectButtonRef}

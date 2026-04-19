@@ -7,9 +7,10 @@ import "./index.css";
 const MAX_CANDIDATES = 8;
 const COLS = 3;
 const DELETE_OPTIONS = ["Yes", "No"] as const;
+const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
 
 type FocusRegion = "coverart" | "candidates" | "actions";
-type Overlay = "left-context-menu" | "left-confirm";
+type Overlay = "left-context-menu" | "left-confirm" | "get-media";
 
 export function deriveScreenTitle(
   importMode: boolean,
@@ -18,9 +19,9 @@ export function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Cover Art`;
+    return `Import Games > ${title} > Media > Cover Art`;
   }
-  return `${gameTitle} > Cover Art`;
+  return `${gameTitle} > Media > Cover Art`;
 }
 
 export function deriveCoverArtUrl(
@@ -65,14 +66,16 @@ interface CoverArtScreenProps {
   gameId: string;
   importMode: boolean;
   importTitle?: string;
+  returnFocus?: string;
 }
 
 export function CoverArtScreen({
   gameId,
   importMode,
   importTitle,
+  returnFocus,
 }: CoverArtScreenProps) {
-  const { pop, push, replace } = useRouter();
+  const { pop, pushFrom, replace } = useRouter();
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
@@ -86,16 +89,20 @@ export function CoverArtScreen({
     undefined,
   );
   const [coverArtDeleted, setCoverArtDeleted] = useState(false);
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("coverart");
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>(
+    returnFocus === "get-media" ? "actions" : "coverart",
+  );
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
-  const [focusedActionIndex, setFocusedActionIndex] = useState(0);
+  const [focusedActionIndex, setFocusedActionIndex] = useState(
+    returnFocus === "get-media" ? 0 : 0,
+  );
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
   const candidateCount = localCandidates.length;
-  const sources = game?.sources ?? [];
+  const getMediaDisabled = candidateCount >= MAX_CANDIDATES;
 
   useEffect(() => {
     const unconsumed = storeCandidates.slice(consumedStoreCountRef.current);
@@ -184,7 +191,7 @@ export function CoverArtScreen({
   }
 
   function handleActionsKey(event: KeyboardEvent) {
-    const actionCount = 2 + (sources.length > 0 ? 1 : 0);
+    const actionCount = 3;
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
@@ -195,16 +202,10 @@ export function CoverArtScreen({
   }
 
   function activateAction(index: number) {
-    if (sources.length > 0) {
-      if (index === 0) handleFetch();
-      else if (index === 1) {
-        if (!saveDisabled) handleSave();
-      } else handleCancel();
-    } else {
-      if (index === 0) {
-        if (!saveDisabled) handleSave();
-      } else handleCancel();
-    }
+    if (index === 0) openGetMediaOverlay();
+    else if (index === 1) {
+      if (!saveDisabled) handleSave();
+    } else handleCancel();
   }
 
   function handleOverlayKey(event: KeyboardEvent) {
@@ -231,17 +232,41 @@ export function CoverArtScreen({
           setOverlayIndex(0);
         }
       }
+    } else if (overlay === "get-media") {
+      if (event.key === "ArrowDown") {
+        setOverlayIndex((prev) =>
+          Math.min(GET_MEDIA_OPTIONS.length - 1, prev + 1),
+        );
+      } else if (event.key === "ArrowUp") {
+        setOverlayIndex((prev) => Math.max(0, prev - 1));
+      } else if (event.key === "Enter") {
+        activateGetMediaOption(overlayIndex);
+      }
     }
   }
 
-  function handleFetch() {
-    if (sources.length === 0) return;
-    push("game-get-from-catalogue", {
+  function openGetMediaOverlay() {
+    if (getMediaDisabled) return;
+    setOverlay("get-media");
+    setOverlayIndex(0);
+  }
+
+  function activateGetMediaOption(index: number) {
+    setOverlay(null);
+    setOverlayIndex(0);
+    const params = {
       gameId,
       flow: "cover-art",
       importMode: importMode ? "true" : "false",
       ...(importTitle !== undefined ? { importTitle } : {}),
-    });
+    };
+    if (index === 0) {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-catalogue", params);
+    } else if (index === 1) {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-url", params);
+    } else {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-file", params);
+    }
   }
 
   function removeCandidate(ci: number) {
@@ -385,12 +410,6 @@ export function CoverArtScreen({
 
   const saveDisabled = selectedCoverUrl === undefined && !coverArtDeleted;
 
-  const fetchHint =
-    focusRegion === "actions" && sources.length === 0
-      ? "No catalogues linked. Add a catalogue link to enable fetch."
-      : "";
-  const bottomBarText = fetchHint;
-
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
@@ -469,27 +488,17 @@ export function CoverArtScreen({
               })}
             </div>
             <div className="cover-art__actions">
-              {sources.length > 0 && (
-                <button
-                  type="button"
-                  className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 0 ? " cover-art__action--active" : ""}`}
-                  onClick={handleFetch}
-                >
-                  Get Media
-                </button>
-              )}
-              {sources.length === 0 && (
-                <button
-                  type="button"
-                  className="cover-art__action cover-art__action--disabled"
-                  disabled
-                >
-                  Get Media
-                </button>
-              )}
               <button
                 type="button"
-                className={`cover-art__action${saveDisabled ? " cover-art__action--disabled" : ""}${focusRegion === "actions" && focusedActionIndex === (sources.length > 0 ? 1 : 0) ? " cover-art__action--active" : ""}`}
+                className={`cover-art__action${getMediaDisabled ? " cover-art__action--disabled" : ""}${focusRegion === "actions" && focusedActionIndex === 0 ? " cover-art__action--active" : ""}`}
+                disabled={getMediaDisabled}
+                onClick={openGetMediaOverlay}
+              >
+                Get Media
+              </button>
+              <button
+                type="button"
+                className={`cover-art__action${saveDisabled ? " cover-art__action--disabled" : ""}${focusRegion === "actions" && focusedActionIndex === 1 ? " cover-art__action--active" : ""}`}
                 disabled={saveDisabled}
                 onClick={handleSave}
               >
@@ -497,7 +506,7 @@ export function CoverArtScreen({
               </button>
               <button
                 type="button"
-                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === (sources.length > 0 ? 2 : 1) ? " cover-art__action--active" : ""}`}
+                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 2 ? " cover-art__action--active" : ""}`}
                 onClick={handleCancel}
               >
                 Cancel
@@ -506,7 +515,7 @@ export function CoverArtScreen({
           </div>
         </div>
       </div>
-      <div className="screen__bottombar">{bottomBarText}</div>
+      <div className="screen__bottombar" />
       {overlay === "left-context-menu" && (
         <div className="overlay-backdrop">
           <div className="overlay">
@@ -556,6 +565,27 @@ export function CoverArtScreen({
                         setOverlayIndex(0);
                       }
                     }
+                  }}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {overlay === "get-media" && (
+        <div className="overlay-backdrop">
+          <div className="overlay">
+            <div className="overlay__title">Get media</div>
+            <ul className="overlay__list">
+              {GET_MEDIA_OPTIONS.map((option, index) => (
+                <li
+                  key={option}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                  onClick={() => activateGetMediaOption(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") activateGetMediaOption(index);
                   }}
                 >
                   {option}
