@@ -3,6 +3,7 @@ import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import type { GameDetails } from "../game-details/types";
 import "./index.css";
+import { buildFormFields, deriveScreenTitle } from "./utils.ts";
 
 type FocusRegion = "form" | "topbar";
 type TopBarCta = "next" | "back";
@@ -21,22 +22,6 @@ type FormField =
   | "fetch"
   | "save"
   | "cancel";
-
-export function deriveScreenTitle(
-  importMode: boolean,
-  gameTitle: string,
-  fetchSource: string | null,
-  importTitle?: string,
-): string {
-  const label = importTitle ?? gameTitle;
-  if (importMode) {
-    if (fetchSource) {
-      return `Import Games > ${label} > Game Details > ${fetchSource}`;
-    }
-    return `Import Games > ${label} > Game Details`;
-  }
-  return `${label} > Game Details`;
-}
 
 interface GameDetailsEditScreenProps {
   gameId: string;
@@ -99,18 +84,8 @@ export function GameDetailsEditScreen({
   const hasCatalogues = sources.length > 0;
 
   // Build the form field order dynamically based on which imported values are present
-  function buildFormFields(): FormField[] {
-    const fields: FormField[] = ["title"];
-    if (importedValues.title) fields.push("apply-title");
-    fields.push("publisher");
-    if (importedValues.publisher) fields.push("apply-publisher");
-    fields.push("year");
-    if (importedValues.year) fields.push("apply-year");
-    fields.push("colourEncoding", "trueDriveEmulation", "notes");
-    if (importedValues.notes) fields.push("apply-notes");
-    fields.push("fetch");
-    if (!importMode) fields.push("save", "cancel");
-    return fields;
+  function buildFormFieldsForRender(): FormField[] {
+    return buildFormFields(importedValues, importMode);
   }
 
   const topBarCtas: TopBarCta[] = importMode ? ["next", "back"] : [];
@@ -328,7 +303,7 @@ export function GameDetailsEditScreen({
   }
 
   function moveField(delta: number) {
-    const current = buildFormFields();
+    const current = buildFormFieldsForRender();
     const currentIndex = current.indexOf(activeField);
     const nextIndex = (currentIndex + delta + current.length) % current.length;
     focusField(current[nextIndex] as FormField);
