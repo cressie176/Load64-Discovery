@@ -162,6 +162,7 @@ describe("GameDetailsScreen", () => {
       hasQuickstart: true,
       hasContinue: true,
       hasAnySnapshot: true,
+      inheritDefaultProfile: false,
     };
 
     const noRomGame: GameDetails = {
@@ -177,6 +178,7 @@ describe("GameDetailsScreen", () => {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     };
 
     it("quickstart is available when hasRom and hasQuickstart", () => {
@@ -226,6 +228,7 @@ describe("GameDetailsScreen", () => {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     };
 
     it("returns ROM message for load-rom when no ROM", () => {

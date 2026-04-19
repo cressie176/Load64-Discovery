@@ -23,6 +23,7 @@ export interface GameDetails {
   hasQuickstart: boolean;
   hasContinue: boolean;
   hasAnySnapshot: boolean;
+  inheritDefaultProfile: boolean;
 }
 
 export interface GameDetailsState {

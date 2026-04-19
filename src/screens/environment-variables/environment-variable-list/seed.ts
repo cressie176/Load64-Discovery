@@ -52,7 +52,7 @@ export const SEED_ENV_VARS: EnvVarsState = {
     },
     {
       id: "profile-default",
-      name: "Default",
+      name: "Fast Load",
       type: "profile",
       parentIds: [],
     },

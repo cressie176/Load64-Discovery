@@ -39,8 +39,8 @@ describe("ProfileEditScreen", () => {
 
     it("returns error when name duplicates an existing profile", () => {
       eq(
-        validateProfileName("Default", existingNames, undefined),
-        'A profile named "Default" already exists.',
+        validateProfileName("Fast Load", existingNames, undefined),
+        'A profile named "Fast Load" already exists.',
       );
     });
 
@@ -49,12 +49,12 @@ describe("ProfileEditScreen", () => {
     });
 
     it("returns no error when renaming to the same name as current", () => {
-      eq(validateProfileName("Default", existingNames, "Default"), "");
+      eq(validateProfileName("Fast Load", existingNames, "Fast Load"), "");
     });
 
     it("returns error when renaming to a different existing name", () => {
       eq(
-        validateProfileName("Multiplayer", existingNames, "Default"),
+        validateProfileName("Multiplayer", existingNames, "Fast Load"),
         'A profile named "Multiplayer" already exists.',
       );
     });

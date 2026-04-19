@@ -34,6 +34,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: true,
       hasContinue: true,
       hasAnySnapshot: true,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-elite",
@@ -60,6 +61,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: false,
       hasContinue: true,
       hasAnySnapshot: true,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-iridis",
@@ -81,6 +83,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: true,
       hasContinue: false,
       hasAnySnapshot: true,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-monty",
@@ -111,6 +114,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: true,
       hasContinue: true,
       hasAnySnapshot: true,
+      inheritDefaultProfile: true,
     },
     {
       id: "game-outrun",
@@ -126,6 +130,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-summer",
@@ -147,6 +152,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-turrican",
@@ -172,6 +178,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: true,
       hasContinue: true,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     },
     {
       id: "game-zzap",
@@ -188,6 +195,7 @@ export const SEED_GAME_DETAILS: GameDetailsState = {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     },
   ],
 };

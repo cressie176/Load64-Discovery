@@ -4,7 +4,7 @@ export const SEED_KEY_MAPPINGS: KeyMappingsState = {
   owners: [
     {
       id: "profile-default",
-      name: "Default",
+      name: "Fast Load",
       type: "profile",
       profileIds: [],
     },

@@ -23,6 +23,7 @@ import { CoverArtScreen } from "./screens/games/game-cover-art/CoverArtScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameDetailsEditScreen } from "./screens/games/game-details-edit/GameDetailsEditScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
+import { GameProfilesSelectionScreen } from "./screens/games/game-profiles-selection/GameProfilesSelectionScreen";
 import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
 import { GameRomListScreen } from "./screens/games/game-rom-list/GameRomListScreen";
@@ -271,7 +272,11 @@ function AppScreens() {
     return <Placeholder name="Game Control List" />;
   }
   if (currentScreen === "game-profiles-selection") {
-    return <Placeholder name="Game Profiles Selection" />;
+    return (
+      <GameProfilesSelectionScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+      />
+    );
   }
   if (currentScreen === "audit") {
     return <Placeholder name="Audit" />;

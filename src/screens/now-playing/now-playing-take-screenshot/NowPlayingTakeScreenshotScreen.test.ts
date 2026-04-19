@@ -119,6 +119,7 @@ describe("NowPlayingTakeScreenshotScreen", () => {
       hasQuickstart: false,
       hasContinue: false,
       hasAnySnapshot: false,
+      inheritDefaultProfile: false,
     };
 
     const noSlots: MediaSlots = {

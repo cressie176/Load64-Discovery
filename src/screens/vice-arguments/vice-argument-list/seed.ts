@@ -4,7 +4,7 @@ export const SEED_VICE_ARGUMENTS: ViceArgumentsState = {
   owners: [
     {
       id: "profile-default",
-      name: "Default",
+      name: "Fast Load",
       type: "profile",
       profileIds: [],
     },

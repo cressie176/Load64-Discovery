@@ -55,6 +55,7 @@ const GAME: GameDetails = {
   hasQuickstart: false,
   hasContinue: false,
   hasAnySnapshot: false,
+  inheritDefaultProfile: false,
 };
 
 describe("ScreenshotsScreen", () => {
