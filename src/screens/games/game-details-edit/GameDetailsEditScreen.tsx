@@ -559,8 +559,6 @@ export function GameDetailsEditScreen({
     return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
   }
 
-  const hasImport = Object.keys(importedValues).length > 0;
-
   function fieldActive(field: FormField): boolean {
     return focusRegion === "form" && activeField === field;
   }
@@ -619,9 +617,7 @@ export function GameDetailsEditScreen({
       </div>
 
       <div className="screen__content">
-        <div
-          className={`game-details-edit__layout${hasImport ? " game-details-edit__layout--import" : ""}`}
-        >
+        <div className="game-details-edit__layout">
           {/* Title */}
           <div className="game-details-edit__field">
             <label className="game-details-edit__label" htmlFor="gde-title">
@@ -644,36 +640,32 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          {hasImport && (
-            <div className="game-details-edit__copy-cell">
-              {importedValues.title !== undefined && (
-                <button
-                  ref={applyTitleRef}
-                  className={applyBtnClass("apply-title")}
-                  type="button"
-                  onClick={() => applyImported("title")}
-                  onFocus={() => {
-                    setActiveField("apply-title");
-                    setFocusRegion("form");
-                  }}
-                >
-                  {"<"}
-                </button>
-              )}
-            </div>
-          )}
-          {hasImport && (
-            <div className="game-details-edit__fetched-cell">
-              {importedValues.title !== undefined && (
-                <span
-                  className="game-details-edit__fetched-value"
-                  title={importedValues.title}
-                >
-                  {importedValues.title}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="game-details-edit__copy-cell">
+            {importedValues.title !== undefined && (
+              <button
+                ref={applyTitleRef}
+                className={applyBtnClass("apply-title")}
+                type="button"
+                onClick={() => applyImported("title")}
+                onFocus={() => {
+                  setActiveField("apply-title");
+                  setFocusRegion("form");
+                }}
+              >
+                {"<"}
+              </button>
+            )}
+          </div>
+          <div className="game-details-edit__fetched-cell">
+            {importedValues.title !== undefined && (
+              <span
+                className="game-details-edit__fetched-value"
+                title={importedValues.title}
+              >
+                {importedValues.title}
+              </span>
+            )}
+          </div>
 
           {/* Publisher */}
           <div className="game-details-edit__field">
@@ -697,36 +689,32 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          {hasImport && (
-            <div className="game-details-edit__copy-cell">
-              {importedValues.publisher !== undefined && (
-                <button
-                  ref={applyPublisherRef}
-                  className={applyBtnClass("apply-publisher")}
-                  type="button"
-                  onClick={() => applyImported("publisher")}
-                  onFocus={() => {
-                    setActiveField("apply-publisher");
-                    setFocusRegion("form");
-                  }}
-                >
-                  {"<"}
-                </button>
-              )}
-            </div>
-          )}
-          {hasImport && (
-            <div className="game-details-edit__fetched-cell">
-              {importedValues.publisher !== undefined && (
-                <span
-                  className="game-details-edit__fetched-value"
-                  title={importedValues.publisher}
-                >
-                  {importedValues.publisher}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="game-details-edit__copy-cell">
+            {importedValues.publisher !== undefined && (
+              <button
+                ref={applyPublisherRef}
+                className={applyBtnClass("apply-publisher")}
+                type="button"
+                onClick={() => applyImported("publisher")}
+                onFocus={() => {
+                  setActiveField("apply-publisher");
+                  setFocusRegion("form");
+                }}
+              >
+                {"<"}
+              </button>
+            )}
+          </div>
+          <div className="game-details-edit__fetched-cell">
+            {importedValues.publisher !== undefined && (
+              <span
+                className="game-details-edit__fetched-value"
+                title={importedValues.publisher}
+              >
+                {importedValues.publisher}
+              </span>
+            )}
+          </div>
 
           {/* Year */}
           <div className="game-details-edit__field">
@@ -750,36 +738,32 @@ export function GameDetailsEditScreen({
               }}
             />
           </div>
-          {hasImport && (
-            <div className="game-details-edit__copy-cell">
-              {importedValues.year !== undefined && (
-                <button
-                  ref={applyYearRef}
-                  className={applyBtnClass("apply-year")}
-                  type="button"
-                  onClick={() => applyImported("year")}
-                  onFocus={() => {
-                    setActiveField("apply-year");
-                    setFocusRegion("form");
-                  }}
-                >
-                  {"<"}
-                </button>
-              )}
-            </div>
-          )}
-          {hasImport && (
-            <div className="game-details-edit__fetched-cell">
-              {importedValues.year !== undefined && (
-                <span
-                  className="game-details-edit__fetched-value"
-                  title={importedValues.year}
-                >
-                  {importedValues.year}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="game-details-edit__copy-cell">
+            {importedValues.year !== undefined && (
+              <button
+                ref={applyYearRef}
+                className={applyBtnClass("apply-year")}
+                type="button"
+                onClick={() => applyImported("year")}
+                onFocus={() => {
+                  setActiveField("apply-year");
+                  setFocusRegion("form");
+                }}
+              >
+                {"<"}
+              </button>
+            )}
+          </div>
+          <div className="game-details-edit__fetched-cell">
+            {importedValues.year !== undefined && (
+              <span
+                className="game-details-edit__fetched-value"
+                title={importedValues.year}
+              >
+                {importedValues.year}
+              </span>
+            )}
+          </div>
 
           {/* Colour Encoding — no fetched counterpart */}
           <div className="game-details-edit__field">
@@ -809,8 +793,8 @@ export function GameDetailsEditScreen({
               <option value="unknown">Unknown</option>
             </select>
           </div>
-          {hasImport && <div className="game-details-edit__copy-cell" />}
-          {hasImport && <div className="game-details-edit__fetched-cell" />}
+          <div className="game-details-edit__copy-cell" />
+          <div className="game-details-edit__fetched-cell" />
 
           {/* True Drive Emulation — no fetched counterpart */}
           <div className="game-details-edit__field">
@@ -834,8 +818,8 @@ export function GameDetailsEditScreen({
               <option value="false">No</option>
             </select>
           </div>
-          {hasImport && <div className="game-details-edit__copy-cell" />}
-          {hasImport && <div className="game-details-edit__fetched-cell" />}
+          <div className="game-details-edit__copy-cell" />
+          <div className="game-details-edit__fetched-cell" />
 
           {/* Notes */}
           <div className="game-details-edit__field">
@@ -859,41 +843,35 @@ export function GameDetailsEditScreen({
               rows={4}
             />
           </div>
-          {hasImport && (
-            <div className="game-details-edit__copy-cell">
-              {importedValues.notes !== undefined && (
-                <button
-                  ref={applyNotesRef}
-                  className={applyBtnClass("apply-notes")}
-                  type="button"
-                  onClick={() => applyImported("notes")}
-                  onFocus={() => {
-                    setActiveField("apply-notes");
-                    setFocusRegion("form");
-                  }}
-                >
-                  {"<"}
-                </button>
-              )}
-            </div>
-          )}
-          {hasImport && (
-            <div className="game-details-edit__fetched-cell">
-              {importedValues.notes !== undefined && (
-                <span
-                  className="game-details-edit__fetched-value game-details-edit__fetched-value--multiline"
-                  title={importedValues.notes}
-                >
-                  {importedValues.notes}
-                </span>
-              )}
-            </div>
-          )}
+          <div className="game-details-edit__copy-cell">
+            {importedValues.notes !== undefined && (
+              <button
+                ref={applyNotesRef}
+                className={applyBtnClass("apply-notes")}
+                type="button"
+                onClick={() => applyImported("notes")}
+                onFocus={() => {
+                  setActiveField("apply-notes");
+                  setFocusRegion("form");
+                }}
+              >
+                {"<"}
+              </button>
+            )}
+          </div>
+          <div className="game-details-edit__fetched-cell">
+            {importedValues.notes !== undefined && (
+              <span
+                className="game-details-edit__fetched-value game-details-edit__fetched-value--multiline"
+                title={importedValues.notes}
+              >
+                {importedValues.notes}
+              </span>
+            )}
+          </div>
 
           {/* Form actions — span all columns */}
-          <div
-            className={`game-details-edit__actions${hasImport ? " game-details-edit__actions--span" : ""}`}
-          >
+          <div className="game-details-edit__actions">
             <button
               ref={fetchButtonRef}
               className={actionBtnClass("fetch")}
@@ -905,7 +883,7 @@ export function GameDetailsEditScreen({
                 setFocusRegion("form");
               }}
             >
-              Fetch
+              Get Details
             </button>
             {!importMode && (
               <>

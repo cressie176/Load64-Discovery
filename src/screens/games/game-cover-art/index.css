@@ -80,12 +80,6 @@
   border-color: var(--colour-accent);
 }
 
-.cover-art__cell--disabled {
-  cursor: default;
-  opacity: 0.4;
-  pointer-events: none;
-}
-
 .cover-art__thumbnail {
   display: block;
   height: 100%;
@@ -93,14 +87,6 @@
   width: 100%;
 }
 
-.cover-art__add-label {
-  color: var(--colour-text-muted);
-  font-size: 13px;
-}
-
-.cover-art__cell--focused .cover-art__add-label {
-  color: var(--colour-text-bright);
-}
 
 .cover-art__actions {
   display: flex;

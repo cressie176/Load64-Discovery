@@ -103,15 +103,6 @@
   width: 100%;
 }
 
-.media-edit__add-label {
-  color: var(--colour-text-muted);
-  font-size: 13px;
-}
-
-.media-edit__cell--focused .media-edit__add-label {
-  color: var(--colour-text-bright);
-}
-
 .media-edit__actions {
   display: flex;
   gap: 12px;

@@ -37,7 +37,6 @@ export type ScreenName =
   | "game-rom-edit"
   | "game-cover-art"
   | "game-screenshots"
-  | "game-media-edit"
   | "import-controls"
   | "get-from-catalogue"
   | "get-from-url"

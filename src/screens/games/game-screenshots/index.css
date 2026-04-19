@@ -100,12 +100,6 @@
   border-color: var(--colour-accent);
 }
 
-.screenshots__cell--disabled {
-  cursor: default;
-  opacity: 0.4;
-  pointer-events: none;
-}
-
 .screenshots__thumbnail {
   display: block;
   height: 100%;
@@ -113,14 +107,6 @@
   width: 100%;
 }
 
-.screenshots__add-label {
-  color: var(--colour-text-muted);
-  font-size: 13px;
-}
-
-.screenshots__cell--focused .screenshots__add-label {
-  color: var(--colour-text-bright);
-}
 
 .screenshots__actions {
   display: flex;

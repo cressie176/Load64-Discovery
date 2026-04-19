@@ -7,12 +7,11 @@ import "./index.css";
 
 const MAX_CANDIDATES = 8;
 const COLS = 3;
-const ADD_OPTIONS = ["From file", "From URL"] as const;
 
 type ScreenshotSlot = "loading" | "title" | "gameplay";
 type FocusPanel = "slots" | "candidates" | "actions" | "topbar";
 type TopBarCta = "back";
-type Overlay = "add" | "context-menu";
+type Overlay = "context-menu";
 
 const SLOT_ORDER: ScreenshotSlot[] = ["loading", "title", "gameplay"];
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
@@ -51,23 +50,14 @@ function candidatesStoreKey(gameId: string): string {
   return `${gameId}-screenshots`;
 }
 
-function totalCells(candidateCount: number): number {
-  return candidateCount + 1;
-}
-
-function isAddIndex(index: number, candidateCount: number): boolean {
-  return index === candidateCount;
-}
-
 function findNextInRow(
   current: number,
   delta: number,
   candidateCount: number,
 ): number {
-  const total = totalCells(candidateCount);
   let next = current + delta;
   if (next < 0) next = 0;
-  if (next >= total) next = total - 1;
+  if (next >= candidateCount) next = candidateCount - 1;
   return next;
 }
 
@@ -76,13 +66,12 @@ function findNextVertical(
   delta: number,
   candidateCount: number,
 ): number {
-  const total = totalCells(candidateCount);
   const row = Math.floor(current / COLS);
   const col = current % COLS;
   const newRow = row + delta;
   const newIndex = newRow * COLS + col;
   if (newIndex < 0) return current;
-  if (newIndex >= total) return current;
+  if (newIndex >= candidateCount) return current;
   return newIndex;
 }
 
@@ -116,7 +105,6 @@ export function ScreenshotsScreen({
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
-  const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
@@ -173,17 +161,22 @@ export function ScreenshotsScreen({
     }
   }
 
+  function handleBack() {
+    clearCandidates();
+    if (importMode) {
+      replace("game-cover-art", {
+        gameId,
+        importMode: "true",
+        ...(importTitle !== undefined ? { importTitle } : {}),
+      });
+    } else {
+      pop();
+    }
+  }
+
   function handleTopBarKey(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      if (importMode) {
-        replace("game-cover-art", {
-          gameId,
-          importMode: "true",
-          ...(importTitle !== undefined ? { importTitle } : {}),
-        });
-      } else {
-        pop();
-      }
+      handleBack();
     }
   }
 
@@ -253,74 +246,29 @@ export function ScreenshotsScreen({
       setOverlay(null);
       return;
     }
-    if (overlay === "add") {
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        setOverlayIndex((prev) => Math.max(0, prev - 1));
-      } else if (event.key === "ArrowDown") {
-        event.preventDefault();
-        setOverlayIndex((prev) => Math.min(ADD_OPTIONS.length - 1, prev + 1));
-      } else if (event.key === "Enter") {
-        const option = ADD_OPTIONS[overlayIndex];
-        setOverlay(null);
-        if (option === "From file") {
-          navigateToGetFromFile();
-        } else {
-          navigateToGetFromUrl();
-        }
-      }
-    } else if (overlay === "context-menu") {
-      if (event.key === "Enter") {
-        setOverlay(null);
-        removeCandidate(focusedCandidateIndex);
-      }
+    if (overlay === "context-menu" && event.key === "Enter") {
+      setOverlay(null);
+      removeCandidate(focusedCandidateIndex);
     }
   }
 
   function activateCandidateCell(index: number) {
-    if (isAddIndex(index, candidateCount)) {
-      setOverlay("add");
-      setOverlayIndex(0);
-    } else {
-      const candidate = localCandidates[index];
-      if (candidate) {
-        setSlotAssignments((prev) => ({
-          ...prev,
-          [currentSlot]: candidate.url,
-        }));
-      }
+    const candidate = localCandidates[index];
+    if (candidate) {
+      setSlotAssignments((prev) => ({
+        ...prev,
+        [currentSlot]: candidate.url,
+      }));
     }
   }
 
   function openContextMenu() {
-    if (!isAddIndex(focusedCandidateIndex, candidateCount)) {
-      setOverlay("context-menu");
-      setOverlayIndex(0);
-    }
+    setOverlay("context-menu");
   }
 
   function handleFetch() {
     if (sources.length === 0) return;
     push("game-get-from-catalogue", {
-      gameId,
-      flow: "screenshots",
-      importMode: importMode ? "true" : "false",
-      ...(importTitle !== undefined ? { importTitle } : {}),
-    });
-  }
-
-  function navigateToGetFromFile() {
-    if (candidateCount >= MAX_CANDIDATES) return;
-    push("game-get-from-file", {
-      gameId,
-      flow: "screenshots",
-      importMode: importMode ? "true" : "false",
-      ...(importTitle !== undefined ? { importTitle } : {}),
-    });
-  }
-
-  function navigateToGetFromUrl() {
-    push("game-get-from-url", {
       gameId,
       flow: "screenshots",
       importMode: importMode ? "true" : "false",
@@ -372,20 +320,36 @@ export function ScreenshotsScreen({
     }
   }
 
+  function clearCandidates() {
+    setStore((prev) => {
+      const updated = { ...prev.gameMediaEdit.candidates };
+      delete updated[key];
+      return {
+        ...prev,
+        gameMediaEdit: { ...prev.gameMediaEdit, candidates: updated },
+      };
+    });
+  }
+
   function handleCancel() {
+    clearCandidates();
     pop();
   }
 
   function toggleFocusPanel(reverse = false) {
+    const hasCandidates = candidateCount > 0;
     if (focusPanel === "slots") {
       if (reverse) {
         const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1] as TopBarCta;
         setFocusPanel("topbar");
         setFocusedCta(cta);
         focusCtaButton(cta);
-      } else {
+      } else if (hasCandidates) {
         setFocusPanel("candidates");
         containerRef.current?.focus();
+      } else {
+        setFocusPanel("actions");
+        setFocusedActionIndex(0);
       }
     } else if (focusPanel === "candidates") {
       if (reverse) {
@@ -396,8 +360,12 @@ export function ScreenshotsScreen({
       }
     } else if (focusPanel === "actions") {
       if (reverse) {
-        setFocusPanel("candidates");
-        containerRef.current?.focus();
+        if (hasCandidates) {
+          setFocusPanel("candidates");
+          containerRef.current?.focus();
+        } else {
+          setFocusPanel("slots");
+        }
       } else {
         const cta = TOP_BAR_CTAS[0] as TopBarCta;
         setFocusPanel("topbar");
@@ -484,18 +452,11 @@ export function ScreenshotsScreen({
           <a
             ref={backButtonRef}
             href="#"
+            tabIndex={-1}
             className={`topbar-cta topbar-cta--nav${focusPanel === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
             onClick={(e) => {
               e.preventDefault();
-              if (importMode) {
-                replace("game-cover-art", {
-                  gameId,
-                  importMode: "true",
-                  ...(importTitle !== undefined ? { importTitle } : {}),
-                });
-              } else {
-                pop();
-              }
+              handleBack();
             }}
           >
             Back
@@ -515,6 +476,7 @@ export function ScreenshotsScreen({
                 <button
                   key={slot}
                   type="button"
+                  tabIndex={-1}
                   className={`screenshots__slot${isCurrentSlot ? " screenshots__slot--current" : ""}`}
                   onClick={() => {
                     setFocusPanel("slots");
@@ -548,6 +510,7 @@ export function ScreenshotsScreen({
                   <button
                     key={candidate.id}
                     type="button"
+                    tabIndex={-1}
                     className={`screenshots__cell${isFocused ? " screenshots__cell--focused" : ""}`}
                     onClick={() => {
                       setFocusPanel("candidates");
@@ -573,42 +536,31 @@ export function ScreenshotsScreen({
                   </button>
                 );
               })}
-              <button
-                type="button"
-                className={`screenshots__cell${focusPanel === "candidates" && focusedCandidateIndex === candidateCount ? " screenshots__cell--focused" : ""}${candidateCount >= MAX_CANDIDATES ? " screenshots__cell--disabled" : ""}`}
-                disabled={candidateCount >= MAX_CANDIDATES}
-                onClick={() => {
-                  if (candidateCount >= MAX_CANDIDATES) return;
-                  setFocusPanel("candidates");
-                  setFocusedCandidateIndex(candidateCount);
-                  setOverlay("add");
-                  setOverlayIndex(0);
-                }}
-              >
-                <span className="screenshots__add-label">Add</span>
-              </button>
             </div>
             <div className="screenshots__actions">
               {sources.length > 0 && (
                 <button
                   type="button"
+                  tabIndex={-1}
                   className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 0 ? " screenshots__action--active" : ""}`}
                   onClick={handleFetch}
                 >
-                  Fetch
+                  Get Media
                 </button>
               )}
               {sources.length === 0 && (
                 <button
                   type="button"
+                  tabIndex={-1}
                   className="screenshots__action screenshots__action--disabled"
                   disabled
                 >
-                  Fetch
+                  Get Media
                 </button>
               )}
               <button
                 type="button"
+                tabIndex={-1}
                 className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 1 : 0) ? " screenshots__action--active" : ""}`}
                 onClick={handleSave}
               >
@@ -616,6 +568,7 @@ export function ScreenshotsScreen({
               </button>
               <button
                 type="button"
+                tabIndex={-1}
                 className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 2 : 1) ? " screenshots__action--active" : ""}`}
                 onClick={handleCancel}
               >
@@ -626,41 +579,6 @@ export function ScreenshotsScreen({
         </div>
       </div>
       <div className="screen__bottombar">{bottomBarText}</div>
-      {overlay === "add" && (
-        <div className="overlay-backdrop">
-          <div className="overlay">
-            <div className="overlay__title">Add image</div>
-            <ul className="overlay__list">
-              {ADD_OPTIONS.map((option, index) => (
-                <li
-                  key={option}
-                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
-                  onClick={() => {
-                    setOverlay(null);
-                    if (option === "From file") {
-                      navigateToGetFromFile();
-                    } else {
-                      navigateToGetFromUrl();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setOverlay(null);
-                      if (option === "From file") {
-                        navigateToGetFromFile();
-                      } else {
-                        navigateToGetFromUrl();
-                      }
-                    }
-                  }}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
       {overlay === "context-menu" && (
         <div className="overlay-backdrop">
           <div className="overlay">

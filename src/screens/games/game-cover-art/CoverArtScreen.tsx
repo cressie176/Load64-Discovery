@@ -6,11 +6,10 @@ import "./index.css";
 
 const MAX_CANDIDATES = 8;
 const COLS = 3;
-const ADD_OPTIONS = ["From file", "From URL"] as const;
 
 type FocusRegion = "candidates" | "actions" | "topbar";
 type TopBarCta = "back";
-type Overlay = "add" | "context-menu";
+type Overlay = "context-menu";
 
 const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 
@@ -36,23 +35,14 @@ function storeKey(gameId: string): string {
   return `${gameId}-cover-thumbnail`;
 }
 
-function totalCells(candidateCount: number): number {
-  return candidateCount + 1;
-}
-
-function isAddIndex(index: number, candidateCount: number): boolean {
-  return index === candidateCount;
-}
-
 function findNextInRow(
   current: number,
   delta: number,
   candidateCount: number,
 ): number {
-  const total = totalCells(candidateCount);
   let next = current + delta;
   if (next < 0) next = 0;
-  if (next >= total) next = total - 1;
+  if (next >= candidateCount) next = candidateCount - 1;
   return next;
 }
 
@@ -61,13 +51,12 @@ function findNextVertical(
   delta: number,
   candidateCount: number,
 ): number {
-  const total = totalCells(candidateCount);
   const row = Math.floor(current / COLS);
   const col = current % COLS;
   const newRow = row + delta;
   const newIndex = newRow * COLS + col;
   if (newIndex < 0) return current;
-  if (newIndex >= total) return current;
+  if (newIndex >= candidateCount) return current;
   return newIndex;
 }
 
@@ -100,7 +89,6 @@ export function CoverArtScreen({
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
-  const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const backButtonRef = useRef<HTMLAnchorElement>(null);
@@ -156,7 +144,7 @@ export function CoverArtScreen({
 
   function handleTopBarKey(event: KeyboardEvent) {
     if (event.key === "Enter") {
-      pop();
+      handleCancel();
     }
   }
 
@@ -212,71 +200,26 @@ export function CoverArtScreen({
       setOverlay(null);
       return;
     }
-    if (overlay === "add") {
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        setOverlayIndex((prev) => Math.max(0, prev - 1));
-      } else if (event.key === "ArrowDown") {
-        event.preventDefault();
-        setOverlayIndex((prev) => Math.min(ADD_OPTIONS.length - 1, prev + 1));
-      } else if (event.key === "Enter") {
-        const option = ADD_OPTIONS[overlayIndex];
-        setOverlay(null);
-        if (option === "From file") {
-          navigateToGetFromFile();
-        } else {
-          navigateToGetFromUrl();
-        }
-      }
-    } else if (overlay === "context-menu") {
-      if (event.key === "Enter") {
-        setOverlay(null);
-        removeCandidate(focusedCandidateIndex);
-      }
+    if (overlay === "context-menu" && event.key === "Enter") {
+      setOverlay(null);
+      removeCandidate(focusedCandidateIndex);
     }
   }
 
   function activateCandidateCell(index: number) {
-    if (isAddIndex(index, candidateCount)) {
-      setOverlay("add");
-      setOverlayIndex(0);
-    } else {
-      const candidate = localCandidates[index];
-      if (candidate) {
-        setSelectedCoverUrl(candidate.url);
-      }
+    const candidate = localCandidates[index];
+    if (candidate) {
+      setSelectedCoverUrl(candidate.url);
     }
   }
 
   function openContextMenu() {
-    if (!isAddIndex(focusedCandidateIndex, candidateCount)) {
-      setOverlay("context-menu");
-      setOverlayIndex(0);
-    }
+    setOverlay("context-menu");
   }
 
   function handleFetch() {
     if (sources.length === 0) return;
     push("game-get-from-catalogue", {
-      gameId,
-      flow: "cover-art",
-      importMode: importMode ? "true" : "false",
-      ...(importTitle !== undefined ? { importTitle } : {}),
-    });
-  }
-
-  function navigateToGetFromFile() {
-    if (candidateCount >= MAX_CANDIDATES) return;
-    push("game-get-from-file", {
-      gameId,
-      flow: "cover-art",
-      importMode: importMode ? "true" : "false",
-      ...(importTitle !== undefined ? { importTitle } : {}),
-    });
-  }
-
-  function navigateToGetFromUrl() {
-    push("game-get-from-url", {
       gameId,
       flow: "cover-art",
       importMode: importMode ? "true" : "false",
@@ -316,7 +259,19 @@ export function CoverArtScreen({
     }
   }
 
+  function clearCandidates() {
+    setStore((prev) => {
+      const updated = { ...prev.gameMediaEdit.candidates };
+      delete updated[key];
+      return {
+        ...prev,
+        gameMediaEdit: { ...prev.gameMediaEdit, candidates: updated },
+      };
+    });
+  }
+
   function handleCancel() {
+    clearCandidates();
     pop();
   }
 
@@ -427,7 +382,7 @@ export function CoverArtScreen({
             className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
             onClick={(e) => {
               e.preventDefault();
-              pop();
+              handleCancel();
             }}
           >
             Back
@@ -481,20 +436,6 @@ export function CoverArtScreen({
                   </button>
                 );
               })}
-              <button
-                type="button"
-                className={`cover-art__cell${focusRegion === "candidates" && focusedCandidateIndex === candidateCount ? " cover-art__cell--focused" : ""}${candidateCount >= MAX_CANDIDATES ? " cover-art__cell--disabled" : ""}`}
-                disabled={candidateCount >= MAX_CANDIDATES}
-                onClick={() => {
-                  if (candidateCount >= MAX_CANDIDATES) return;
-                  setFocusRegion("candidates");
-                  setFocusedCandidateIndex(candidateCount);
-                  setOverlay("add");
-                  setOverlayIndex(0);
-                }}
-              >
-                <span className="cover-art__add-label">Add</span>
-              </button>
             </div>
             <div className="cover-art__actions">
               {sources.length > 0 && (
@@ -503,7 +444,7 @@ export function CoverArtScreen({
                   className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 0 ? " cover-art__action--active" : ""}`}
                   onClick={handleFetch}
                 >
-                  Fetch
+                  Get Media
                 </button>
               )}
               {sources.length === 0 && (
@@ -512,7 +453,7 @@ export function CoverArtScreen({
                   className="cover-art__action cover-art__action--disabled"
                   disabled
                 >
-                  Fetch
+                  Get Media
                 </button>
               )}
               <button
@@ -534,41 +475,6 @@ export function CoverArtScreen({
         </div>
       </div>
       <div className="screen__bottombar">{bottomBarText}</div>
-      {overlay === "add" && (
-        <div className="overlay-backdrop">
-          <div className="overlay">
-            <div className="overlay__title">Add image</div>
-            <ul className="overlay__list">
-              {ADD_OPTIONS.map((option, index) => (
-                <li
-                  key={option}
-                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
-                  onClick={() => {
-                    setOverlay(null);
-                    if (option === "From file") {
-                      navigateToGetFromFile();
-                    } else {
-                      navigateToGetFromUrl();
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setOverlay(null);
-                      if (option === "From file") {
-                        navigateToGetFromFile();
-                      } else {
-                        navigateToGetFromUrl();
-                      }
-                    }
-                  }}
-                >
-                  {option}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
       {overlay === "context-menu" && (
         <div className="overlay-backdrop">
           <div className="overlay">

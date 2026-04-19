@@ -23,7 +23,6 @@ import { CoverArtScreen } from "./screens/games/game-cover-art/CoverArtScreen";
 import { GameDetailsScreen } from "./screens/games/game-details/GameDetailsScreen";
 import { GameDetailsEditScreen } from "./screens/games/game-details-edit/GameDetailsEditScreen";
 import { GameManagementScreen } from "./screens/games/game-management/GameManagementScreen";
-import { GameMediaEditScreen } from "./screens/games/game-media-edit/GameMediaEditScreen";
 import { GameRomAddScreen } from "./screens/games/game-rom-add/GameRomAddScreen";
 import { GameRomEditScreen } from "./screens/games/game-rom-edit/GameRomEditScreen";
 import { GameRomListScreen } from "./screens/games/game-rom-list/GameRomListScreen";
@@ -251,18 +250,6 @@ function AppScreens() {
         gameId={currentParams.gameId ?? "game-bubble"}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
-      />
-    );
-  }
-  if (currentScreen === "game-media-edit") {
-    return (
-      <GameMediaEditScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
-        mediaSlot={currentParams.mediaSlot ?? "cover-thumbnail"}
-        importMode={currentParams.importMode === "true"}
-        importTitle={currentParams.importTitle}
-        catalogueName={currentParams.catalogueName}
-        entryId={currentParams.entryId}
       />
     );
   }
