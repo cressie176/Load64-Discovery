@@ -113,7 +113,7 @@ export function GameDetailsEditScreen({
     return fields;
   }
 
-  const topBarCtas: TopBarCta[] = importMode ? ["next", "back"] : ["back"];
+  const topBarCtas: TopBarCta[] = importMode ? ["next", "back"] : [];
 
   useEffect(() => {
     titleInputRef.current?.focus();
@@ -364,12 +364,16 @@ export function GameDetailsEditScreen({
         // Tab forward: go to first form-action CTA
         setFocusRegion("form");
         focusField(formActionCtas[0] as FormField);
-      } else {
-        // Shift+Tab backward: go to last top-bar CTA
+      } else if (topBarCtas.length > 0) {
+        // Shift+Tab backward: go to last top-bar CTA (import mode only)
         const cta = topBarCtas[topBarCtas.length - 1];
         setFocusRegion("topbar");
         setFocusedCta(cta);
         focusCtaButton(cta);
+      } else {
+        // No topbar CTAs (non-import mode): wrap to last form-action CTA
+        setFocusRegion("form");
+        focusField(formActionCtas[formActionCtas.length - 1] as FormField);
       }
     } else if (focusRegion === "topbar") {
       const currentIndex = topBarCtas.indexOf(focusedCta);
@@ -398,12 +402,16 @@ export function GameDetailsEditScreen({
     const nextIndex = currentIndex + (reverse ? -1 : 1);
     if (nextIndex >= 0 && nextIndex < formActionCtas.length) {
       focusField(formActionCtas[nextIndex] as FormField);
-    } else if (!reverse) {
-      // Tab past last form-action → first topbar CTA
+    } else if (!reverse && topBarCtas.length > 0) {
+      // Tab past last form-action → first topbar CTA (import mode only)
       const cta = topBarCtas[0];
       setFocusRegion("topbar");
       setFocusedCta(cta);
       focusCtaButton(cta);
+    } else if (!reverse) {
+      // No topbar CTAs (non-import mode): wrap back to form content
+      setFocusRegion("form");
+      focusField("title");
     } else {
       // Shift+Tab before first form-action → back to form content
       setFocusRegion("form");
@@ -527,19 +535,6 @@ export function GameDetailsEditScreen({
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
           <span className="screen__topbar-title">Game Details</span>
-          <div className="screen__topbar-ctas">
-            <a
-              ref={backButtonRef}
-              href="#"
-              className="topbar-cta topbar-cta--nav topbar-cta--focused"
-              onClick={(e) => {
-                e.preventDefault();
-                pop();
-              }}
-            >
-              Back
-            </a>
-          </div>
         </div>
         <div className="screen__content screen__content--empty">
           Game not found.
@@ -583,8 +578,8 @@ export function GameDetailsEditScreen({
     >
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
-        <div className="screen__topbar-ctas">
-          {importMode && (
+        {importMode && (
+          <div className="screen__topbar-ctas">
             <button
               ref={nextButtonRef}
               className={ctaActionClass("next")}
@@ -597,23 +592,23 @@ export function GameDetailsEditScreen({
             >
               Next
             </button>
-          )}
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={ctaNavClass("back")}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-            onFocus={() => {
-              setFocusRegion("topbar");
-              setFocusedCta("back");
-            }}
-          >
-            Back
-          </a>
-        </div>
+            <a
+              ref={backButtonRef}
+              href="#"
+              className={ctaNavClass("back")}
+              onClick={(e) => {
+                e.preventDefault();
+                pop();
+              }}
+              onFocus={() => {
+                setFocusRegion("topbar");
+                setFocusedCta("back");
+              }}
+            >
+              Back
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="screen__content">

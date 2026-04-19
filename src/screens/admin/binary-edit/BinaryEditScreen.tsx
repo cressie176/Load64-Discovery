@@ -5,7 +5,7 @@ import { useStore } from "../../../store/StoreContext";
 import type { BinaryStatus, BinaryStatusReason } from "../binary-list/types";
 import "./index.css";
 
-type FocusRegion = "form" | "topbar";
+type FocusRegion = "form";
 type FormField = "path" | "browsePath" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["path", "browsePath", "save", "cancel"];
@@ -45,7 +45,6 @@ export function BinaryEditScreen() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const pathInputRef = useRef<HTMLInputElement>(null);
   const browsePathRef = useRef<HTMLButtonElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
@@ -89,31 +88,15 @@ export function BinaryEditScreen() {
   function handleFormKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      if (focusRegion === "topbar") {
-        setFocusRegion("form");
-        focusField("path");
-        return;
-      }
       const delta = event.shiftKey ? -1 : 1;
       const currentIndex = FORM_FIELDS.indexOf(activeField);
-      const nextIndex = currentIndex + delta;
-      if (nextIndex >= FORM_FIELDS.length) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else if (nextIndex < 0) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else {
-        focusField(FORM_FIELDS[nextIndex] as FormField);
-      }
+      const nextIndex =
+        (currentIndex + delta + FORM_FIELDS.length) % FORM_FIELDS.length;
+      focusField(FORM_FIELDS[nextIndex] as FormField);
       return;
     }
     if (event.key === "Escape") {
       pop();
-      return;
-    }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
       return;
     }
     if (event.key === "ArrowDown") {
@@ -200,19 +183,6 @@ export function BinaryEditScreen() {
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{`Binaries > ${machineName}`}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div className="form form--two-column-label-left">

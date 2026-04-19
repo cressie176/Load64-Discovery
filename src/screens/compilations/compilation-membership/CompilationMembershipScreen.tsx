@@ -4,11 +4,9 @@ import { useStore } from "../../../store/StoreContext";
 import type { MembershipGame } from "./types";
 import "./index.css";
 
-type FocusRegion = "list" | "actions" | "topbar";
+type FocusRegion = "list" | "actions";
 type ActionField = "save" | "cancel";
 
-const TOP_BAR_CTAS = ["back"] as const;
-type TopBarCta = (typeof TOP_BAR_CTAS)[number];
 const ACTION_FIELDS: ActionField[] = ["save", "cancel"];
 
 function wrapIndex(index: number, delta: number, length: number): number {
@@ -68,11 +66,9 @@ export function CompilationMembershipScreen({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [checkedIds, setCheckedIds] = useState<Set<string>>(new Set());
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
-  const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [activeAction, setActiveAction] = useState<ActionField>("save");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -104,21 +100,11 @@ export function CompilationMembershipScreen({
       pop();
       return;
     }
-    if (focusRegion === "topbar") {
-      handleTopBarKey(event);
-      return;
-    }
     if (focusRegion === "actions") {
       handleActionsKey(event);
       return;
     }
     handleListKey(event);
-  }
-
-  function handleTopBarKey(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      pop();
-    }
   }
 
   function handleActionsKey(event: KeyboardEvent) {
@@ -220,33 +206,18 @@ export function CompilationMembershipScreen({
   function toggleFocusRegion(reverse = false) {
     if (focusRegion === "list") {
       if (reverse) {
-        setFocusRegion("topbar");
-        setFocusedCta("back");
-        backButtonRef.current?.focus();
+        setFocusRegion("actions");
+        setActiveAction("cancel");
+        cancelButtonRef.current?.focus();
       } else {
         setFocusRegion("actions");
         setActiveAction("save");
         saveButtonRef.current?.focus();
       }
-    } else if (focusRegion === "actions") {
-      if (reverse) {
-        setFocusRegion("list");
-        containerRef.current?.focus();
-      } else {
-        setFocusRegion("topbar");
-        setFocusedCta("back");
-        backButtonRef.current?.focus();
-      }
     } else {
-      // topbar
-      if (reverse) {
-        setFocusRegion("actions");
-        setActiveAction("cancel");
-        cancelButtonRef.current?.focus();
-      } else {
-        setFocusRegion("list");
-        containerRef.current?.focus();
-      }
+      // actions
+      setFocusRegion("list");
+      containerRef.current?.focus();
     }
   }
 
@@ -291,19 +262,6 @@ export function CompilationMembershipScreen({
     <div role="application" className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{`Compilations > ${compilation?.name ?? "Compilation"} > Add`}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div
         className={`screen__content${isEmpty ? " screen__content--empty" : ""}`}

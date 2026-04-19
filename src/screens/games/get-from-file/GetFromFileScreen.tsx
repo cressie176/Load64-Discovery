@@ -13,12 +13,10 @@ function mediaStoreKey(gameId: string, flow: MediaFlow): string {
   return `${gameId}-screenshots`;
 }
 
-type FocusRegion = "form" | "form-actions" | "topbar";
+type FocusRegion = "form" | "form-actions";
 type FormActionCta = "select" | "cancel";
-type TopBarCta = "back";
 
 const FORM_ACTION_CTAS: FormActionCta[] = ["select", "cancel"];
-const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 
 interface GetFromFileScreenProps {
   gameId: string;
@@ -44,14 +42,12 @@ export function GetFromFileScreen({
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [activeField, setActiveField] = useState<"file">("file");
   const [focusedFormCta, setFocusedFormCta] = useState<FormActionCta>("select");
-  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filePickerRef = useRef<HTMLInputElement>(null);
   const selectButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     fileInputRef.current?.focus();
@@ -74,10 +70,6 @@ export function GetFromFileScreen({
     if (event.key === "Escape") {
       fileInputRef.current?.blur();
       pop();
-      return;
-    }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
       return;
     }
     if (focusRegion === "form-actions") {
@@ -181,39 +173,19 @@ export function GetFromFileScreen({
       if (!reverse) {
         focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
       } else {
-        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1] as TopBarCta;
-        setFocusedTopBarCta(cta);
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
+        focusFormActionCta(
+          FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
+        );
       }
-    } else if (focusRegion === "form-actions") {
+    } else {
+      // form-actions
       const currentIndex = FORM_ACTION_CTAS.indexOf(focusedFormCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex] as FormActionCta);
-      } else if (!reverse) {
-        const cta = TOP_BAR_CTAS[0] as TopBarCta;
-        setFocusedTopBarCta(cta);
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
       } else {
         setFocusRegion("form");
         fileInputRef.current?.focus();
-      }
-    } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-        setFocusedTopBarCta(nextCta);
-        backButtonRef.current?.focus();
-      } else if (!reverse) {
-        setFocusRegion("form");
-        fileInputRef.current?.focus();
-      } else {
-        focusFormActionCta(
-          FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
-        );
       }
     }
   }
@@ -227,29 +199,11 @@ export function GetFromFileScreen({
 
   const isFormActive = focusRegion === "form";
   const isFormActionsActive = focusRegion === "form-actions";
-  const isTopbarActive = focusRegion === "topbar";
 
   return (
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${isTopbarActive && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-            onFocus={() => {
-              setFocusRegion("topbar");
-              setFocusedTopBarCta("back");
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div className="form form--two-column-label-left">

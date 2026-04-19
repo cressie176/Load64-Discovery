@@ -8,7 +8,7 @@ import {
 } from "../control-list/types";
 import "./index.css";
 
-type FocusRegion = "form" | "topbar";
+type FocusRegion = "form";
 type FormField =
   | "controlName"
   | "canonicalName"
@@ -116,7 +116,6 @@ export function ControlEditScreen() {
     : `Controllers > ${ownerName} > Controls > ${canonicalLabel}`;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const controlNameInputRef = useRef<HTMLInputElement>(null);
   const canonicalNameSelectRef = useRef<HTMLSelectElement>(null);
   const eventInputRef = useRef<HTMLInputElement>(null);
@@ -187,28 +186,15 @@ export function ControlEditScreen() {
   function handleFormKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      if (focusRegion === "topbar") {
-        setFocusRegion("form");
-        focusField("controlName");
-        return;
-      }
       const delta = event.shiftKey ? -1 : 1;
       const currentIndex = formFields.indexOf(activeField);
-      const nextIndex = currentIndex + delta;
-      if (nextIndex >= formFields.length || nextIndex < 0) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else {
-        focusField(formFields[nextIndex] as FormField);
-      }
+      const nextIndex =
+        (currentIndex + delta + formFields.length) % formFields.length;
+      focusField(formFields[nextIndex] as FormField);
       return;
     }
     if (event.key === "Escape") {
       pop();
-      return;
-    }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
       return;
     }
     if (event.key === "ArrowDown") {
@@ -341,19 +327,6 @@ export function ControlEditScreen() {
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{ownerLabel}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div className="form form--two-column-label-left">

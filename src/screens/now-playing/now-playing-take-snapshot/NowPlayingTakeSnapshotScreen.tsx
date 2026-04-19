@@ -4,14 +4,12 @@ import { useStore } from "../../../store/StoreContext";
 import type { ConflictState, OverlayOption, ScreenMode } from "./types";
 import "./index.css";
 
-type FocusRegion = "form" | "form-actions" | "topbar";
+type FocusRegion = "form" | "form-actions";
 type FormField = "name" | "save" | "discard";
 type FormActionCta = "save" | "discard";
-type TopBarCta = "back";
 
 const FORM_FIELDS: FormField[] = ["name", "save", "discard"];
 const FORM_ACTION_CTAS: FormActionCta[] = ["save", "discard"];
-const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 const OVERLAY_OPTIONS: OverlayOption[] = ["overwrite", "rename", "discard"];
 
 function normaliseName(name: string): string {
@@ -71,13 +69,11 @@ export function NowPlayingTakeSnapshotScreen({
   const [mode, setMode] = useState<ScreenMode>("capture");
   const [name, setName] = useState("");
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
-  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
   const [focusedFormCta, setFocusedFormCta] = useState<FormActionCta>("save");
   const [activeField, setActiveField] = useState<FormField>("name");
   const [conflict, setConflict] = useState<ConflictState | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const nameInputRef = useRef<HTMLInputElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const discardButtonRef = useRef<HTMLButtonElement>(null);
@@ -118,10 +114,6 @@ export function NowPlayingTakeSnapshotScreen({
       pop();
       return;
     }
-    if (focusRegion === "topbar") {
-      handleTopBarKey(event);
-      return;
-    }
     if (focusRegion === "form-actions") {
       handleFormActionsKey(event);
       return;
@@ -130,12 +122,6 @@ export function NowPlayingTakeSnapshotScreen({
       handleNameInputKey(event);
     } else {
       handleFormKey(event);
-    }
-  }
-
-  function handleTopBarKey(event: KeyboardEvent) {
-    if (event.key === "Enter" && focusedTopBarCta === "back") {
-      pop();
     }
   }
 
@@ -275,43 +261,24 @@ export function NowPlayingTakeSnapshotScreen({
     }
   }
 
-  function focusTopBarCta(cta: TopBarCta) {
-    setFocusedTopBarCta(cta);
-    backButtonRef.current?.focus();
-  }
-
   function toggleFocusRegion(reverse = false) {
     if (focusRegion === "form") {
       if (!reverse) {
         setFocusRegion("form-actions");
         focusFormActionCta(FORM_ACTION_CTAS[0]);
       } else {
-        setFocusRegion("topbar");
-        focusTopBarCta(TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]);
+        setFocusRegion("form-actions");
+        focusFormActionCta(FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1]);
       }
-    } else if (focusRegion === "form-actions") {
+    } else {
+      // form-actions
       const currentIndex = FORM_ACTION_CTAS.indexOf(focusedFormCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex]);
-      } else if (!reverse) {
-        setFocusRegion("topbar");
-        focusTopBarCta(TOP_BAR_CTAS[0]);
       } else {
         setFocusRegion("form");
         containerRef.current?.focus();
-      }
-    } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        focusTopBarCta(TOP_BAR_CTAS[nextIndex]);
-      } else if (!reverse) {
-        setFocusRegion("form");
-        containerRef.current?.focus();
-      } else {
-        setFocusRegion("form-actions");
-        focusFormActionCta(FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1]);
       }
     }
   }
@@ -326,19 +293,6 @@ export function NowPlayingTakeSnapshotScreen({
         <span className="screen__topbar-title">
           Now Playing &gt; {gameTitle} &gt; Take Snapshot
         </span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
 
       <div className="screen__content">

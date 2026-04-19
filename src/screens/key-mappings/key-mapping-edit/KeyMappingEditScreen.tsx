@@ -3,7 +3,7 @@ import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
 import "./index.css";
 
-type FocusRegion = "form" | "topbar";
+type FocusRegion = "form";
 type FormField = "hostKey" | "machineKey" | "save" | "cancel";
 
 const FORM_FIELDS: FormField[] = ["hostKey", "machineKey", "save", "cancel"];
@@ -134,7 +134,6 @@ export function KeyMappingEditScreen() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const hostKeySelectRef = useRef<HTMLSelectElement>(null);
   const machineKeySelectRef = useRef<HTMLSelectElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
@@ -179,28 +178,15 @@ export function KeyMappingEditScreen() {
   function handleFormKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      if (focusRegion === "topbar") {
-        setFocusRegion("form");
-        focusField("hostKey");
-        return;
-      }
       const delta = event.shiftKey ? -1 : 1;
       const currentIndex = FORM_FIELDS.indexOf(activeField);
-      const nextIndex = currentIndex + delta;
-      if (nextIndex >= FORM_FIELDS.length || nextIndex < 0) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else {
-        focusField(FORM_FIELDS[nextIndex] as FormField);
-      }
+      const nextIndex =
+        (currentIndex + delta + FORM_FIELDS.length) % FORM_FIELDS.length;
+      focusField(FORM_FIELDS[nextIndex] as FormField);
       return;
     }
     if (event.key === "Escape") {
       pop();
-      return;
-    }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
       return;
     }
     if (event.key === "ArrowDown") {
@@ -288,19 +274,6 @@ export function KeyMappingEditScreen() {
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{`${ownerPrefix} > Key Mappings${isEditing ? (draftHostKey ? ` > ${draftHostKey}` : "") : " > Add"}`}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div className="form form--two-column-label-left">

@@ -5,7 +5,7 @@ import { useStore } from "../../../store/StoreContext";
 import type { GeneralSettings } from "./types";
 import "./index.css";
 
-type FocusRegion = "form" | "topbar";
+type FocusRegion = "form";
 type FormField =
   | "gamesDirectory"
   | "browseGamesDirectory"
@@ -104,7 +104,6 @@ export function GeneralSettingsScreen() {
   const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
   const gamesDirectoryRef = useRef<HTMLInputElement>(null);
   const browseGamesDirectoryRef = useRef<HTMLButtonElement>(null);
   const catalogueUrlRef = useRef<HTMLInputElement>(null);
@@ -153,33 +152,15 @@ export function GeneralSettingsScreen() {
   function handleFormKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      if (focusRegion === "topbar") {
-        setFocusRegion("form");
-        focusField(formFields[0] as FormField);
-        return;
-      }
       const delta = event.shiftKey ? -1 : 1;
       const currentIndex = formFields.indexOf(activeField);
-      const nextIndex = currentIndex + delta;
-      if (nextIndex >= formFields.length && hasSavedDirectory) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else if (nextIndex < 0 && hasSavedDirectory) {
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
-      } else {
-        const wrappedIndex =
-          (nextIndex + formFields.length) % formFields.length;
-        focusField(formFields[wrappedIndex] as FormField);
-      }
+      const nextIndex =
+        (currentIndex + delta + formFields.length) % formFields.length;
+      focusField(formFields[nextIndex] as FormField);
       return;
     }
     if (event.key === "Escape") {
       pop();
-      return;
-    }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
       return;
     }
     if (event.key === "ArrowDown") {
@@ -312,21 +293,6 @@ export function GeneralSettingsScreen() {
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">General Settings</span>
-        {hasSavedDirectory && (
-          <div className="screen__topbar-ctas">
-            <a
-              ref={backButtonRef}
-              href="#"
-              className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}`}
-              onClick={(e) => {
-                e.preventDefault();
-                pop();
-              }}
-            >
-              Back
-            </a>
-          </div>
-        )}
       </div>
       <div className="screen__content">
         <div className="form form--two-column-label-left general-settings">
