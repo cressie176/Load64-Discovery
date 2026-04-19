@@ -8,8 +8,8 @@ export const SEED_PROFILES: ProfilesState = {
     { id: "profile-shmups", name: "Shmups", isDefault: false },
   ],
   gameProfileRefs: [
-    { gameId: "game-monty", profileId: "profile-multiplayer" },
-    { gameId: "game-monty", profileId: "profile-sid-8580" },
-    { gameId: "game-iridis", profileId: "profile-shmups" },
+    { gameId: "game-monty", profileId: "profile-multiplayer", order: 1 },
+    { gameId: "game-monty", profileId: "profile-sid-8580", order: 2 },
+    { gameId: "game-iridis", profileId: "profile-shmups", order: 1 },
   ],
 };

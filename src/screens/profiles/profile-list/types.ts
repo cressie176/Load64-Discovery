@@ -7,6 +7,7 @@ export interface Profile {
 export interface GameProfileRef {
   gameId: string;
   profileId: string;
+  order: number;
 }
 
 export interface ProfilesState {

@@ -2,29 +2,67 @@
    Game Profiles Selection
    ============================================================ */
 
-.game-profiles-selection__checkbox {
-  flex-shrink: 0;
-  width: 28px;
+.game-profiles-selection__empty {
+  color: var(--colour-text-muted);
+  padding: 8px;
 }
 
-.game-profiles-selection__section-heading {
+.game-profiles-selection__hint {
   color: var(--colour-text-muted);
   font-size: 12px;
   margin-bottom: 8px;
-  padding: 0 8px 0 24px;
+  padding: 0 8px 0 8px;
 }
 
-li.game-profiles-selection__section-heading {
-  margin-top: 12px;
+.game-profiles-selection__pos {
+  flex-shrink: 0;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 24px;
 }
 
-.game-profiles-selection .form__actions {
+.game-profiles-selection__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  padding-left: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-profiles-selection__row--reordering {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-accent);
+  color: var(--colour-text-bright);
+}
+
+.game-profiles-selection__inherit {
+  align-items: center;
+  color: var(--colour-text);
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 4px 8px 4px 8px;
+}
+
+.game-profiles-selection__inherit--focused {
+  color: var(--colour-text-bright);
+}
+
+.game-profiles-selection__inherit-checkbox {
+  flex-shrink: 0;
+}
+
+.game-profiles-selection__actions {
   display: flex;
   gap: 16px;
   margin-top: 16px;
 }
 
-.game-profiles-selection .form__action {
+.game-profiles-selection__actions .form__action {
   background: var(--colour-surface);
   border: 1px solid var(--colour-border);
   color: var(--colour-text);
@@ -34,7 +72,7 @@ li.game-profiles-selection__section-heading {
   padding: 2px 12px;
 }
 
-.game-profiles-selection .form__action--active {
+.game-profiles-selection__actions .form__action--active {
   border-color: var(--colour-accent);
   color: var(--colour-text-bright);
 }

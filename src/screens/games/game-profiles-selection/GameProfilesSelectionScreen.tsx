@@ -1,47 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
-import type { GameProfilesSelectionRow } from "./types";
+import type { AssignedProfile } from "./types";
+import {
+  addProfile,
+  buildPendingProfiles,
+  buildSaveRefs,
+  cancelReorder,
+  getUnassignedProfiles,
+  moveProfile,
+  removeProfile,
+  wrapIndex,
+} from "./utils";
 import "./index.css";
 
-type FocusRegion = "list" | "actions";
+type FocusRegion = "topbar" | "list" | "inherit" | "actions";
 type ActionField = "save" | "cancel";
 
 const ACTION_FIELDS: ActionField[] = ["save", "cancel"];
-
-function wrapIndex(index: number, delta: number, length: number): number {
-  return (index + delta + length) % length;
-}
-
-function buildRows(
-  profiles: { id: string; name: string; isDefault: boolean }[],
-): GameProfilesSelectionRow[] {
-  const sorted = [...profiles].sort((a, b) => a.name.localeCompare(b.name));
-  const defaultProfile = profiles.find((p) => p.isDefault);
-
-  const namedRows: GameProfilesSelectionRow[] = sorted.map((p) => ({
-    kind: "profile",
-    id: p.id,
-    name: p.name,
-  }));
-
-  if (!defaultProfile) {
-    return namedRows;
-  }
-
-  return [
-    ...namedRows,
-    {
-      kind: "section-heading",
-      label: "Automatically inherit configuration from the default profiles:",
-    },
-    { kind: "default-profile", defaultProfileName: defaultProfile.name },
-  ];
-}
-
-function isSelectableRow(row: GameProfilesSelectionRow): boolean {
-  return row.kind !== "section-heading";
-}
 
 interface GameProfilesSelectionScreenProps {
   gameId: string;
@@ -54,38 +30,69 @@ export function GameProfilesSelectionScreen({
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
-  const profiles = store.profiles.profiles;
+  const allProfiles = store.profiles.profiles;
   const gameProfileRefs = store.profiles.gameProfileRefs;
 
-  const existingProfileIds = new Set(
-    gameProfileRefs
-      .filter((ref) => ref.gameId === gameId)
-      .map((ref) => ref.profileId),
+  const [pendingProfiles, setPendingProfiles] = useState<AssignedProfile[]>(
+    () => buildPendingProfiles(gameProfileRefs, allProfiles, gameId),
   );
-
-  const rows = buildRows(profiles);
-  const defaultProfile = profiles.find((p) => p.isDefault);
-
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const [pendingDefaultProfile, setPendingDefaultProfile] = useState(
+  const [pendingInherit, setPendingInherit] = useState(
     game?.inheritDefaultProfile ?? false,
   );
-  const [pendingProfileIds, setPendingProfileIds] = useState<Set<string>>(
-    () => new Set(existingProfileIds),
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>(() =>
+    buildPendingProfiles(gameProfileRefs, allProfiles, gameId).length === 0
+      ? "inherit"
+      : "list",
   );
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("list");
-  const [activeAction, setActiveAction] = useState<ActionField>("save");
+  const [focusedAction, setFocusedAction] = useState<ActionField>("save");
+  const [overlay, setOverlay] = useState<
+    "context-menu" | "reorder" | "picker" | null
+  >(null);
+  const [overlayIndex, setOverlayIndex] = useState(0);
+  const [reorderOriginIndex, setReorderOriginIndex] = useState(0);
+  const [statusMessage, setStatusMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const addButtonRef = useRef<HTMLButtonElement>(null);
+  const inheritRef = useRef<HTMLLabelElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
+  const safeSelectedIndex =
+    pendingProfiles.length > 0
+      ? Math.min(selectedIndex, pendingProfiles.length - 1)
+      : 0;
+
+  const unassigned = getUnassignedProfiles(allProfiles, pendingProfiles);
+  const allAssigned = unassigned.length === 0;
+
+  const initiallyEmpty = useRef(
+    buildPendingProfiles(gameProfileRefs, allProfiles, gameId).length === 0,
+  );
+
   useEffect(() => {
-    containerRef.current?.focus();
+    if (initiallyEmpty.current) {
+      inheritRef.current?.focus();
+    } else {
+      containerRef.current?.focus();
+    }
   }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (overlay === "context-menu") {
+        handleContextMenuKey(event);
+        return;
+      }
+      if (overlay === "reorder") {
+        handleReorderKey(event);
+        return;
+      }
+      if (overlay === "picker") {
+        handlePickerKey(event);
+        return;
+      }
       handleMainKey(event);
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -102,6 +109,14 @@ export function GameProfilesSelectionScreen({
       pop();
       return;
     }
+    if (focusRegion === "topbar") {
+      handleTopBarKey(event);
+      return;
+    }
+    if (focusRegion === "inherit") {
+      handleInheritKey(event);
+      return;
+    }
     if (focusRegion === "actions") {
       handleActionsKey(event);
       return;
@@ -109,23 +124,59 @@ export function GameProfilesSelectionScreen({
     handleListKey(event);
   }
 
+  function handleTopBarKey(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      activateAdd();
+    }
+  }
+
+  function activateAdd() {
+    if (allAssigned) return;
+    setOverlay("picker");
+    setOverlayIndex(0);
+  }
+
+  function handleInheritKey(event: KeyboardEvent) {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      setPendingInherit((prev) => !prev);
+    }
+  }
+
+  function handleListKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      if (pendingProfiles.length > 0) {
+        setSelectedIndex((prev) => wrapIndex(prev, 1, pendingProfiles.length));
+        setStatusMessage("");
+      }
+    } else if (event.key === "ArrowUp") {
+      if (pendingProfiles.length > 0) {
+        setSelectedIndex((prev) => wrapIndex(prev, -1, pendingProfiles.length));
+        setStatusMessage("");
+      }
+    } else if (event.key === "Alt") {
+      event.preventDefault();
+      openContextMenu();
+    }
+  }
+
   function handleActionsKey(event: KeyboardEvent) {
     if (event.key === "ArrowLeft") {
-      const idx = ACTION_FIELDS.indexOf(activeAction);
+      const idx = ACTION_FIELDS.indexOf(focusedAction);
       const next = ACTION_FIELDS[
         wrapIndex(idx, -1, ACTION_FIELDS.length)
       ] as ActionField;
-      setActiveAction(next);
+      setFocusedAction(next);
       focusActionButton(next);
     } else if (event.key === "ArrowRight") {
-      const idx = ACTION_FIELDS.indexOf(activeAction);
+      const idx = ACTION_FIELDS.indexOf(focusedAction);
       const next = ACTION_FIELDS[
         wrapIndex(idx, 1, ACTION_FIELDS.length)
       ] as ActionField;
-      setActiveAction(next);
+      setFocusedAction(next);
       focusActionButton(next);
     } else if (event.key === "Enter") {
-      if (activeAction === "save") {
+      if (focusedAction === "save") {
         handleSave();
       } else {
         pop();
@@ -133,68 +184,147 @@ export function GameProfilesSelectionScreen({
     }
   }
 
-  function moveSelection(delta: number) {
-    setSelectedIndex((prev) => {
-      let next = prev + delta;
-      while (next >= 0 && next < rows.length) {
-        if (isSelectableRow(rows[next])) return next;
-        next += delta;
-      }
-      return prev;
-    });
-  }
-
-  function handleListKey(event: KeyboardEvent) {
+  function handleContextMenuKey(event: KeyboardEvent) {
     if (event.key === "ArrowDown") {
-      moveSelection(1);
+      setOverlayIndex((prev) => wrapIndex(prev, 1, 2));
     } else if (event.key === "ArrowUp") {
-      moveSelection(-1);
-    } else if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      const row = rows[selectedIndex];
-      if (row && isSelectableRow(row)) {
-        toggleRow(row);
+      setOverlayIndex((prev) => wrapIndex(prev, -1, 2));
+    } else if (event.key === "Enter") {
+      if (overlayIndex === 0) {
+        setOverlay("reorder");
+        setReorderOriginIndex(safeSelectedIndex);
+      } else {
+        executeRemove();
       }
+    } else if (event.key === "Escape") {
+      setOverlay(null);
     }
   }
 
-  function toggleRow(row: GameProfilesSelectionRow) {
-    if (row.kind === "section-heading") return;
-    if (row.kind === "default-profile") {
-      setPendingDefaultProfile((prev) => !prev);
+  function handleReorderKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      const nextIndex = Math.min(
+        safeSelectedIndex + 1,
+        pendingProfiles.length - 1,
+      );
+      setPendingProfiles((prev) => moveProfile(prev, safeSelectedIndex, 1));
+      setSelectedIndex(nextIndex);
+    } else if (event.key === "ArrowUp") {
+      const nextIndex = Math.max(safeSelectedIndex - 1, 0);
+      setPendingProfiles((prev) => moveProfile(prev, safeSelectedIndex, -1));
+      setSelectedIndex(nextIndex);
+    } else if (event.key === "Enter") {
+      setOverlay(null);
+    } else if (event.key === "Escape") {
+      setPendingProfiles((prev) =>
+        cancelReorder(prev, safeSelectedIndex, reorderOriginIndex),
+      );
+      setSelectedIndex(reorderOriginIndex);
+      setOverlay(null);
+    }
+  }
+
+  function handlePickerKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      setOverlayIndex((prev) => wrapIndex(prev, 1, unassigned.length));
+    } else if (event.key === "ArrowUp") {
+      setOverlayIndex((prev) => wrapIndex(prev, -1, unassigned.length));
+    } else if (event.key === "Enter") {
+      const profile = unassigned[overlayIndex];
+      if (profile) {
+        const newIndex = pendingProfiles.length;
+        setPendingProfiles((prev) => addProfile(prev, profile));
+        setStatusMessage(`${profile.name} added`);
+        setSelectedIndex(newIndex);
+        setOverlay(null);
+      }
+    } else if (event.key === "Escape") {
+      setOverlay(null);
+    }
+  }
+
+  function openContextMenu() {
+    if (pendingProfiles.length === 0) return;
+    setOverlay("context-menu");
+    setOverlayIndex(0);
+  }
+
+  function executeRemove() {
+    const profile = pendingProfiles[safeSelectedIndex];
+    if (!profile) return;
+    const removedName = profile.name;
+    setPendingProfiles((prev) => removeProfile(prev, profile.id));
+    setSelectedIndex((prev) => Math.max(0, prev - 1));
+    setOverlay(null);
+    setStatusMessage(`${removedName} removed`);
+    if (pendingProfiles.length <= 1) {
+      inheritRef.current?.focus();
+      setFocusRegion("inherit");
     } else {
-      setPendingProfileIds((prev) => {
-        const next = new Set(prev);
-        if (next.has(row.id)) {
-          next.delete(row.id);
-        } else {
-          next.add(row.id);
-        }
-        return next;
-      });
+      containerRef.current?.focus();
     }
   }
 
-  function isRowChecked(row: GameProfilesSelectionRow): boolean {
-    if (row.kind === "section-heading") return false;
-    if (row.kind === "default-profile") return pendingDefaultProfile;
-    return pendingProfileIds.has(row.id);
+  function focusInherit() {
+    setFocusRegion("inherit");
+    inheritRef.current?.focus();
+  }
+
+  function focusList() {
+    setFocusRegion("list");
+    containerRef.current?.focus();
   }
 
   function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "list") {
-      if (reverse) {
-        setFocusRegion("actions");
-        setActiveAction("cancel");
-        cancelButtonRef.current?.focus();
+    // Tab order per wiki: [Add] (topbar) → LIST → INHERIT → [Save]/[Cancel] (actions) → [Add]
+    // When the list is empty, skip the "list" region entirely.
+    const isEmpty = pendingProfiles.length === 0;
+    if (focusRegion === "topbar") {
+      if (!reverse) {
+        if (isEmpty) {
+          focusInherit();
+        } else {
+          focusList();
+        }
       } else {
         setFocusRegion("actions");
-        setActiveAction("save");
+        setFocusedAction("cancel");
+        cancelButtonRef.current?.focus();
+      }
+    } else if (focusRegion === "list") {
+      if (!reverse) {
+        focusInherit();
+      } else {
+        setFocusRegion("topbar");
+        addButtonRef.current?.focus();
+      }
+    } else if (focusRegion === "inherit") {
+      if (!reverse) {
+        setFocusRegion("actions");
+        setFocusedAction("save");
         saveButtonRef.current?.focus();
+      } else {
+        if (isEmpty) {
+          setFocusRegion("topbar");
+          addButtonRef.current?.focus();
+        } else {
+          focusList();
+        }
       }
     } else {
-      setFocusRegion("list");
-      containerRef.current?.focus();
+      // actions
+      const currentIndex = ACTION_FIELDS.indexOf(focusedAction);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < ACTION_FIELDS.length) {
+        const next = ACTION_FIELDS[nextIndex] as ActionField;
+        setFocusedAction(next);
+        focusActionButton(next);
+      } else if (!reverse) {
+        setFocusRegion("topbar");
+        addButtonRef.current?.focus();
+      } else {
+        focusInherit();
+      }
     }
   }
 
@@ -207,27 +337,20 @@ export function GameProfilesSelectionScreen({
   }
 
   function handleSave() {
-    const newRefs = Array.from(pendingProfileIds).map((profileId) => ({
-      gameId,
-      profileId,
-    }));
+    const newRefs = buildSaveRefs(gameId, pendingProfiles);
     setStore((prev) => ({
       ...prev,
       profiles: {
         ...prev.profiles,
         gameProfileRefs: [
-          ...prev.profiles.gameProfileRefs.filter(
-            (ref) => ref.gameId !== gameId,
-          ),
+          ...prev.profiles.gameProfileRefs.filter((r) => r.gameId !== gameId),
           ...newRefs,
         ],
       },
       gameDetails: {
         ...prev.gameDetails,
         games: prev.gameDetails.games.map((g) =>
-          g.id === gameId
-            ? { ...g, inheritDefaultProfile: pendingDefaultProfile }
-            : g,
+          g.id === gameId ? { ...g, inheritDefaultProfile: pendingInherit } : g,
         ),
       },
     }));
@@ -235,102 +358,131 @@ export function GameProfilesSelectionScreen({
   }
 
   function deriveBottomBarMessage(): string {
-    if (focusRegion !== "list") return "";
-    const focusedRow = rows[selectedIndex];
-    if (!focusedRow) return "";
-    if (focusedRow.kind === "default-profile") {
-      return "Inherited configuration will change if the default profile changes.";
+    if (overlay !== null) return "";
+    if (focusRegion === "topbar" && allAssigned) {
+      return "All profiles are already assigned.";
     }
-    if (focusedRow.kind !== "profile") return "";
-    if (!pendingDefaultProfile) return "";
-    if (focusedRow.id !== defaultProfile?.id) return "";
-    return "Included via default. Select explicitly to inherit regardless of default.";
+    return statusMessage;
   }
 
   const title = game ? `${game.title} > Profiles` : "Profiles";
-  const hasNamedProfiles = rows.some((r) => r.kind === "profile");
+  const isEmpty = pendingProfiles.length === 0;
   const bottomBarMessage = deriveBottomBarMessage();
 
   return (
-    <div role="application" className="screen" ref={containerRef} tabIndex={-1}>
+    <div
+      role="application"
+      className="screen"
+      ref={containerRef}
+      tabIndex={-1}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        if (pendingProfiles.length > 0) openContextMenu();
+      }}
+    >
       <div className="screen__topbar">
         <span className="screen__topbar-title">{title}</span>
+        <div className="screen__topbar-ctas">
+          <button
+            ref={addButtonRef}
+            type="button"
+            className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" ? " topbar-cta--focused" : ""}${allAssigned ? " topbar-cta--disabled" : ""}`}
+            onClick={() => {
+              setFocusRegion("topbar");
+              activateAdd();
+            }}
+            onFocus={() => setFocusRegion("topbar")}
+          >
+            Add
+          </button>
+        </div>
       </div>
       <div className="screen__content">
         <div className="game-profiles-selection">
-          {hasNamedProfiles && (
-            <p className="game-profiles-selection__section-heading">
-              Automatically inherit configuration from the following profiles:
+          {isEmpty ? (
+            <p className="game-profiles-selection__empty">
+              Select Add to assign a profile to this game.
             </p>
+          ) : (
+            <>
+              <p className="game-profiles-selection__hint">
+                Profiles are applied in order. Use Reorder to change the
+                sequence.
+              </p>
+              <ul className="list">
+                {pendingProfiles.map((profile, index) => {
+                  const isSelected =
+                    index === safeSelectedIndex && focusRegion === "list";
+                  const isReordering =
+                    overlay === "reorder" && index === safeSelectedIndex;
+                  return (
+                    <li
+                      key={profile.id}
+                      className={buildRowClassName(isSelected, isReordering)}
+                      style={{ display: "flex" }}
+                      onClick={() => {
+                        setFocusRegion("list");
+                        setSelectedIndex(index);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          setFocusRegion("list");
+                          setSelectedIndex(index);
+                        }
+                      }}
+                    >
+                      <span className="game-profiles-selection__pos">
+                        {profile.order}
+                      </span>
+                      <span className="game-profiles-selection__name">
+                        {profile.name}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
-          <ul className="list">
-            {rows.map((row, index) => {
-              if (row.kind === "section-heading") {
-                return (
-                  <li
-                    key="section-heading-default"
-                    className="game-profiles-selection__section-heading"
-                    aria-hidden="true"
-                  >
-                    {row.label}
-                  </li>
-                );
-              }
-              const label =
-                row.kind === "default-profile"
-                  ? `Default → ${row.defaultProfileName}`
-                  : row.name;
-              const checked = isRowChecked(row);
-              const isSelected =
-                index === selectedIndex && focusRegion === "list";
-              return (
-                <li
-                  key={
-                    row.kind === "default-profile" ? "default-profile" : row.id
-                  }
-                  className={`list__row${isSelected ? " list__row--selected" : ""}`}
-                  style={{ display: "flex", gap: "8px", alignItems: "center" }}
-                  onClick={() => {
-                    setSelectedIndex(index);
-                    toggleRow(row);
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      setSelectedIndex(index);
-                      toggleRow(row);
-                    }
-                  }}
-                >
-                  <span className="game-profiles-selection__checkbox">
-                    {checked ? "[x]" : "[ ]"}
-                  </span>
-                  <span>{label}</span>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="form__actions">
+          <label
+            ref={inheritRef}
+            tabIndex={-1}
+            className={`game-profiles-selection__inherit${focusRegion === "inherit" ? " game-profiles-selection__inherit--focused" : ""}`}
+            onClick={() => setFocusRegion("inherit")}
+            onKeyDown={() => setFocusRegion("inherit")}
+          >
+            <input
+              type="checkbox"
+              checked={pendingInherit}
+              onChange={() => setPendingInherit((prev) => !prev)}
+              style={{ display: "none" }}
+            />
+            <span className="game-profiles-selection__inherit-checkbox">
+              {pendingInherit ? "[x]" : "[ ]"}
+            </span>
+            <span>Inherit from the default profile (if configured)</span>
+          </label>
+          <div className="game-profiles-selection__actions">
             <button
               ref={saveButtonRef}
-              className={`form__action${focusRegion === "actions" && activeAction === "save" ? " form__action--active" : ""}`}
+              type="button"
+              className={`form__action${focusRegion === "actions" && focusedAction === "save" ? " form__action--active" : ""}`}
               onClick={handleSave}
               onFocus={() => {
-                setActiveAction("save");
+                setFocusedAction("save");
                 setFocusRegion("actions");
               }}
-              type="button"
             >
               Save
             </button>
             <button
               ref={cancelButtonRef}
-              className={`form__action${focusRegion === "actions" && activeAction === "cancel" ? " form__action--active" : ""}`}
+              type="button"
+              className={`form__action${focusRegion === "actions" && focusedAction === "cancel" ? " form__action--active" : ""}`}
               onClick={pop}
               onFocus={() => {
-                setActiveAction("cancel");
+                setFocusedAction("cancel");
                 setFocusRegion("actions");
               }}
-              type="button"
             >
               Cancel
             </button>
@@ -338,6 +490,67 @@ export function GameProfilesSelectionScreen({
         </div>
       </div>
       <div className="screen__bottombar">{bottomBarMessage}</div>
+      {overlay === "context-menu" && pendingProfiles[safeSelectedIndex] && (
+        <div
+          className="overlay-backdrop"
+          style={{ alignItems: "flex-start", paddingTop: "80px" }}
+        >
+          <div className="overlay">
+            <ul className="overlay__list">
+              {(["Reorder", "Remove"] as const).map((item, index) => (
+                <li
+                  key={item}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {overlay === "picker" && unassigned.length > 0 && (
+        <div
+          className="overlay-backdrop"
+          style={{ alignItems: "flex-start", paddingTop: "80px" }}
+        >
+          <div className="overlay">
+            <ul className="overlay__list">
+              {unassigned.map((profile, index) => (
+                <li
+                  key={profile.id}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                  onClick={() => {
+                    const newIndex = pendingProfiles.length;
+                    setPendingProfiles((prev) => addProfile(prev, profile));
+                    setStatusMessage(`${profile.name} added`);
+                    setSelectedIndex(newIndex);
+                    setOverlay(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      const newIndex = pendingProfiles.length;
+                      setPendingProfiles((prev) => addProfile(prev, profile));
+                      setStatusMessage(`${profile.name} added`);
+                      setSelectedIndex(newIndex);
+                      setOverlay(null);
+                    }
+                  }}
+                >
+                  {profile.name}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+function buildRowClassName(isSelected: boolean, isReordering: boolean): string {
+  const parts = ["list__row"];
+  if (isSelected) parts.push("list__row--selected");
+  if (isReordering) parts.push("game-profiles-selection__row--reordering");
+  return parts.join(" ");
 }
