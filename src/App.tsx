@@ -251,6 +251,7 @@ function AppScreens() {
         gameId={currentParams.gameId ?? "game-bubble"}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
+        returnFocus={currentParams.returnFocus}
       />
     );
   }

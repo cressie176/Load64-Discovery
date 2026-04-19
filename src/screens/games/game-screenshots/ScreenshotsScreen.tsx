@@ -8,10 +8,15 @@ import "./index.css";
 const MAX_CANDIDATES = 8;
 const COLS = 3;
 const DELETE_OPTIONS = ["Yes", "No"] as const;
+const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
 
 type ScreenshotSlot = "loading" | "title" | "gameplay";
 type FocusPanel = "slots" | "candidates" | "actions";
-type Overlay = "context-menu" | "left-context-menu" | "left-confirm";
+type Overlay =
+  | "context-menu"
+  | "left-context-menu"
+  | "left-confirm"
+  | "get-media";
 
 const SLOT_ORDER: ScreenshotSlot[] = ["loading", "title", "gameplay"];
 
@@ -82,14 +87,16 @@ interface ScreenshotsScreenProps {
   gameId: string;
   importMode: boolean;
   importTitle?: string;
+  returnFocus?: string;
 }
 
 export function ScreenshotsScreen({
   gameId,
   importMode,
   importTitle,
+  returnFocus,
 }: ScreenshotsScreenProps) {
-  const { pop, push, replace } = useRouter();
+  const { pop, pushFrom, replace } = useRouter();
   const { store, setStore } = useStore();
 
   const game = store.gameDetails.games.find((g) => g.id === gameId);
@@ -106,7 +113,9 @@ export function ScreenshotsScreen({
   const [deletedSlots, setDeletedSlots] = useState<Set<ScreenshotSlot>>(
     new Set(),
   );
-  const [focusPanel, setFocusPanel] = useState<FocusPanel>("slots");
+  const [focusPanel, setFocusPanel] = useState<FocusPanel>(
+    returnFocus === "get-media" ? "actions" : "slots",
+  );
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
   const [overlay, setOverlay] = useState<Overlay | null>(null);
@@ -115,7 +124,7 @@ export function ScreenshotsScreen({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const candidateCount = localCandidates.length;
-  const sources = game?.sources ?? [];
+  const getMediaDisabled = candidateCount >= MAX_CANDIDATES;
   const currentSlot = SLOT_ORDER[currentSlotIndex] ?? "loading";
 
   useEffect(() => {
@@ -211,25 +220,19 @@ export function ScreenshotsScreen({
   }
 
   function handleActionsKey(event: KeyboardEvent) {
-    const actionCount = 2 + (sources.length > 0 ? 1 : 0);
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
-      setFocusedActionIndex((prev) => Math.min(actionCount - 1, prev + 1));
+      setFocusedActionIndex((prev) => Math.min(2, prev + 1));
     } else if (event.key === "Enter") {
       activateAction(focusedActionIndex);
     }
   }
 
   function activateAction(index: number) {
-    if (sources.length > 0) {
-      if (index === 0) handleFetch();
-      else if (index === 1) handleSave();
-      else handleCancel();
-    } else {
-      if (index === 0) handleSave();
-      else handleCancel();
-    }
+    if (index === 0) openGetMediaOverlay();
+    else if (index === 1) handleSave();
+    else handleCancel();
   }
 
   function handleOverlayKey(event: KeyboardEvent) {
@@ -258,6 +261,16 @@ export function ScreenshotsScreen({
           setOverlay(null);
           setOverlayIndex(0);
         }
+      }
+    } else if (overlay === "get-media") {
+      if (event.key === "ArrowDown") {
+        setOverlayIndex((prev) =>
+          Math.min(GET_MEDIA_OPTIONS.length - 1, prev + 1),
+        );
+      } else if (event.key === "ArrowUp") {
+        setOverlayIndex((prev) => Math.max(0, prev - 1));
+      } else if (event.key === "Enter") {
+        activateGetMediaOption(overlayIndex);
       }
     }
   }
@@ -289,14 +302,28 @@ export function ScreenshotsScreen({
     setOverlay("context-menu");
   }
 
-  function handleFetch() {
-    if (sources.length === 0) return;
-    push("game-get-from-catalogue", {
+  function openGetMediaOverlay() {
+    if (getMediaDisabled) return;
+    setOverlay("get-media");
+    setOverlayIndex(0);
+  }
+
+  function activateGetMediaOption(index: number) {
+    setOverlay(null);
+    setOverlayIndex(0);
+    const params = {
       gameId,
       flow: "screenshots",
       importMode: importMode ? "true" : "false",
       ...(importTitle !== undefined ? { importTitle } : {}),
-    });
+    };
+    if (index === 0) {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-catalogue", params);
+    } else if (index === 1) {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-url", params);
+    } else {
+      pushFrom({ returnFocus: "get-media" }, "game-get-from-file", params);
+    }
   }
 
   function removeCandidate(ci: number) {
@@ -438,12 +465,6 @@ export function ScreenshotsScreen({
 
   const deleteLabel = deriveSlotDeleteLabel(currentSlot);
 
-  const fetchHint =
-    focusPanel === "actions" && sources.length === 0
-      ? "No catalogues linked. Add a catalogue link to enable fetch."
-      : "";
-  const bottomBarText = fetchHint;
-
   if (!game) {
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
@@ -560,30 +581,19 @@ export function ScreenshotsScreen({
               })}
             </div>
             <div className="screenshots__actions">
-              {sources.length > 0 && (
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 0 ? " screenshots__action--active" : ""}`}
-                  onClick={handleFetch}
-                >
-                  Get Media
-                </button>
-              )}
-              {sources.length === 0 && (
-                <button
-                  type="button"
-                  tabIndex={-1}
-                  className="screenshots__action screenshots__action--disabled"
-                  disabled
-                >
-                  Get Media
-                </button>
-              )}
               <button
                 type="button"
                 tabIndex={-1}
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 1 : 0) ? " screenshots__action--active" : ""}`}
+                className={`screenshots__action${getMediaDisabled ? " screenshots__action--disabled" : ""}${focusPanel === "actions" && focusedActionIndex === 0 ? " screenshots__action--active" : ""}`}
+                disabled={getMediaDisabled}
+                onClick={openGetMediaOverlay}
+              >
+                Get Media
+              </button>
+              <button
+                type="button"
+                tabIndex={-1}
+                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 1 ? " screenshots__action--active" : ""}`}
                 onClick={handleSave}
               >
                 Save
@@ -591,7 +601,7 @@ export function ScreenshotsScreen({
               <button
                 type="button"
                 tabIndex={-1}
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === (sources.length > 0 ? 2 : 1) ? " screenshots__action--active" : ""}`}
+                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 2 ? " screenshots__action--active" : ""}`}
                 onClick={handleCancel}
               >
                 Cancel
@@ -600,7 +610,7 @@ export function ScreenshotsScreen({
           </div>
         </div>
       </div>
-      <div className="screen__bottombar">{bottomBarText}</div>
+      <div className="screen__bottombar" />
       {overlay === "context-menu" && (
         <div className="overlay-backdrop">
           <div className="overlay">
@@ -673,6 +683,27 @@ export function ScreenshotsScreen({
                         setOverlayIndex(0);
                       }
                     }
+                  }}
+                >
+                  {option}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+      {overlay === "get-media" && (
+        <div className="overlay-backdrop">
+          <div className="overlay">
+            <div className="overlay__title">Get media</div>
+            <ul className="overlay__list">
+              {GET_MEDIA_OPTIONS.map((option, index) => (
+                <li
+                  key={option}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                  onClick={() => activateGetMediaOption(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") activateGetMediaOption(index);
                   }}
                 >
                   {option}
