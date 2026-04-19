@@ -23,13 +23,11 @@ function mediaStoreKey(gameId: string, flow: CatalogueFlow): string {
   return `${gameId}-screenshots`;
 }
 
-type FocusRegion = "form" | "form-actions" | "topbar";
+type FocusRegion = "form" | "form-actions";
 type FormField = "catalogue" | "id";
-type FormActionCta = "get" | "cancel";
-type TopBarCta = "back";
+type FormActionCta = "fetch" | "cancel";
 
-const FORM_ACTION_CTAS: FormActionCta[] = ["get", "cancel"];
-const TOP_BAR_CTAS: TopBarCta[] = ["back"];
+const FORM_ACTION_CTAS: FormActionCta[] = ["fetch", "cancel"];
 
 interface GetFromCatalogueScreenProps {
   gameId: string;
@@ -61,15 +59,13 @@ export function GetFromCatalogueScreen({
 
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [activeField, setActiveField] = useState<FormField>("catalogue");
-  const [focusedFormCta, setFocusedFormCta] = useState<FormActionCta>("get");
-  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
+  const [focusedFormCta, setFocusedFormCta] = useState<FormActionCta>("fetch");
 
   const containerRef = useRef<HTMLDivElement>(null);
   const catalogueSelectRef = useRef<HTMLSelectElement>(null);
   const idInputRef = useRef<HTMLInputElement>(null);
-  const getButtonRef = useRef<HTMLButtonElement>(null);
+  const fetchButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
     catalogueSelectRef.current?.focus();
@@ -95,10 +91,6 @@ export function GetFromCatalogueScreen({
       pop();
       return;
     }
-    if (focusRegion === "topbar") {
-      if (event.key === "Enter") pop();
-      return;
-    }
     if (focusRegion === "form-actions") {
       handleFormActionsKey(event);
       return;
@@ -115,7 +107,7 @@ export function GetFromCatalogueScreen({
         if (activeField === "catalogue") {
           focusFormField("id");
         } else {
-          handleGet();
+          handleFetch();
         }
         return;
       }
@@ -154,7 +146,7 @@ export function GetFromCatalogueScreen({
       if (idx < FORM_ACTION_CTAS.length - 1)
         focusFormActionCta(FORM_ACTION_CTAS[idx + 1] as FormActionCta);
     } else if (event.key === "Enter") {
-      if (focusedFormCta === "get") handleGet();
+      if (focusedFormCta === "fetch") handleFetch();
       else pop();
     }
   }
@@ -189,7 +181,7 @@ export function GetFromCatalogueScreen({
   function focusFormActionCta(cta: FormActionCta) {
     setFocusedFormCta(cta);
     setFocusRegion("form-actions");
-    if (cta === "get") getButtonRef.current?.focus();
+    if (cta === "fetch") fetchButtonRef.current?.focus();
     else cancelButtonRef.current?.focus();
   }
 
@@ -204,7 +196,7 @@ export function GetFromCatalogueScreen({
     setBottomMessage("");
   }
 
-  function handleGet() {
+  function handleFetch() {
     const trimmedId = entryId.trim();
     if (!trimmedId) {
       setBottomMessage("ID is required.");
@@ -296,39 +288,18 @@ export function GetFromCatalogueScreen({
       if (!reverse) {
         focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
       } else {
-        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1] as TopBarCta;
-        setFocusedTopBarCta(cta);
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
+        focusFormActionCta(
+          FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
+        );
       }
-    } else if (focusRegion === "form-actions") {
+    } else {
       const currentIndex = FORM_ACTION_CTAS.indexOf(focusedFormCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex] as FormActionCta);
-      } else if (!reverse) {
-        const cta = TOP_BAR_CTAS[0] as TopBarCta;
-        setFocusedTopBarCta(cta);
-        setFocusRegion("topbar");
-        backButtonRef.current?.focus();
       } else {
         setFocusRegion("form");
         focusFormField("catalogue");
-      }
-    } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-        setFocusedTopBarCta(nextCta);
-        backButtonRef.current?.focus();
-      } else if (!reverse) {
-        setFocusRegion("form");
-        focusFormField("catalogue");
-      } else {
-        focusFormActionCta(
-          FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
-        );
       }
     }
   }
@@ -342,29 +313,11 @@ export function GetFromCatalogueScreen({
 
   const isFormActive = focusRegion === "form";
   const isFormActionsActive = focusRegion === "form-actions";
-  const isTopbarActive = focusRegion === "topbar";
 
   return (
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            className={`topbar-cta topbar-cta--nav${isTopbarActive && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
-            onFocus={() => {
-              setFocusRegion("topbar");
-              setFocusedTopBarCta("back");
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div
@@ -420,17 +373,17 @@ export function GetFromCatalogueScreen({
           </div>
           <div className="form__actions">
             <button
-              ref={getButtonRef}
+              ref={fetchButtonRef}
               type="button"
-              className={`form__action${isFormActionsActive && focusedFormCta === "get" ? " form__action--active" : ""}`}
+              className={`form__action${isFormActionsActive && focusedFormCta === "fetch" ? " form__action--active" : ""}`}
               disabled={fetching}
-              onClick={handleGet}
+              onClick={handleFetch}
               onFocus={() => {
-                setFocusedFormCta("get");
+                setFocusedFormCta("fetch");
                 setFocusRegion("form-actions");
               }}
             >
-              Get
+              Fetch
             </button>
             <button
               ref={cancelButtonRef}
