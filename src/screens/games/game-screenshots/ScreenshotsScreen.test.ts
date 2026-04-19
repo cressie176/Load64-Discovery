@@ -27,6 +27,10 @@ function deriveSlotLabel(slot: ScreenshotSlot): string {
   }
 }
 
+function deriveSlotDeleteLabel(slot: ScreenshotSlot): string {
+  return `Delete ${deriveSlotLabel(slot)} image`;
+}
+
 function deriveAssignedUrl(
   game: GameDetails,
   slot: ScreenshotSlot,
@@ -88,6 +92,20 @@ describe("ScreenshotsScreen", () => {
 
     it("returns Gameplay for gameplay slot", () => {
       eq(deriveSlotLabel("gameplay"), "Gameplay");
+    });
+  });
+
+  describe("deriveSlotDeleteLabel", () => {
+    it("returns delete label for loading slot", () => {
+      eq(deriveSlotDeleteLabel("loading"), "Delete Loading image");
+    });
+
+    it("returns delete label for title slot", () => {
+      eq(deriveSlotDeleteLabel("title"), "Delete Title image");
+    });
+
+    it("returns delete label for gameplay slot", () => {
+      eq(deriveSlotDeleteLabel("gameplay"), "Delete Gameplay image");
     });
   });
 

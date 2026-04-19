@@ -18,9 +18,11 @@ function deriveCoverArtUrl(coverUrl: string | undefined): string | undefined {
 }
 
 function derivePreviewUrl(
+  deleted: boolean,
   selectedUrl: string | undefined,
   savedUrl: string | undefined,
 ): string | undefined {
+  if (deleted) return undefined;
   return selectedUrl ?? savedUrl;
 }
 
@@ -62,9 +64,21 @@ describe("CoverArtScreen", () => {
   });
 
   describe("derivePreviewUrl", () => {
+    it("returns undefined when cover art has been deleted", () => {
+      eq(
+        derivePreviewUrl(
+          true,
+          "https://example.com/candidate.jpg",
+          "https://example.com/saved.jpg",
+        ),
+        undefined,
+      );
+    });
+
     it("returns selected url when a candidate has been selected", () => {
       eq(
         derivePreviewUrl(
+          false,
           "https://example.com/candidate.jpg",
           "https://example.com/saved.jpg",
         ),
@@ -74,13 +88,13 @@ describe("CoverArtScreen", () => {
 
     it("returns saved url when no candidate has been selected", () => {
       eq(
-        derivePreviewUrl(undefined, "https://example.com/saved.jpg"),
+        derivePreviewUrl(false, undefined, "https://example.com/saved.jpg"),
         "https://example.com/saved.jpg",
       );
     });
 
     it("returns undefined when no candidate selected and no saved url", () => {
-      eq(derivePreviewUrl(undefined, undefined), undefined);
+      eq(derivePreviewUrl(false, undefined, undefined), undefined);
     });
   });
 });

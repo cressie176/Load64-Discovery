@@ -19,12 +19,26 @@
   width: 220px;
 }
 
+.cover-art__slot-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+}
+
 .cover-art__slot-image {
   border: 1px solid var(--colour-border);
   display: block;
   height: 180px;
   object-fit: contain;
   width: 150px;
+}
+
+.cover-art__slot-button--focused .cover-art__slot-image {
+  border-color: var(--colour-accent);
 }
 
 .cover-art__slot-empty {
@@ -86,7 +100,6 @@
   object-fit: contain;
   width: 100%;
 }
-
 
 .cover-art__actions {
   display: flex;

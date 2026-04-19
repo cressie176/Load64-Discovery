@@ -7,14 +7,13 @@ import "./index.css";
 
 const MAX_CANDIDATES = 8;
 const COLS = 3;
+const DELETE_OPTIONS = ["Yes", "No"] as const;
 
 type ScreenshotSlot = "loading" | "title" | "gameplay";
-type FocusPanel = "slots" | "candidates" | "actions" | "topbar";
-type TopBarCta = "back";
-type Overlay = "context-menu";
+type FocusPanel = "slots" | "candidates" | "actions";
+type Overlay = "context-menu" | "left-context-menu" | "left-confirm";
 
 const SLOT_ORDER: ScreenshotSlot[] = ["loading", "title", "gameplay"];
-const TOP_BAR_CTAS: TopBarCta[] = ["back"];
 
 export function deriveScreenTitle(
   importMode: boolean,
@@ -37,6 +36,10 @@ export function deriveSlotLabel(slot: ScreenshotSlot): string {
     case "gameplay":
       return "Gameplay";
   }
+}
+
+export function deriveSlotDeleteLabel(slot: ScreenshotSlot): string {
+  return `Delete ${deriveSlotLabel(slot)} image`;
 }
 
 export function deriveAssignedUrl(
@@ -100,14 +103,16 @@ export function ScreenshotsScreen({
   const [slotAssignments, setSlotAssignments] = useState<
     Partial<Record<ScreenshotSlot, string>>
   >({});
+  const [deletedSlots, setDeletedSlots] = useState<Set<ScreenshotSlot>>(
+    new Set(),
+  );
   const [focusPanel, setFocusPanel] = useState<FocusPanel>("slots");
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
   const [focusedActionIndex, setFocusedActionIndex] = useState(0);
-  const [focusedCta, setFocusedCta] = useState<TopBarCta>("back");
   const [overlay, setOverlay] = useState<Overlay | null>(null);
+  const [overlayIndex, setOverlayIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   const candidateCount = localCandidates.length;
   const sources = game?.sources ?? [];
@@ -119,9 +124,10 @@ export function ScreenshotsScreen({
     consumedStoreCountRef.current = storeCandidates.length;
     setLocalCandidates((prev) => {
       const updated = [...prev, ...unconsumed].slice(0, MAX_CANDIDATES);
-      setFocusedCandidateIndex(updated.length - 1);
       return updated;
     });
+    setFocusPanel("actions");
+    setFocusedActionIndex(0);
   }, [storeCandidates]);
 
   useEffect(() => {
@@ -150,33 +156,12 @@ export function ScreenshotsScreen({
       handleCancel();
       return;
     }
-    if (focusPanel === "topbar") {
-      handleTopBarKey(event);
-    } else if (focusPanel === "slots") {
+    if (focusPanel === "slots") {
       handleSlotsKey(event);
     } else if (focusPanel === "candidates") {
       handleCandidatesKey(event);
     } else if (focusPanel === "actions") {
       handleActionsKey(event);
-    }
-  }
-
-  function handleBack() {
-    clearCandidates();
-    if (importMode) {
-      replace("game-cover-art", {
-        gameId,
-        importMode: "true",
-        ...(importTitle !== undefined ? { importTitle } : {}),
-      });
-    } else {
-      pop();
-    }
-  }
-
-  function handleTopBarKey(event: KeyboardEvent) {
-    if (event.key === "Enter") {
-      handleBack();
     }
   }
 
@@ -187,6 +172,12 @@ export function ScreenshotsScreen({
     } else if (event.key === "ArrowUp") {
       event.preventDefault();
       setCurrentSlotIndex((prev) => Math.max(0, prev - 1));
+    } else if (event.key === "Alt") {
+      event.preventDefault();
+      const slot = SLOT_ORDER[currentSlotIndex];
+      if (slot !== undefined && getSlotUrl(slot)) {
+        setOverlay("left-context-menu");
+      }
     }
   }
 
@@ -244,12 +235,39 @@ export function ScreenshotsScreen({
   function handleOverlayKey(event: KeyboardEvent) {
     if (event.key === "Escape") {
       setOverlay(null);
+      setOverlayIndex(0);
       return;
     }
     if (overlay === "context-menu" && event.key === "Enter") {
       setOverlay(null);
       removeCandidate(focusedCandidateIndex);
+    } else if (overlay === "left-context-menu" && event.key === "Enter") {
+      setOverlayIndex(1);
+      setOverlay("left-confirm");
+    } else if (overlay === "left-confirm") {
+      if (event.key === "ArrowDown") {
+        setOverlayIndex((prev) =>
+          Math.min(DELETE_OPTIONS.length - 1, prev + 1),
+        );
+      } else if (event.key === "ArrowUp") {
+        setOverlayIndex((prev) => Math.max(0, prev - 1));
+      } else if (event.key === "Enter") {
+        if (overlayIndex === 0) {
+          confirmDeleteSlot();
+        } else {
+          setOverlay(null);
+          setOverlayIndex(0);
+        }
+      }
     }
+  }
+
+  function getSlotUrl(slot: ScreenshotSlot): string | undefined {
+    if (deletedSlots.has(slot)) return undefined;
+    return (
+      slotAssignments[slot] ??
+      (game ? deriveAssignedUrl(game, slot) : undefined)
+    );
   }
 
   function activateCandidateCell(index: number) {
@@ -259,6 +277,11 @@ export function ScreenshotsScreen({
         ...prev,
         [currentSlot]: candidate.url,
       }));
+      setDeletedSlots((prev) => {
+        const next = new Set(prev);
+        next.delete(currentSlot);
+        return next;
+      });
     }
   }
 
@@ -285,6 +308,20 @@ export function ScreenshotsScreen({
     );
   }
 
+  function confirmDeleteSlot() {
+    const slot = SLOT_ORDER[currentSlotIndex];
+    if (slot !== undefined) {
+      setSlotAssignments((prev) => {
+        const next = { ...prev };
+        delete next[slot];
+        return next;
+      });
+      setDeletedSlots((prev) => new Set([...prev, slot]));
+    }
+    setOverlay(null);
+    setOverlayIndex(0);
+  }
+
   function handleSave() {
     setStore((prev) => ({
       ...prev,
@@ -294,6 +331,10 @@ export function ScreenshotsScreen({
           if (g.id !== gameId) return g;
           let screenshots = [...g.screenshots];
           for (const slot of SLOT_ORDER) {
+            if (deletedSlots.has(slot)) {
+              screenshots = screenshots.filter((s) => s.slot !== slot);
+              continue;
+            }
             const url = slotAssignments[slot];
             if (url === undefined) continue;
             const existing = screenshots.find((s) => s.slot === slot);
@@ -309,6 +350,7 @@ export function ScreenshotsScreen({
         }),
       },
     }));
+    clearCandidates();
     if (importMode) {
       replace("import-controls", {
         gameId,
@@ -332,6 +374,23 @@ export function ScreenshotsScreen({
   }
 
   function handleCancel() {
+    if (deletedSlots.size > 0) {
+      setStore((prev) => ({
+        ...prev,
+        gameDetails: {
+          ...prev.gameDetails,
+          games: prev.gameDetails.games.map((g) => {
+            if (g.id !== gameId) return g;
+            return {
+              ...g,
+              screenshots: g.screenshots.filter(
+                (s) => !deletedSlots.has(s.slot as ScreenshotSlot),
+              ),
+            };
+          }),
+        },
+      }));
+    }
     clearCandidates();
     pop();
   }
@@ -340,10 +399,8 @@ export function ScreenshotsScreen({
     const hasCandidates = candidateCount > 0;
     if (focusPanel === "slots") {
       if (reverse) {
-        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1] as TopBarCta;
-        setFocusPanel("topbar");
-        setFocusedCta(cta);
-        focusCtaButton(cta);
+        setFocusPanel("actions");
+        setFocusedActionIndex(0);
       } else if (hasCandidates) {
         setFocusPanel("candidates");
         containerRef.current?.focus();
@@ -358,7 +415,8 @@ export function ScreenshotsScreen({
         setFocusPanel("actions");
         setFocusedActionIndex(0);
       }
-    } else if (focusPanel === "actions") {
+    } else {
+      // actions
       if (reverse) {
         if (hasCandidates) {
           setFocusPanel("candidates");
@@ -367,32 +425,8 @@ export function ScreenshotsScreen({
           setFocusPanel("slots");
         }
       } else {
-        const cta = TOP_BAR_CTAS[0] as TopBarCta;
-        setFocusPanel("topbar");
-        setFocusedCta(cta);
-        focusCtaButton(cta);
+        setFocusPanel("slots");
       }
-    } else {
-      const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
-        const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
-        setFocusedCta(nextCta);
-        focusCtaButton(nextCta);
-      } else {
-        if (reverse) {
-          setFocusPanel("actions");
-          setFocusedActionIndex(0);
-        } else {
-          setFocusPanel("slots");
-        }
-      }
-    }
-  }
-
-  function focusCtaButton(cta: TopBarCta) {
-    if (cta === "back") {
-      backButtonRef.current?.focus();
     }
   }
 
@@ -401,6 +435,8 @@ export function ScreenshotsScreen({
     game?.title ?? "Game",
     importTitle,
   );
+
+  const deleteLabel = deriveSlotDeleteLabel(currentSlot);
 
   const fetchHint =
     focusPanel === "actions" && sources.length === 0
@@ -413,19 +449,6 @@ export function ScreenshotsScreen({
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
           <span className="screen__topbar-title">Screenshots</span>
-          <div className="screen__topbar-ctas">
-            <a
-              ref={backButtonRef}
-              href="#"
-              className="topbar-cta topbar-cta--nav topbar-cta--focused"
-              onClick={(e) => {
-                e.preventDefault();
-                pop();
-              }}
-            >
-              Back
-            </a>
-          </div>
         </div>
         <div className="screen__content screen__content--empty">
           Game not found.
@@ -448,20 +471,6 @@ export function ScreenshotsScreen({
     >
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
-        <div className="screen__topbar-ctas">
-          <a
-            ref={backButtonRef}
-            href="#"
-            tabIndex={-1}
-            className={`topbar-cta topbar-cta--nav${focusPanel === "topbar" && focusedCta === "back" ? " topbar-cta--focused" : ""}`}
-            onClick={(e) => {
-              e.preventDefault();
-              handleBack();
-            }}
-          >
-            Back
-          </a>
-        </div>
       </div>
       <div className="screen__content">
         <div className="screenshots__layout">
@@ -470,8 +479,7 @@ export function ScreenshotsScreen({
           >
             {SLOT_ORDER.map((slot, index) => {
               const isCurrentSlot = currentSlotIndex === index;
-              const assignedUrl =
-                slotAssignments[slot] ?? deriveAssignedUrl(game, slot);
+              const assignedUrl = getSlotUrl(slot);
               return (
                 <button
                   key={slot}
@@ -481,6 +489,15 @@ export function ScreenshotsScreen({
                   onClick={() => {
                     setFocusPanel("slots");
                     setCurrentSlotIndex(index);
+                  }}
+                  onContextMenu={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setFocusPanel("slots");
+                    setCurrentSlotIndex(index);
+                    if (assignedUrl) {
+                      setOverlay("left-context-menu");
+                    }
                   }}
                 >
                   {assignedUrl ? (
@@ -519,6 +536,11 @@ export function ScreenshotsScreen({
                         ...prev,
                         [currentSlot]: candidate.url,
                       }));
+                      setDeletedSlots((prev) => {
+                        const next = new Set(prev);
+                        next.delete(currentSlot);
+                        return next;
+                      });
                     }}
                     onContextMenu={(e) => {
                       e.stopPropagation();
@@ -598,6 +620,64 @@ export function ScreenshotsScreen({
               >
                 Remove
               </li>
+            </ul>
+          </div>
+        </div>
+      )}
+      {overlay === "left-context-menu" && (
+        <div className="overlay-backdrop">
+          <div className="overlay">
+            <ul className="overlay__list">
+              <li
+                className="overlay__row overlay__row--selected"
+                onClick={() => {
+                  setOverlayIndex(0);
+                  setOverlay("left-confirm");
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setOverlayIndex(0);
+                    setOverlay("left-confirm");
+                  }
+                }}
+              >
+                {deleteLabel}
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+      {overlay === "left-confirm" && (
+        <div className="overlay-backdrop">
+          <div className="overlay">
+            <div className="overlay__title">{deleteLabel}?</div>
+            <ul className="overlay__list">
+              {DELETE_OPTIONS.map((option, index) => (
+                <li
+                  key={option}
+                  className={`overlay__row${index === overlayIndex ? " overlay__row--selected" : ""}`}
+                  onClick={() => {
+                    if (index === 0) {
+                      confirmDeleteSlot();
+                    } else {
+                      setOverlay(null);
+                      setOverlayIndex(0);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (index === 0) {
+                        confirmDeleteSlot();
+                      } else {
+                        setOverlay(null);
+                        setOverlayIndex(0);
+                      }
+                    }
+                  }}
+                >
+                  {option}
+                </li>
+              ))}
             </ul>
           </div>
         </div>
