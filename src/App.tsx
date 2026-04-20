@@ -211,7 +211,8 @@ function AppScreens() {
   if (currentScreen === "game-details-edit") {
     return (
       <GameDetailsEditScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
+        gameId={currentParams.gameId}
+        candidateId={currentParams.candidateId}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
       />
@@ -312,7 +313,8 @@ function AppScreens() {
     const flow = (currentParams.flow ?? "cover-art") as CatalogueFlow;
     return (
       <GetFromCatalogueScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
+        gameId={currentParams.gameId}
+        candidateId={currentParams.candidateId}
         flow={flow}
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}

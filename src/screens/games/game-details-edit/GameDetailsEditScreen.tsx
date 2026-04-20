@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
+import type { ImportCandidate } from "../../import/import-candidate/types";
 import type { GameDetails } from "../game-details/types";
 import "./index.css";
 import { buildFormFields, deriveScreenTitle } from "./utils.ts";
@@ -24,26 +25,46 @@ type FormField =
   | "cancel";
 
 interface GameDetailsEditScreenProps {
-  gameId: string;
+  gameId?: string;
+  candidateId?: string;
   importMode?: boolean;
   importTitle?: string;
 }
 
+function candidateInitialTitle(candidate: ImportCandidate | undefined): string {
+  if (!candidate) return "";
+  if (candidate.title !== null) return candidate.title;
+  return "";
+}
+
 export function GameDetailsEditScreen({
   gameId,
+  candidateId,
   importMode = false,
   importTitle,
 }: GameDetailsEditScreenProps) {
   const { pop, push } = useRouter();
   const { store, setStore } = useStore();
 
-  const game = store.gameDetails.games.find((g) => g.id === gameId);
+  const game = gameId
+    ? store.gameDetails.games.find((g) => g.id === gameId)
+    : undefined;
+  const candidate: ImportCandidate | undefined = candidateId
+    ? store.importCandidate.queue.find((c) => c.id === candidateId)
+    : undefined;
 
-  const [draftTitle, setDraftTitle] = useState(game?.title ?? "");
-  const [draftPublisher, setDraftPublisher] = useState(game?.publisher ?? "");
-  const [draftYear, setDraftYear] = useState(
-    game?.year !== undefined ? String(game.year) : "",
-  );
+  const initialTitle = game?.title ?? candidateInitialTitle(candidate);
+  const initialPublisher = game?.publisher ?? candidate?.publisher ?? "";
+  const initialYear =
+    game?.year !== undefined
+      ? String(game.year)
+      : candidate?.year !== null && candidate?.year !== undefined
+        ? String(candidate.year)
+        : "";
+
+  const [draftTitle, setDraftTitle] = useState(initialTitle);
+  const [draftPublisher, setDraftPublisher] = useState(initialPublisher);
+  const [draftYear, setDraftYear] = useState(initialYear);
   const [draftColourEncoding, setDraftColourEncoding] = useState<
     "pal" | "ntsc" | "unknown"
   >(game?.colourEncoding ?? "unknown");
@@ -81,7 +102,7 @@ export function GameDetailsEditScreen({
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   const sources = game?.sources ?? [];
-  const hasCatalogues = sources.length > 0;
+  const hasCatalogues = importMode || sources.length > 0;
 
   // Build the form field order dynamically based on which imported values are present
   function buildFormFieldsForRender(): FormField[] {
@@ -387,7 +408,8 @@ export function GameDetailsEditScreen({
   function openFetchMenu() {
     if (!hasCatalogues) return;
     push("game-get-from-catalogue", {
-      gameId,
+      ...(gameId !== undefined ? { gameId } : {}),
+      ...(candidateId !== undefined ? { candidateId } : {}),
       flow: "details",
       importMode: importMode ? "true" : "false",
       ...(importTitle !== undefined ? { importTitle } : {}),
@@ -431,37 +453,44 @@ export function GameDetailsEditScreen({
       return false;
     }
     setBottomMessage("");
-    setStore((prev) => ({
-      ...prev,
-      gameDetails: {
-        ...prev.gameDetails,
-        games: prev.gameDetails.games.map((g): GameDetails => {
-          if (g.id !== gameId) return g;
-          return {
-            ...g,
-            title: trimmedTitle,
-            publisher: draftPublisher.trim(),
-            year: Number.isNaN(Number(draftYear.trim()))
-              ? g.year
-              : Number(draftYear.trim()) || g.year,
-            colourEncoding: draftColourEncoding,
-            trueDriveEmulation: draftTrueDriveEmulation,
-            notes: draftNotes.trim() || undefined,
-          };
-        }),
-      },
-    }));
+    if (game) {
+      setStore((prev) => ({
+        ...prev,
+        gameDetails: {
+          ...prev.gameDetails,
+          games: prev.gameDetails.games.map((g): GameDetails => {
+            if (g.id !== gameId) return g;
+            return {
+              ...g,
+              title: trimmedTitle,
+              publisher: draftPublisher.trim(),
+              year: Number.isNaN(Number(draftYear.trim()))
+                ? g.year
+                : Number(draftYear.trim()) || g.year,
+              colourEncoding: draftColourEncoding,
+              trueDriveEmulation: draftTrueDriveEmulation,
+              notes: draftNotes.trim() || undefined,
+            };
+          }),
+        },
+      }));
+    }
     return true;
+  }
+
+  function importNavParams(): Record<string, string> {
+    return {
+      ...(gameId !== undefined ? { gameId } : {}),
+      ...(candidateId !== undefined ? { candidateId } : {}),
+      importMode: "true",
+      ...(importTitle !== undefined ? { importTitle } : {}),
+    };
   }
 
   function handleSaveOrNext() {
     if (!saveToStore()) return;
     if (importMode) {
-      push("game-cover-art", {
-        gameId,
-        importMode: "true",
-        ...(importTitle !== undefined ? { importTitle } : {}),
-      });
+      push("game-cover-art", importNavParams());
     } else {
       pop();
     }
@@ -469,16 +498,12 @@ export function GameDetailsEditScreen({
 
   function handleNext() {
     if (!saveToStore()) return;
-    push("game-cover-art", {
-      gameId,
-      importMode: "true",
-      ...(importTitle !== undefined ? { importTitle } : {}),
-    });
+    push("game-cover-art", importNavParams());
   }
 
   const screenTitle = deriveScreenTitle(
     importMode,
-    game?.title ?? "Game",
+    (game?.title ?? draftTitle) || "Game",
     importTitle,
   );
 
@@ -492,11 +517,12 @@ export function GameDetailsEditScreen({
     bottomMessage ||
     (fetchSource ? `Details from ${fetchSource}` : "");
 
-  if (!game) {
+  if (!game && !(importMode && candidate)) {
+    const errorTitle = deriveScreenTitle(importMode, "Game", importTitle);
     return (
       <div className="screen" ref={containerRef} tabIndex={-1}>
         <div className="screen__topbar">
-          <span className="screen__topbar-title">Game Details</span>
+          <span className="screen__topbar-title">{errorTitle}</span>
         </div>
         <div className="screen__content screen__content--empty">
           Game not found.
@@ -509,11 +535,6 @@ export function GameDetailsEditScreen({
   function ctaNavClass(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
     return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
-  }
-
-  function ctaActionClass(cta: TopBarCta): string {
-    const focused = focusRegion === "topbar" && focusedCta === cta;
-    return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
   }
 
   function fieldActive(field: FormField): boolean {
@@ -544,7 +565,7 @@ export function GameDetailsEditScreen({
           <div className="screen__topbar-ctas">
             <button
               ref={nextButtonRef}
-              className={ctaActionClass("next")}
+              className={ctaNavClass("next")}
               type="button"
               onClick={handleNext}
               onFocus={() => {

@@ -30,7 +30,8 @@ type FormActionCta = "fetch" | "cancel";
 const FORM_ACTION_CTAS: FormActionCta[] = ["fetch", "cancel"];
 
 interface GetFromCatalogueScreenProps {
-  gameId: string;
+  gameId?: string;
+  candidateId?: string;
   flow: CatalogueFlow;
   importMode: boolean;
   importTitle?: string;
@@ -38,6 +39,7 @@ interface GetFromCatalogueScreenProps {
 
 export function GetFromCatalogueScreen({
   gameId,
+  candidateId,
   flow,
   importMode,
   importTitle,
@@ -45,8 +47,11 @@ export function GetFromCatalogueScreen({
   const { pop } = useRouter();
   const { store, setStore } = useStore();
 
-  const game = store.gameDetails.games.find((g) => g.id === gameId);
+  const game = gameId
+    ? store.gameDetails.games.find((g) => g.id === gameId)
+    : undefined;
   const sources = game?.sources ?? [];
+  const effectiveId = gameId ?? candidateId ?? "";
 
   const [selectedCatalogue, setSelectedCatalogue] = useState(
     SUPPORTED_CATALOGUES[0] ?? "",
@@ -209,7 +214,7 @@ export function GetFromCatalogueScreen({
     setBottomMessage(`Fetching from ${selectedCatalogue}…`);
 
     if (flow === "details") {
-      simulateFetch(gameId, selectedCatalogue, trimmedId)
+      simulateFetch(effectiveId, selectedCatalogue, trimmedId)
         .then((fetched) => {
           setStore((prev) => ({
             ...prev,
@@ -236,7 +241,7 @@ export function GetFromCatalogueScreen({
           id: crypto.randomUUID(),
           url: `https://placehold.co/270x360/1a1a2e/4040ff?text=${encodeURIComponent(selectedCatalogue)}`,
         };
-        const key = mediaStoreKey(gameId, flow);
+        const key = mediaStoreKey(effectiveId, flow);
         setStore((prev) => ({
           ...prev,
           gameMediaEdit: {
@@ -255,6 +260,7 @@ export function GetFromCatalogueScreen({
   }
 
   function saveEntryId(id: string) {
+    if (!game) return;
     setStore((prev) => ({
       ...prev,
       gameDetails: {
