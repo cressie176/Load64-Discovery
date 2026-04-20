@@ -165,7 +165,7 @@ export function Load64CatalogueUpdateScreen() {
           {hasCatalogueUrl && !isUpdating && (
             <button
               ref={updateButtonRef}
-              className={ctaClass("update", "action")}
+              className={ctaClass("update", "nav")}
               onClick={handleUpdate}
               type="button"
             >
