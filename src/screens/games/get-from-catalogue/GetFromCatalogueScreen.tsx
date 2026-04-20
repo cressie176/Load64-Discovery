@@ -83,6 +83,10 @@ export function GetFromCatalogueScreen({
   function handleMainKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
+      // Blur the ID input if it has focus — it is skipped by Tab
+      if (focusRegion === "form" && activeField === "id") {
+        idInputRef.current?.blur();
+      }
       toggleFocusRegion(event.shiftKey);
       return;
     }
@@ -285,6 +289,8 @@ export function GetFromCatalogueScreen({
 
   function toggleFocusRegion(reverse = false) {
     if (focusRegion === "form") {
+      // Tab forward: go to first form-action (Fetch)
+      // Shift+Tab backward: go to last form-action (Cancel)
       if (!reverse) {
         focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
       } else {
@@ -298,8 +304,10 @@ export function GetFromCatalogueScreen({
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex] as FormActionCta);
       } else {
+        // Wrap back to the catalogue dropdown — ID is skipped by Tab
         setFocusRegion("form");
-        focusFormField("catalogue");
+        setActiveField("catalogue");
+        catalogueSelectRef.current?.focus();
       }
     }
   }
