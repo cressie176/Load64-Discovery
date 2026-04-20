@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
+import type { ActionField, FocusRegion } from "./focus.ts";
+import { nextFocusState } from "./focus.ts";
 import type { MembershipGame } from "./types";
 import "./index.css";
-
-type FocusRegion = "list" | "actions";
-type ActionField = "save" | "cancel";
 
 const ACTION_FIELDS: ActionField[] = ["save", "cancel"];
 
@@ -204,19 +203,15 @@ export function CompilationMembershipScreen({
   }
 
   function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "list") {
-      if (reverse) {
-        setFocusRegion("actions");
-        setActiveAction("cancel");
-        cancelButtonRef.current?.focus();
-      } else {
-        setFocusRegion("actions");
-        setActiveAction("save");
-        saveButtonRef.current?.focus();
-      }
+    const next = nextFocusState(
+      { region: focusRegion, action: activeAction },
+      reverse,
+    );
+    setFocusRegion(next.region);
+    setActiveAction(next.action);
+    if (next.region === "actions") {
+      focusActionButton(next.action);
     } else {
-      // actions
-      setFocusRegion("list");
       containerRef.current?.focus();
     }
   }
