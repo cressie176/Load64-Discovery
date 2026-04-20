@@ -7,14 +7,13 @@ type FocusRegion = "form" | "topbar";
 type FormField = "path" | "browse" | "discover";
 
 const FORM_FIELDS: FormField[] = ["path", "browse", "discover"];
+const SCAN_TOTAL = 10000;
+const DISCOVERY_DURATION_MS = 1500;
+const SCAN_INTERVAL_MS = 50;
 
 function validatePath(path: string): string | null {
   if (!path.trim()) return "Path is required.";
   return null;
-}
-
-function simulateDiscovery(): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, 1500));
 }
 
 export function ImportGamesScreen() {
@@ -24,6 +23,10 @@ export function ImportGamesScreen() {
   const [focusRegion, setFocusRegion] = useState<FocusRegion>("form");
   const [activeField, setActiveField] = useState<FormField>("path");
   const [discovering, setDiscovering] = useState(false);
+  const [scanProgress, setScanProgress] = useState<{
+    count: number;
+    total: number;
+  } | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -147,13 +150,31 @@ export function ImportGamesScreen() {
     }
     setErrorMessage("");
     setDiscovering(true);
-    simulateDiscovery().then(() => {
+    setScanProgress({ count: 0, total: SCAN_TOTAL });
+
+    const steps = Math.floor(DISCOVERY_DURATION_MS / SCAN_INTERVAL_MS);
+    const increment = Math.ceil(SCAN_TOTAL / steps);
+    let count = 0;
+
+    const interval = setInterval(() => {
+      count = Math.min(count + increment, SCAN_TOTAL);
+      setScanProgress({ count, total: SCAN_TOTAL });
+      if (count >= SCAN_TOTAL) {
+        clearInterval(interval);
+      }
+    }, SCAN_INTERVAL_MS);
+
+    setTimeout(() => {
+      clearInterval(interval);
       setDiscovering(false);
+      setScanProgress(null);
       push("import-discovery", { importPath: path.trim() });
-    });
+    }, DISCOVERY_DURATION_MS);
   }
 
-  const bottomBarMessage = discovering ? "Discovering…" : errorMessage;
+  const bottomBarMessage = scanProgress
+    ? `Scanning ROMs… ${scanProgress.count.toLocaleString()} of ${scanProgress.total.toLocaleString()}`
+    : errorMessage;
 
   return (
     <div className="screen" ref={containerRef} tabIndex={-1}>
