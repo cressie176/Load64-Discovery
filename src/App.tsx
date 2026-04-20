@@ -241,7 +241,10 @@ function AppScreens() {
   if (currentScreen === "game-cover-art") {
     return (
       <CoverArtScreen
-        gameId={currentParams.gameId ?? "game-bubble"}
+        gameId={
+          currentParams.gameId ??
+          (currentParams.importMode === "true" ? "game-outrun" : "game-bubble")
+        }
         importMode={currentParams.importMode === "true"}
         importTitle={currentParams.importTitle}
         returnFocus={currentParams.returnFocus}

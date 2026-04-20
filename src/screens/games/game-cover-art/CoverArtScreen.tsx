@@ -9,7 +9,7 @@ const COLS = 3;
 const DELETE_OPTIONS = ["Yes", "No"] as const;
 const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
 
-type FocusRegion = "coverart" | "candidates" | "actions";
+type FocusRegion = "coverart" | "candidates" | "actions" | "topbar";
 type Overlay = "left-context-menu" | "left-confirm" | "get-media";
 
 export function deriveScreenTitle(
@@ -89,8 +89,13 @@ export function CoverArtScreen({
     undefined,
   );
   const [coverArtDeleted, setCoverArtDeleted] = useState(false);
+  const hasCoverArtInitially = game?.coverUrl !== undefined;
   const [focusRegion, setFocusRegion] = useState<FocusRegion>(
-    returnFocus === "get-media" ? "actions" : "coverart",
+    returnFocus === "get-media"
+      ? "actions"
+      : hasCoverArtInitially
+        ? "coverart"
+        : "actions",
   );
   const [focusedCandidateIndex, setFocusedCandidateIndex] = useState(0);
   const [focusedActionIndex, setFocusedActionIndex] = useState(
@@ -99,6 +104,8 @@ export function CoverArtScreen({
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
 
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const candidateCount = localCandidates.length;
@@ -147,6 +154,11 @@ export function CoverArtScreen({
       handleCandidatesKey(event);
     } else if (focusRegion === "actions") {
       handleActionsKey(event);
+    } else if (focusRegion === "topbar") {
+      if (event.key === "Enter") {
+        if (focusedTopBarCta === "next") handleSave();
+        else handleCancel();
+      }
     }
   }
 
@@ -190,12 +202,13 @@ export function CoverArtScreen({
     }
   }
 
+  const ACTION_COUNT = importMode ? 1 : 3;
+
   function handleActionsKey(event: KeyboardEvent) {
-    const actionCount = 3;
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
-      setFocusedActionIndex((prev) => Math.min(actionCount - 1, prev + 1));
+      setFocusedActionIndex((prev) => Math.min(ACTION_COUNT - 1, prev + 1));
     } else if (event.key === "Enter") {
       activateAction(focusedActionIndex);
     }
@@ -346,21 +359,87 @@ export function CoverArtScreen({
     pop();
   }
 
+  type TopBarCta = "next" | "back";
+  const TOP_BAR_CTAS: TopBarCta[] = importMode ? ["next", "back"] : [];
+  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
+
+  function focusTopBarCta(cta: TopBarCta) {
+    if (cta === "next") nextButtonRef.current?.focus();
+    else backButtonRef.current?.focus();
+  }
+
   function toggleFocusRegion(reverse = false) {
-    const ACTION_COUNT = 3;
+    const hasCoverArt =
+      !coverArtDeleted &&
+      (selectedCoverUrl !== undefined || game?.coverUrl !== undefined);
+    const firstRegion: FocusRegion = hasCoverArt
+      ? "coverart"
+      : candidateCount > 0
+        ? "candidates"
+        : "actions";
     if (focusRegion === "coverart") {
-      setFocusRegion("actions");
-      setFocusedActionIndex(!reverse ? 0 : ACTION_COUNT - 1);
+      if (!reverse) {
+        if (candidateCount > 0) {
+          setFocusRegion("candidates");
+          setFocusedCandidateIndex(0);
+        } else {
+          setFocusRegion("actions");
+          setFocusedActionIndex(0);
+        }
+      } else if (TOP_BAR_CTAS.length > 0) {
+        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1];
+        setFocusRegion("topbar");
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else {
+        setFocusRegion("actions");
+        setFocusedActionIndex(ACTION_COUNT - 1);
+      }
     } else if (focusRegion === "candidates") {
-      setFocusRegion("actions");
-      setFocusedActionIndex(!reverse ? 0 : ACTION_COUNT - 1);
-    } else {
-      // actions — step through individual buttons
+      if (!reverse) {
+        setFocusRegion("actions");
+        setFocusedActionIndex(0);
+      } else if (hasCoverArt) {
+        setFocusRegion("coverart");
+      } else if (TOP_BAR_CTAS.length > 0) {
+        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1];
+        setFocusRegion("topbar");
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else {
+        setFocusRegion("actions");
+        setFocusedActionIndex(ACTION_COUNT - 1);
+      }
+    } else if (focusRegion === "actions") {
       const next = focusedActionIndex + (reverse ? -1 : 1);
       if (next >= 0 && next < ACTION_COUNT) {
         setFocusedActionIndex(next);
+      } else if (!reverse && TOP_BAR_CTAS.length > 0) {
+        const cta = TOP_BAR_CTAS[0];
+        setFocusRegion("topbar");
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else if (!reverse) {
+        setFocusRegion(firstRegion);
+        containerRef.current?.focus();
       } else {
-        setFocusRegion("coverart");
+        setFocusRegion(firstRegion);
+        containerRef.current?.focus();
+      }
+    } else {
+      // topbar — step through CTAs
+      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+        const cta = TOP_BAR_CTAS[nextIndex];
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else if (!reverse) {
+        setFocusRegion(firstRegion);
+        containerRef.current?.focus();
+      } else {
+        setFocusRegion("actions");
+        setFocusedActionIndex(ACTION_COUNT - 1);
       }
     }
   }
@@ -377,7 +456,8 @@ export function CoverArtScreen({
     game?.coverUrl,
   );
 
-  const saveDisabled = selectedCoverUrl === undefined && !coverArtDeleted;
+  const saveDisabled =
+    !importMode && selectedCoverUrl === undefined && !coverArtDeleted;
 
   if (!game) {
     return (
@@ -397,6 +477,36 @@ export function CoverArtScreen({
     <div role="application" className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
+        <div className="screen__topbar-ctas">
+          {importMode && (
+            <button
+              ref={nextButtonRef}
+              type="button"
+              className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedTopBarCta === "next" ? " topbar-cta--focused" : ""}`}
+              onClick={handleSave}
+              onFocus={() => {
+                setFocusRegion("topbar");
+                setFocusedTopBarCta("next");
+              }}
+            >
+              Next
+            </button>
+          )}
+          {importMode && (
+            <button
+              ref={backButtonRef}
+              type="button"
+              className={`topbar-cta topbar-cta--nav${focusRegion === "topbar" && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
+              onClick={handleCancel}
+              onFocus={() => {
+                setFocusRegion("topbar");
+                setFocusedTopBarCta("back");
+              }}
+            >
+              Back
+            </button>
+          )}
+        </div>
       </div>
       <div className="screen__content">
         <div className="cover-art__layout">
@@ -465,21 +575,25 @@ export function CoverArtScreen({
               >
                 Get Media
               </button>
-              <button
-                type="button"
-                className={`cover-art__action${saveDisabled ? " cover-art__action--disabled" : ""}${focusRegion === "actions" && focusedActionIndex === 1 ? " cover-art__action--active" : ""}`}
-                disabled={saveDisabled}
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 2 ? " cover-art__action--active" : ""}`}
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
+              {!importMode && (
+                <>
+                  <button
+                    type="button"
+                    className={`cover-art__action${saveDisabled ? " cover-art__action--disabled" : ""}${focusRegion === "actions" && focusedActionIndex === 1 ? " cover-art__action--active" : ""}`}
+                    disabled={saveDisabled}
+                    onClick={handleSave}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    className={`cover-art__action${focusRegion === "actions" && focusedActionIndex === 2 ? " cover-art__action--active" : ""}`}
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
