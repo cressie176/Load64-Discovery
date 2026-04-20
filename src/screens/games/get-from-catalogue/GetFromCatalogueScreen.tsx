@@ -83,7 +83,6 @@ export function GetFromCatalogueScreen({
   function handleMainKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      // Blur the ID input if it has focus — it is skipped by Tab
       if (focusRegion === "form" && activeField === "id") {
         idInputRef.current?.blur();
       }
@@ -287,13 +286,20 @@ export function GetFromCatalogueScreen({
     }));
   }
 
+  const FORM_FIELDS: FormField[] = ["catalogue", "id"];
+
   function toggleFocusRegion(reverse = false) {
     if (focusRegion === "form") {
-      // Tab forward: go to first form-action (Fetch)
-      // Shift+Tab backward: go to last form-action (Cancel)
-      if (!reverse) {
+      const currentIndex = FORM_FIELDS.indexOf(activeField);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < FORM_FIELDS.length) {
+        // Still more form fields to step through
+        focusFormField(FORM_FIELDS[nextIndex] as FormField);
+      } else if (!reverse) {
+        // Tab past last form field → first form-action (Fetch)
         focusFormActionCta(FORM_ACTION_CTAS[0] as FormActionCta);
       } else {
+        // Shift+Tab before first form field → last form-action (Cancel)
         focusFormActionCta(
           FORM_ACTION_CTAS[FORM_ACTION_CTAS.length - 1] as FormActionCta,
         );
@@ -303,11 +309,12 @@ export function GetFromCatalogueScreen({
       const nextIndex = currentIndex + (reverse ? -1 : 1);
       if (nextIndex >= 0 && nextIndex < FORM_ACTION_CTAS.length) {
         focusFormActionCta(FORM_ACTION_CTAS[nextIndex] as FormActionCta);
+      } else if (!reverse) {
+        // Tab past last form-action → back to first form field (Catalogue)
+        focusFormField(FORM_FIELDS[0] as FormField);
       } else {
-        // Wrap back to the catalogue dropdown — ID is skipped by Tab
-        setFocusRegion("form");
-        setActiveField("catalogue");
-        catalogueSelectRef.current?.focus();
+        // Shift+Tab before first form-action → last form field (ID)
+        focusFormField(FORM_FIELDS[FORM_FIELDS.length - 1] as FormField);
       }
     }
   }
