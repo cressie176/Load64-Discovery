@@ -17,18 +17,11 @@ type FormField =
 export function deriveScreenTitle(
   importMode: boolean,
   gameTitle: string,
-  fetchSource: string | null,
   importTitle?: string,
 ): string {
   const label = importTitle ?? gameTitle;
   if (importMode) {
-    if (fetchSource) {
-      return `Import Games > ${label} > Details > ${fetchSource}`;
-    }
     return `Import Games > ${label} > Details`;
-  }
-  if (fetchSource) {
-    return `${label} > Details > ${fetchSource}`;
   }
   return `${label} > Details`;
 }

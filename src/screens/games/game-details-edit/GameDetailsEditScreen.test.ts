@@ -5,37 +5,20 @@ import { buildFormFields, deriveScreenTitle } from "./utils.ts";
 describe("GameDetailsEditScreen", () => {
   describe("deriveScreenTitle", () => {
     it("returns simple edit breadcrumb", () => {
-      eq(
-        deriveScreenTitle(false, "Bubble Bobble", null),
-        "Bubble Bobble > Details",
-      );
+      eq(deriveScreenTitle(false, "Bubble Bobble"), "Bubble Bobble > Details");
     });
 
-    it("returns import breadcrumb before fetch", () => {
+    it("returns import breadcrumb", () => {
       eq(
-        deriveScreenTitle(true, "Bubble Bobble", null),
+        deriveScreenTitle(true, "Bubble Bobble"),
         "Import Games > Bubble Bobble > Details",
       );
     });
 
     it("uses importTitle when provided", () => {
       eq(
-        deriveScreenTitle(true, "Bubble Bobble", null, "BB disc1"),
+        deriveScreenTitle(true, "Bubble Bobble", "BB disc1"),
         "Import Games > BB disc1 > Details",
-      );
-    });
-
-    it("appends fetch source in import mode after fetch", () => {
-      eq(
-        deriveScreenTitle(true, "Bubble Bobble", "GameBase64: 243"),
-        "Import Games > Bubble Bobble > Details > GameBase64: 243",
-      );
-    });
-
-    it("appends fetch source in simple mode after fetch", () => {
-      eq(
-        deriveScreenTitle(false, "Elite", "GameBase64: 881"),
-        "Elite > Details > GameBase64: 881",
       );
     });
   });

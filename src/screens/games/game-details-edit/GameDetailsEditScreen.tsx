@@ -144,27 +144,23 @@ export function GameDetailsEditScreen({
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
-  const formActionFields: FormField[] = ["fetch", "save", "cancel"];
-
   function handleMainKey(event: KeyboardEvent) {
     if (event.key === "Tab") {
       event.preventDefault();
-      const isFormAction =
-        focusRegion === "form" && formActionFields.includes(activeField);
-      if (isFormAction) {
-        advanceFromFormAction(activeField, event.shiftKey);
+      if (focusRegion === "topbar") {
+        advanceTopBarCta(event.shiftKey);
         return;
       }
+      // Blur text inputs before moving focus away from them
       const isTextActive =
-        focusRegion === "form" &&
-        (activeField === "title" ||
-          activeField === "publisher" ||
-          activeField === "year" ||
-          activeField === "notes");
+        activeField === "title" ||
+        activeField === "publisher" ||
+        activeField === "year" ||
+        activeField === "notes";
       if (isTextActive) {
         getInputRef(activeField)?.blur();
       }
-      toggleFocusRegion(event.shiftKey);
+      advanceFormField(event.shiftKey);
       return;
     }
     if (event.key === "Escape") {
@@ -329,68 +325,57 @@ export function GameDetailsEditScreen({
     }
   }
 
-  function toggleFocusRegion(reverse = false) {
-    const formActionCtas: FormField[] = importMode
-      ? ["fetch"]
-      : ["fetch", "save", "cancel"];
-
-    if (focusRegion === "form") {
-      if (!reverse) {
-        // Tab forward: go to first form-action CTA
-        setFocusRegion("form");
-        focusField(formActionCtas[0] as FormField);
-      } else if (topBarCtas.length > 0) {
-        // Shift+Tab backward: go to last top-bar CTA (import mode only)
-        const cta = topBarCtas[topBarCtas.length - 1];
-        setFocusRegion("topbar");
-        setFocusedCta(cta);
-        focusCtaButton(cta);
-      } else {
-        // No topbar CTAs (non-import mode): wrap to last form-action CTA
-        setFocusRegion("form");
-        focusField(formActionCtas[formActionCtas.length - 1] as FormField);
-      }
-    } else if (focusRegion === "topbar") {
-      const currentIndex = topBarCtas.indexOf(focusedCta);
-      const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < topBarCtas.length) {
-        const nextCta = topBarCtas[nextIndex] as TopBarCta;
-        setFocusedCta(nextCta);
-        focusCtaButton(nextCta);
-      } else if (!reverse) {
-        // Tab past last topbar CTA → back to form content
-        setFocusRegion("form");
-        focusField("title");
-      } else {
-        // Shift+Tab before first topbar CTA → last form-action CTA
-        setFocusRegion("form");
-        focusField(formActionCtas[formActionCtas.length - 1] as FormField);
-      }
-    }
-  }
-
-  function advanceFromFormAction(currentCta: FormField, reverse: boolean) {
-    const formActionCtas: FormField[] = importMode
-      ? ["fetch"]
-      : ["fetch", "save", "cancel"];
-    const currentIndex = formActionCtas.indexOf(currentCta);
+  // Tab forward/backward through form fields (including transfer buttons and action buttons).
+  // In import mode, Tab past the last form field advances into the topbar CTAs before wrapping.
+  function advanceFormField(reverse: boolean) {
+    const fields = buildFormFieldsForRender();
+    const currentIndex = fields.indexOf(activeField);
     const nextIndex = currentIndex + (reverse ? -1 : 1);
-    if (nextIndex >= 0 && nextIndex < formActionCtas.length) {
-      focusField(formActionCtas[nextIndex] as FormField);
-    } else if (!reverse && topBarCtas.length > 0) {
-      // Tab past last form-action → first topbar CTA (import mode only)
+
+    if (nextIndex >= 0 && nextIndex < fields.length) {
+      focusField(fields[nextIndex] as FormField);
+      return;
+    }
+
+    if (!reverse && topBarCtas.length > 0) {
+      // Tab past last form field → first topbar CTA (import mode)
       const cta = topBarCtas[0];
       setFocusRegion("topbar");
       setFocusedCta(cta);
       focusCtaButton(cta);
-    } else if (!reverse) {
-      // No topbar CTAs (non-import mode): wrap back to form content
-      setFocusRegion("form");
-      focusField("title");
+    } else if (reverse && topBarCtas.length > 0) {
+      // Shift+Tab before first form field → last topbar CTA (import mode)
+      const cta = topBarCtas[topBarCtas.length - 1];
+      setFocusRegion("topbar");
+      setFocusedCta(cta);
+      focusCtaButton(cta);
     } else {
-      // Shift+Tab before first form-action → back to form content
-      setFocusRegion("form");
-      focusField("title");
+      // Non-import mode: wrap around within the form field list
+      const wrapIndex =
+        (currentIndex + (reverse ? -1 : 1) + fields.length) % fields.length;
+      focusField(fields[wrapIndex] as FormField);
+    }
+  }
+
+  // Tab forward/backward through topbar CTAs (import mode only).
+  function advanceTopBarCta(reverse: boolean) {
+    const currentIndex = topBarCtas.indexOf(focusedCta);
+    const nextIndex = currentIndex + (reverse ? -1 : 1);
+
+    if (nextIndex >= 0 && nextIndex < topBarCtas.length) {
+      const nextCta = topBarCtas[nextIndex] as TopBarCta;
+      setFocusedCta(nextCta);
+      focusCtaButton(nextCta);
+      return;
+    }
+
+    const fields = buildFormFieldsForRender();
+    if (!reverse) {
+      // Tab past last topbar CTA → back to first form field
+      focusField(fields[0] as FormField);
+    } else {
+      // Shift+Tab before first topbar CTA → last form field
+      focusField(fields[fields.length - 1] as FormField);
     }
   }
 
@@ -494,7 +479,6 @@ export function GameDetailsEditScreen({
   const screenTitle = deriveScreenTitle(
     importMode,
     game?.title ?? "Game",
-    fetchSource,
     importTitle,
   );
 
@@ -503,7 +487,10 @@ export function GameDetailsEditScreen({
       ? "No catalogues linked. Add a catalogue link to enable fetch."
       : "";
 
-  const effectiveBottomMessage = fetchHint || bottomMessage;
+  const effectiveBottomMessage =
+    fetchHint ||
+    bottomMessage ||
+    (fetchSource ? `Details from ${fetchSource}` : "");
 
   if (!game) {
     return (
