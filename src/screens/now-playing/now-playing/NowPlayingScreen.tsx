@@ -36,13 +36,9 @@ function getActionLabel(action: NowPlayingAction): string {
 
 function buildBottomBarMessage(
   action: NowPlayingAction,
-  port1Name: string,
-  port2Name: string,
   diskLabel: string | null,
 ): string {
   switch (action) {
-    case "swap-joystick":
-      return `Port 1: ${port1Name}  ◆  Port 2: ${port2Name}`;
     case "swap-disks":
       return diskLabel !== null ? `Current: ${diskLabel}` : "";
     default:
@@ -56,7 +52,7 @@ interface NowPlayingScreenProps {
 
 export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
   const { pop, push, pushFrom, currentParams } = useRouter();
-  const { store, setStore } = useStore();
+  const { store } = useStore();
 
   const nowPlaying = store.nowPlaying;
   const game = store.gameDetails.games.find((g) => g.id === gameId);
@@ -161,27 +157,11 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
           ownerId: nowPlaying.joystickPorts.port1ControllerId,
         });
         break;
-      case "swap-joystick": {
-        const {
-          port1ControllerId,
-          port1DeviceName,
-          port2ControllerId,
-          port2DeviceName,
-        } = nowPlaying.joystickPorts;
-        setStore((prev) => ({
-          ...prev,
-          nowPlaying: {
-            ...prev.nowPlaying,
-            joystickPorts: {
-              port1ControllerId: port2ControllerId,
-              port1DeviceName: port2DeviceName,
-              port2ControllerId: port1ControllerId,
-              port2DeviceName: port1DeviceName,
-            },
-          },
-        }));
+      case "swap-joystick":
+        pushFrom({ focusedAction }, "now-playing-swap-joystick-ports", {
+          gameId,
+        });
         break;
-      }
       case "swap-disks":
         pushFrom({ focusedAction }, "now-playing-swap-disks", { gameId });
         break;
@@ -197,17 +177,10 @@ export function NowPlayingScreen({ gameId }: NowPlayingScreenProps) {
     }
   }
 
-  const { port1DeviceName, port2DeviceName } = nowPlaying.joystickPorts;
   const diskLabel = nowPlaying.activeDisk?.label ?? null;
 
   const bottomBarText =
-    outcomeMessage ||
-    buildBottomBarMessage(
-      focusedAction,
-      port1DeviceName,
-      port2DeviceName,
-      diskLabel,
-    );
+    outcomeMessage || buildBottomBarMessage(focusedAction, diskLabel);
 
   function renderActionRow(action: NowPlayingAction) {
     const selected = focusedAction === action;

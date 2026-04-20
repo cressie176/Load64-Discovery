@@ -40,6 +40,7 @@ import { KeyMappingEditScreen } from "./screens/key-mappings/key-mapping-edit/Ke
 import { KeyMappingListScreen } from "./screens/key-mappings/key-mapping-list/KeyMappingListScreen";
 import { NowPlayingScreen } from "./screens/now-playing/now-playing/NowPlayingScreen";
 import { NowPlayingSwapDisksScreen } from "./screens/now-playing/now-playing-swap-disks/NowPlayingSwapDisksScreen";
+import { NowPlayingSwapJoystickPortsScreen } from "./screens/now-playing/now-playing-swap-joystick-ports/NowPlayingSwapJoystickPortsScreen";
 import { NowPlayingTakeScreenshotScreen } from "./screens/now-playing/now-playing-take-screenshot/NowPlayingTakeScreenshotScreen";
 import { NowPlayingTakeSnapshotScreen } from "./screens/now-playing/now-playing-take-snapshot/NowPlayingTakeSnapshotScreen";
 import { Placeholder } from "./screens/Placeholder";
@@ -287,6 +288,13 @@ function AppScreens() {
   }
   if (currentScreen === "now-playing") {
     return <NowPlayingScreen gameId={currentParams.gameId ?? "game-bubble"} />;
+  }
+  if (currentScreen === "now-playing-swap-joystick-ports") {
+    return (
+      <NowPlayingSwapJoystickPortsScreen
+        gameId={currentParams.gameId ?? "game-bubble"}
+      />
+    );
   }
   if (currentScreen === "now-playing-swap-disks") {
     return (

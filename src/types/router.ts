@@ -47,6 +47,7 @@ export type ScreenName =
   | "load64-catalogue-update"
   | "now-playing"
   | "now-playing-swap-disks"
+  | "now-playing-swap-joystick-ports"
   | "now-playing-take-screenshot"
   | "now-playing-take-snapshot"
   | "game-get-from-catalogue"
