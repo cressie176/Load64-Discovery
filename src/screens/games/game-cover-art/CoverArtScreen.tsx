@@ -347,51 +347,20 @@ export function CoverArtScreen({
   }
 
   function toggleFocusRegion(reverse = false) {
-    const hasCoverArt = !!previewUrl;
-    const hasCandidates = candidateCount > 0;
+    const ACTION_COUNT = 3;
     if (focusRegion === "coverart") {
-      if (reverse) {
-        setFocusRegion("actions");
-        setFocusedActionIndex(0);
-      } else if (hasCandidates) {
-        setFocusRegion("candidates");
-        setFocusedCandidateIndex(0);
-      } else {
-        setFocusRegion("actions");
-        setFocusedActionIndex(0);
-      }
+      setFocusRegion("actions");
+      setFocusedActionIndex(!reverse ? 0 : ACTION_COUNT - 1);
     } else if (focusRegion === "candidates") {
-      if (reverse) {
-        if (hasCoverArt) {
-          setFocusRegion("coverart");
-        } else {
-          setFocusRegion("actions");
-          setFocusedActionIndex(0);
-        }
-      } else {
-        setFocusRegion("actions");
-        setFocusedActionIndex(0);
-      }
+      setFocusRegion("actions");
+      setFocusedActionIndex(!reverse ? 0 : ACTION_COUNT - 1);
     } else {
-      // actions
-      if (reverse) {
-        if (hasCandidates) {
-          setFocusRegion("candidates");
-          setFocusedCandidateIndex(0);
-        } else if (hasCoverArt) {
-          setFocusRegion("coverart");
-        } else {
-          setFocusRegion("actions");
-          setFocusedActionIndex(0);
-        }
-      } else if (hasCoverArt) {
-        setFocusRegion("coverart");
-      } else if (hasCandidates) {
-        setFocusRegion("candidates");
-        setFocusedCandidateIndex(0);
+      // actions — step through individual buttons
+      const next = focusedActionIndex + (reverse ? -1 : 1);
+      if (next >= 0 && next < ACTION_COUNT) {
+        setFocusedActionIndex(next);
       } else {
-        setFocusRegion("actions");
-        setFocusedActionIndex(0);
+        setFocusRegion("coverart");
       }
     }
   }
