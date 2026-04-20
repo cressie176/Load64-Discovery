@@ -1,54 +1,69 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "../../../router/RouterContext";
 import { useStore } from "../../../store/StoreContext";
-import { deriveUnrecognisedTitle } from "./title";
-import type { ImportSuggestion } from "./types";
+import {
+  buildImportQueue,
+  formatPublisher,
+  formatTitle,
+  formatYear,
+  selectionCount,
+} from "./helpers";
+import type { DiscoveredGame } from "./types";
 import "./index.css";
 
-type FocusRegion = "content" | "topbar";
+type Tab = "new" | "already-imported";
+type FocusRegion = "tabs" | "controls" | "games" | "topbar";
+type Control = "select-all" | "select-none";
 type TopBarCta = "next" | "back";
 
-function topBarCtas(hasGames: boolean): TopBarCta[] {
-  return hasGames ? ["next", "back"] : ["back"];
-}
-
-function formatYear(year: number | null): string {
-  return year !== null ? String(year) : "—";
-}
-
-function formatPublisher(publisher: string | null): string {
-  return publisher ?? "—";
-}
-
-function formatTitle(suggestion: ImportSuggestion): string {
-  if (suggestion.title !== null) return suggestion.title;
-  return deriveUnrecognisedTitle(suggestion.roms);
-}
+const TOP_BAR_CTAS: TopBarCta[] = ["next", "back"];
 
 export function ImportDiscoveryScreen() {
   const { pop, push } = useRouter();
-  const { store } = useStore();
-  const discovery = store.importDiscovery;
+  const { store, setStore } = useStore();
 
-  const hasGames = discovery.games > 0;
-  const ctas = topBarCtas(hasGames);
-
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>(
-    hasGames ? "topbar" : "content",
+  const [games, setGames] = useState<DiscoveredGame[]>(
+    store.importDiscovery.games,
   );
-  const [focusedCta, setFocusedCta] = useState<TopBarCta>(ctas[0]);
+  const [activeTab, setActiveTab] = useState<Tab>("new");
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>("games");
+  const [focusedControl, setFocusedControl] = useState<Control>("select-all");
+  const [focusedCta, setFocusedCta] = useState<TopBarCta>("next");
+  const [focusedGameIndex, setFocusedGameIndex] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const nextButtonRef = useRef<HTMLAnchorElement>(null);
-  const backButtonRef = useRef<HTMLAnchorElement>(null);
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    if (hasGames) {
-      nextButtonRef.current?.focus();
-    } else {
-      containerRef.current?.focus();
-    }
-  }, [hasGames]);
+    containerRef.current?.focus();
+  }, []);
+
+  const hasNew = games.some((g) => !g.alreadyImported);
+  const hasAlreadyImported = games.some((g) => g.alreadyImported);
+  const hasBoth = hasNew && hasAlreadyImported;
+  const hasAny = games.length > 0;
+  const allAlreadyImported = hasAny && !hasNew;
+
+  const visibleTab: Tab = hasBoth
+    ? activeTab
+    : hasAlreadyImported
+      ? "already-imported"
+      : "new";
+  const visibleGames = games.filter((g) =>
+    visibleTab === "new" ? !g.alreadyImported : g.alreadyImported,
+  );
+
+  const newCount = games.filter((g) => !g.alreadyImported).length;
+  const alreadyImportedCount = games.filter((g) => g.alreadyImported).length;
+  const totalSelected = selectionCount(games);
+  const importEnabled = store.importDiscovery.scanComplete && totalSelected > 0;
+
+  const topBarCtas: TopBarCta[] = hasAny ? TOP_BAR_CTAS : ["back"];
+  const clampedGameIndex = Math.min(
+    focusedGameIndex,
+    Math.max(0, visibleGames.length - 1),
+  );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -61,30 +76,97 @@ export function ImportDiscoveryScreen() {
         pop();
         return;
       }
-      if (focusRegion === "topbar" && event.key === "Enter") {
-        event.preventDefault();
-        activateCta(focusedCta);
+      if (focusRegion === "topbar") {
+        handleTopBarKey(event);
+      } else if (focusRegion === "tabs") {
+        handleTabsKey(event);
+      } else if (focusRegion === "controls") {
+        handleControlsKey(event);
+      } else {
+        handleGamesKey(event);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   });
 
+  function handleTopBarKey(event: KeyboardEvent) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      activateCta(focusedCta);
+    }
+  }
+
+  function handleControlsKey(event: KeyboardEvent) {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      setFocusedControl("select-all");
+    } else if (event.key === "ArrowRight") {
+      event.preventDefault();
+      setFocusedControl("select-none");
+    } else if (event.key === "ArrowUp" && hasBoth) {
+      event.preventDefault();
+      setFocusRegion("tabs");
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setFocusRegion("games");
+      setFocusedGameIndex(0);
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      if (focusedControl === "select-all") selectAll();
+      else selectNone();
+    }
+  }
+
+  function handleGamesKey(event: KeyboardEvent) {
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setFocusedGameIndex((i) => Math.min(i + 1, visibleGames.length - 1));
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      if (clampedGameIndex === 0) {
+        setFocusRegion("controls");
+      } else {
+        setFocusedGameIndex((i) => i - 1);
+      }
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      toggleRowSelection(clampedGameIndex);
+    }
+  }
+
+  function handleTabsKey(event: KeyboardEvent) {
+    if (event.key === "ArrowLeft" && hasBoth) {
+      event.preventDefault();
+      setActiveTab("new");
+    } else if (event.key === "ArrowRight" && hasBoth) {
+      event.preventDefault();
+      setActiveTab("already-imported");
+    } else if (event.key === "ArrowDown") {
+      event.preventDefault();
+      setFocusRegion("controls");
+    }
+  }
+
   function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "content") {
-      const cta = reverse ? ctas[ctas.length - 1] : ctas[0];
+    if (
+      focusRegion === "tabs" ||
+      focusRegion === "controls" ||
+      focusRegion === "games"
+    ) {
+      const cta = reverse ? topBarCtas[topBarCtas.length - 1] : topBarCtas[0];
       setFocusRegion("topbar");
       setFocusedCta(cta);
       focusCtaButton(cta);
     } else {
-      const currentIndex = ctas.indexOf(focusedCta);
+      const currentIndex = topBarCtas.indexOf(focusedCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
-      if (nextIndex >= 0 && nextIndex < ctas.length) {
-        const next = ctas[nextIndex];
+      if (nextIndex >= 0 && nextIndex < topBarCtas.length) {
+        const next = topBarCtas[nextIndex];
         setFocusedCta(next);
         focusCtaButton(next);
       } else {
-        setFocusRegion("content");
+        setFocusRegion("games");
         containerRef.current?.focus();
       }
     }
@@ -101,7 +183,41 @@ export function ImportDiscoveryScreen() {
   }
 
   function handleNext() {
+    if (!importEnabled) return;
+    const queue = buildImportQueue(games);
+    setStore((prev) => ({
+      ...prev,
+      importCandidate: { queue, currentIndex: 0 },
+    }));
     push("import-candidate");
+  }
+
+  function toggleRowSelection(gameIndex: number) {
+    const game = visibleGames[gameIndex];
+    if (!game) return;
+    setGames((prev) =>
+      prev.map((g) => (g.id === game.id ? { ...g, selected: !g.selected } : g)),
+    );
+  }
+
+  function selectAll() {
+    setGames((prev) =>
+      prev.map((g) => {
+        const inCurrentTab =
+          visibleTab === "new" ? !g.alreadyImported : g.alreadyImported;
+        return inCurrentTab ? { ...g, selected: true } : g;
+      }),
+    );
+  }
+
+  function selectNone() {
+    setGames((prev) =>
+      prev.map((g) => {
+        const inCurrentTab =
+          visibleTab === "new" ? !g.alreadyImported : g.alreadyImported;
+        return inCurrentTab ? { ...g, selected: false } : g;
+      }),
+    );
   }
 
   function ctaClassName(cta: TopBarCta): string {
@@ -109,108 +225,149 @@ export function ImportDiscoveryScreen() {
     return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
   }
 
+  function tabClassName(tab: Tab): string {
+    const active = visibleTab === tab;
+    const focused = focusRegion === "tabs" && visibleTab === tab;
+    return [
+      "import-discovery__tab",
+      active ? "import-discovery__tab--active" : "",
+      focused ? "import-discovery__tab--focused" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  function controlClassName(control: Control): string {
+    const focused = focusRegion === "controls" && focusedControl === control;
+    return `import-discovery__control${focused ? " import-discovery__control--focused" : ""}`;
+  }
+
+  function bottomBarMessage(): string {
+    if (!hasAny) return "Nothing to import.";
+    if (allAlreadyImported) return "Nothing new to import.";
+    return `${totalSelected} of ${games.length} selected`;
+  }
+
   return (
     <div className="screen" ref={containerRef} tabIndex={-1}>
       <div className="screen__topbar">
         <span className="screen__topbar-title">Import Games &gt; Discover</span>
         <div className="screen__topbar-ctas">
-          {hasGames && (
-            <a
+          {hasAny && (
+            <button
               ref={nextButtonRef}
-              href="#"
               className={ctaClassName("next")}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNext();
-              }}
+              disabled={!importEnabled}
+              onClick={handleNext}
+              type="button"
             >
               Next
-            </a>
+            </button>
           )}
-          <a
+          <button
             ref={backButtonRef}
-            href="#"
             className={ctaClassName("back")}
-            onClick={(e) => {
-              e.preventDefault();
-              pop();
-            }}
+            onClick={pop}
+            type="button"
           >
             Back
-          </a>
+          </button>
         </div>
       </div>
       <div className="screen__content">
-        <div className="import-discovery__summary">
-          <div className="import-discovery__stat">
-            <span className="import-discovery__stat-label">Games</span>
-            <span className="import-discovery__stat-value">
-              {discovery.games}
-            </span>
-          </div>
-          <div className="import-discovery__stat">
-            <span className="import-discovery__stat-label">Recognised</span>
-            <span className="import-discovery__stat-value">
-              {discovery.recognised}
-            </span>
-          </div>
-          <div className="import-discovery__stat">
-            <span className="import-discovery__stat-label">Unrecognised</span>
-            <span className="import-discovery__stat-value">
-              {discovery.unrecognised}
-            </span>
-          </div>
-          <div className="import-discovery__stat">
-            <span className="import-discovery__stat-label">Duplicates</span>
-            <span className="import-discovery__stat-value">
-              {discovery.duplicates}
-            </span>
-          </div>
-          <div className="import-discovery__stat">
-            <span className="import-discovery__stat-label">Ignored</span>
-            <span className="import-discovery__stat-value">
-              {discovery.ignored}
-            </span>
-          </div>
-          {hasGames && (
-            <div className="import-discovery__sample">
-              <div className="import-discovery__sample-heading">Sample</div>
-              <ul className="import-discovery__sample-list">
-                <li className="import-discovery__sample-header">
-                  <span className="import-discovery__col-title">Title</span>
-                  <span className="import-discovery__col-publisher">
-                    Publisher
-                  </span>
-                  <span className="import-discovery__col-year">Year</span>
-                  <span className="import-discovery__col-roms">ROMs</span>
-                </li>
-                {discovery.sample.map((suggestion) => (
+        {hasAny && (
+          <div className="import-discovery__checklist">
+            {hasBoth && (
+              <div className="import-discovery__tabs">
+                <button
+                  className={tabClassName("new")}
+                  onClick={() => {
+                    setActiveTab("new");
+                    setFocusRegion("tabs");
+                  }}
+                  type="button"
+                >
+                  New ({newCount})
+                </button>
+                <button
+                  className={tabClassName("already-imported")}
+                  onClick={() => {
+                    setActiveTab("already-imported");
+                    setFocusRegion("tabs");
+                  }}
+                  type="button"
+                >
+                  Already Imported ({alreadyImportedCount})
+                </button>
+              </div>
+            )}
+            <div className="import-discovery__controls">
+              <button
+                className={controlClassName("select-all")}
+                onClick={() => {
+                  setFocusRegion("controls");
+                  setFocusedControl("select-all");
+                  selectAll();
+                }}
+                type="button"
+              >
+                Select All
+              </button>
+              <button
+                className={controlClassName("select-none")}
+                onClick={() => {
+                  setFocusRegion("controls");
+                  setFocusedControl("select-none");
+                  selectNone();
+                }}
+                type="button"
+              >
+                Select None
+              </button>
+            </div>
+            <ul className="list import-discovery__list">
+              <li className="list__header import-discovery__header">
+                <span className="import-discovery__col-check" />
+                <span className="import-discovery__col-title">Title</span>
+                <span className="import-discovery__col-publisher">
+                  Publisher
+                </span>
+                <span className="import-discovery__col-year">Year</span>
+              </li>
+              {visibleGames.map((game, index) => {
+                const isRowFocused =
+                  focusRegion === "games" && index === clampedGameIndex;
+                return (
                   <li
-                    key={suggestion.id}
-                    className="import-discovery__sample-row"
+                    key={game.id}
+                    className={`list__row import-discovery__row${isRowFocused ? " list__row--selected" : ""}`}
+                    onClick={() => {
+                      setFocusRegion("games");
+                      setFocusedGameIndex(index);
+                      toggleRowSelection(index);
+                    }}
+                    onKeyDown={() => {}}
                   >
+                    <span className="import-discovery__col-check">
+                      {game.selected ? "[x]" : "[ ]"}
+                    </span>
                     <span className="import-discovery__col-title">
-                      {formatTitle(suggestion)}
+                      {formatTitle(game)}
                     </span>
                     <span className="import-discovery__col-publisher">
-                      {formatPublisher(suggestion.publisher)}
+                      {formatPublisher(game.publisher)}
                     </span>
                     <span className="import-discovery__col-year">
-                      {formatYear(suggestion.year)}
-                    </span>
-                    <span className="import-discovery__col-roms">
-                      {suggestion.romCount}
+                      {formatYear(game.year)}
                     </span>
                   </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+                );
+              })}
+            </ul>
+          </div>
+        )}
       </div>
-      <div className="screen__bottombar">
-        {!hasGames && "Nothing to import."}
-      </div>
+      <div className="screen__bottombar">{bottomBarMessage()}</div>
     </div>
   );
 }

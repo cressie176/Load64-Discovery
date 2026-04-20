@@ -2,60 +2,89 @@
    Import Discovery Screen
    ============================================================ */
 
-.import-discovery__summary {
-  border: 1px solid var(--colour-border);
-  padding: 16px;
-}
-
-.import-discovery__stat {
+.import-discovery__checklist {
   display: flex;
-  gap: 16px;
-  padding: 2px 0;
+  flex-direction: column;
+  height: 100%;
 }
 
-.import-discovery__stat-label {
+.import-discovery__tabs {
+  border-bottom: 1px solid var(--colour-border);
+  display: flex;
+  gap: 0;
+}
+
+.import-discovery__tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
   color: var(--colour-text-muted);
-  min-width: 120px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  margin-bottom: -1px;
+  padding: 6px 16px;
 }
 
-.import-discovery__stat-value {
+.import-discovery__tab--active {
+  border-bottom-color: var(--colour-accent);
   color: var(--colour-text-bright);
 }
 
-.import-discovery__sample {
-  margin-top: 16px;
+.import-discovery__tab--focused {
+  color: var(--colour-text-bright);
+  outline: 1px solid var(--colour-accent);
+  outline-offset: -1px;
 }
 
-.import-discovery__sample-heading {
-  color: var(--colour-text-muted);
-  font-size: 12px;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-}
-
-.import-discovery__sample-list {
-  list-style: none;
-}
-
-.import-discovery__sample-header {
+.import-discovery__controls {
   border-bottom: 1px solid var(--colour-border);
-  color: var(--colour-text-muted);
   display: flex;
-  font-size: 11px;
-  gap: 0;
-  letter-spacing: 0.05em;
-  margin-bottom: 4px;
-  padding: 4px 8px;
-  text-transform: uppercase;
+  gap: 16px;
+  padding: 6px 8px;
 }
 
-.import-discovery__sample-row {
-  color: var(--colour-text);
+.import-discovery__control {
+  background: none;
+  border: none;
+  color: var(--colour-text-muted);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0 8px;
+}
+
+.import-discovery__control--focused,
+.import-discovery__control:hover {
+  border-bottom: 1px solid var(--colour-accent);
+  color: var(--colour-text-bright);
+  padding-bottom: 0;
+}
+
+.import-discovery__list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.import-discovery__header {
+  padding-left: 8px;
+}
+
+.import-discovery__row {
+  cursor: pointer;
   display: flex;
   gap: 0;
   overflow: hidden;
-  padding: 4px 8px;
+  padding-left: 8px;
+}
+
+.import-discovery__row:hover {
+  color: var(--colour-text-bright);
+}
+
+.import-discovery__col-check {
+  color: var(--colour-text-muted);
+  flex: 0 0 36px;
 }
 
 .import-discovery__col-title {
@@ -80,10 +109,4 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.import-discovery__col-roms {
-  flex: 0 0 48px;
-  min-width: 0;
-  text-align: right;
 }
