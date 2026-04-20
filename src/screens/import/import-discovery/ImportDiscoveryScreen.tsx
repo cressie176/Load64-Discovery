@@ -33,7 +33,9 @@ export function ImportDiscoveryScreen() {
   const hasGames = discovery.games > 0;
   const ctas = topBarCtas(hasGames);
 
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("content");
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>(
+    hasGames ? "topbar" : "content",
+  );
   const [focusedCta, setFocusedCta] = useState<TopBarCta>(ctas[0]);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,8 +43,12 @@ export function ImportDiscoveryScreen() {
   const backButtonRef = useRef<HTMLAnchorElement>(null);
 
   useEffect(() => {
-    containerRef.current?.focus();
-  }, []);
+    if (hasGames) {
+      nextButtonRef.current?.focus();
+    } else {
+      containerRef.current?.focus();
+    }
+  }, [hasGames]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -56,6 +62,7 @@ export function ImportDiscoveryScreen() {
         return;
       }
       if (focusRegion === "topbar" && event.key === "Enter") {
+        event.preventDefault();
         activateCta(focusedCta);
       }
     };

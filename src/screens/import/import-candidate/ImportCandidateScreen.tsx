@@ -49,7 +49,7 @@ export function ImportCandidateScreen() {
       ? `Import Games > ${deriveTitle(candidate)}`
       : "Import Games";
 
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("content");
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>("topbar");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("next");
   const [showAbortOverlay, setShowAbortOverlay] = useState(false);
   const [overlayIndex, setOverlayIndex] = useState(0);
@@ -60,7 +60,7 @@ export function ImportCandidateScreen() {
   const abortButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    containerRef.current?.focus();
+    nextButtonRef.current?.focus();
   }, []);
 
   useEffect(() => {
