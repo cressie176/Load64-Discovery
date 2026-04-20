@@ -11,7 +11,7 @@ const DELETE_OPTIONS = ["Yes", "No"] as const;
 const GET_MEDIA_OPTIONS = ["From catalogue", "From URL", "From file"] as const;
 
 type ScreenshotSlot = "loading" | "title" | "gameplay";
-type FocusPanel = "slots" | "candidates" | "actions";
+type FocusPanel = "slots" | "candidates" | "actions" | "topbar";
 type Overlay =
   | "context-menu"
   | "left-context-menu"
@@ -27,9 +27,9 @@ export function deriveScreenTitle(
 ): string {
   if (importMode) {
     const title = importTitle ?? gameTitle;
-    return `Import Games > ${title} > Screenshots`;
+    return `Import Games > ${title} > Media > Screenshots`;
   }
-  return `${gameTitle} > Screenshots`;
+  return `${gameTitle} > Media > Screenshots`;
 }
 
 export function deriveSlotLabel(slot: ScreenshotSlot): string {
@@ -121,11 +121,22 @@ export function ScreenshotsScreen({
   const [overlay, setOverlay] = useState<Overlay | null>(null);
   const [overlayIndex, setOverlayIndex] = useState(0);
 
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const backButtonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const candidateCount = localCandidates.length;
   const getMediaDisabled = candidateCount >= MAX_CANDIDATES;
   const currentSlot = SLOT_ORDER[currentSlotIndex] ?? "loading";
+
+  type TopBarCta = "next" | "back";
+  const TOP_BAR_CTAS: TopBarCta[] = importMode ? ["next", "back"] : [];
+  const [focusedTopBarCta, setFocusedTopBarCta] = useState<TopBarCta>("back");
+
+  const saveDisabled =
+    !importMode &&
+    Object.keys(slotAssignments).length === 0 &&
+    deletedSlots.size === 0;
 
   useEffect(() => {
     const unconsumed = storeCandidates.slice(consumedStoreCountRef.current);
@@ -171,6 +182,11 @@ export function ScreenshotsScreen({
       handleCandidatesKey(event);
     } else if (focusPanel === "actions") {
       handleActionsKey(event);
+    } else if (focusPanel === "topbar") {
+      if (event.key === "Enter") {
+        if (focusedTopBarCta === "next") handleSave();
+        else handleCancel();
+      }
     }
   }
 
@@ -219,11 +235,13 @@ export function ScreenshotsScreen({
     }
   }
 
+  const ACTION_COUNT = importMode ? 1 : 3;
+
   function handleActionsKey(event: KeyboardEvent) {
     if (event.key === "ArrowLeft") {
       setFocusedActionIndex((prev) => Math.max(0, prev - 1));
     } else if (event.key === "ArrowRight") {
-      setFocusedActionIndex((prev) => Math.min(2, prev + 1));
+      setFocusedActionIndex((prev) => Math.min(ACTION_COUNT - 1, prev + 1));
     } else if (event.key === "Enter") {
       activateAction(focusedActionIndex);
     }
@@ -231,8 +249,9 @@ export function ScreenshotsScreen({
 
   function activateAction(index: number) {
     if (index === 0) openGetMediaOverlay();
-    else if (index === 1) handleSave();
-    else handleCancel();
+    else if (index === 1) {
+      if (!saveDisabled) handleSave();
+    } else handleCancel();
   }
 
   function handleOverlayKey(event: KeyboardEvent) {
@@ -422,37 +441,73 @@ export function ScreenshotsScreen({
     pop();
   }
 
+  function focusTopBarCta(cta: TopBarCta) {
+    if (cta === "next") nextButtonRef.current?.focus();
+    else backButtonRef.current?.focus();
+  }
+
   function toggleFocusPanel(reverse = false) {
     const hasCandidates = candidateCount > 0;
     if (focusPanel === "slots") {
-      if (reverse) {
-        setFocusPanel("actions");
-        setFocusedActionIndex(0);
-      } else if (hasCandidates) {
-        setFocusPanel("candidates");
-        containerRef.current?.focus();
+      if (!reverse) {
+        if (hasCandidates) {
+          setFocusPanel("candidates");
+          containerRef.current?.focus();
+        } else {
+          setFocusPanel("actions");
+          setFocusedActionIndex(0);
+        }
+      } else if (TOP_BAR_CTAS.length > 0) {
+        const cta = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1];
+        setFocusPanel("topbar");
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
       } else {
         setFocusPanel("actions");
-        setFocusedActionIndex(0);
+        setFocusedActionIndex(ACTION_COUNT - 1);
       }
     } else if (focusPanel === "candidates") {
-      if (reverse) {
-        setFocusPanel("slots");
-      } else {
+      if (!reverse) {
         setFocusPanel("actions");
         setFocusedActionIndex(0);
+      } else {
+        setFocusPanel("slots");
       }
-    } else {
-      // actions
-      if (reverse) {
+    } else if (focusPanel === "actions") {
+      const next = focusedActionIndex + (reverse ? -1 : 1);
+      if (next >= 0 && next < ACTION_COUNT) {
+        setFocusedActionIndex(next);
+      } else if (!reverse && TOP_BAR_CTAS.length > 0) {
+        const cta = TOP_BAR_CTAS[0];
+        setFocusPanel("topbar");
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else if (!reverse) {
+        setFocusPanel("slots");
+        containerRef.current?.focus();
+      } else {
         if (hasCandidates) {
           setFocusPanel("candidates");
           containerRef.current?.focus();
         } else {
           setFocusPanel("slots");
+          containerRef.current?.focus();
         }
-      } else {
+      }
+    } else {
+      // topbar — step through CTAs
+      const currentIndex = TOP_BAR_CTAS.indexOf(focusedTopBarCta);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < TOP_BAR_CTAS.length) {
+        const cta = TOP_BAR_CTAS[nextIndex];
+        setFocusedTopBarCta(cta);
+        focusTopBarCta(cta);
+      } else if (!reverse) {
         setFocusPanel("slots");
+        containerRef.current?.focus();
+      } else {
+        setFocusPanel("actions");
+        setFocusedActionIndex(ACTION_COUNT - 1);
       }
     }
   }
@@ -492,6 +547,36 @@ export function ScreenshotsScreen({
     >
       <div className="screen__topbar">
         <span className="screen__topbar-title">{screenTitle}</span>
+        <div className="screen__topbar-ctas">
+          {importMode && (
+            <button
+              ref={nextButtonRef}
+              type="button"
+              className={`topbar-cta topbar-cta--nav${focusPanel === "topbar" && focusedTopBarCta === "next" ? " topbar-cta--focused" : ""}`}
+              onClick={handleSave}
+              onFocus={() => {
+                setFocusPanel("topbar");
+                setFocusedTopBarCta("next");
+              }}
+            >
+              Next
+            </button>
+          )}
+          {importMode && (
+            <button
+              ref={backButtonRef}
+              type="button"
+              className={`topbar-cta topbar-cta--nav${focusPanel === "topbar" && focusedTopBarCta === "back" ? " topbar-cta--focused" : ""}`}
+              onClick={handleCancel}
+              onFocus={() => {
+                setFocusPanel("topbar");
+                setFocusedTopBarCta("back");
+              }}
+            >
+              Back
+            </button>
+          )}
+        </div>
       </div>
       <div className="screen__content">
         <div className="screenshots__layout">
@@ -590,22 +675,27 @@ export function ScreenshotsScreen({
               >
                 Get Media
               </button>
-              <button
-                type="button"
-                tabIndex={-1}
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 1 ? " screenshots__action--active" : ""}`}
-                onClick={handleSave}
-              >
-                Save
-              </button>
-              <button
-                type="button"
-                tabIndex={-1}
-                className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 2 ? " screenshots__action--active" : ""}`}
-                onClick={handleCancel}
-              >
-                Cancel
-              </button>
+              {!importMode && (
+                <>
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className={`screenshots__action${saveDisabled ? " screenshots__action--disabled" : ""}${focusPanel === "actions" && focusedActionIndex === 1 ? " screenshots__action--active" : ""}`}
+                    disabled={saveDisabled}
+                    onClick={handleSave}
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    tabIndex={-1}
+                    className={`screenshots__action${focusPanel === "actions" && focusedActionIndex === 2 ? " screenshots__action--active" : ""}`}
+                    onClick={handleCancel}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
