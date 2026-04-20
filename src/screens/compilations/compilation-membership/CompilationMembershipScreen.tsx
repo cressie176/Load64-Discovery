@@ -303,13 +303,10 @@ export function CompilationMembershipScreen({
                 </li>
               ))}
             </ul>
-            <div
-              className="form__actions"
-              style={{ paddingLeft: 0, marginTop: "16px" }}
-            >
+            <div className="compilation-membership__actions">
               <button
                 ref={saveButtonRef}
-                className={`form__action${focusRegion === "actions" && activeAction === "save" ? " form__action--active" : ""}`}
+                className={`compilation-membership__action${focusRegion === "actions" && activeAction === "save" ? " compilation-membership__action--active" : ""}`}
                 onClick={handleSave}
                 onFocus={() => {
                   setActiveAction("save");
@@ -321,7 +318,7 @@ export function CompilationMembershipScreen({
               </button>
               <button
                 ref={cancelButtonRef}
-                className={`form__action${focusRegion === "actions" && activeAction === "cancel" ? " form__action--active" : ""}`}
+                className={`compilation-membership__action${focusRegion === "actions" && activeAction === "cancel" ? " compilation-membership__action--active" : ""}`}
                 onClick={pop}
                 onFocus={() => {
                   setActiveAction("cancel");

@@ -33,3 +33,24 @@
 .list__row--selected .compilation-membership__row-year {
   color: var(--colour-text);
 }
+
+.compilation-membership__actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.compilation-membership__action {
+  background: var(--colour-surface);
+  border: 1px solid var(--colour-border);
+  color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 2px 12px;
+}
+
+.compilation-membership__action--active {
+  border-color: var(--colour-accent);
+  color: var(--colour-text-bright);
+}
