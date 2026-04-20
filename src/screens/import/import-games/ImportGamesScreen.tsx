@@ -33,7 +33,7 @@ export function ImportGamesScreen() {
   const discoverButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    containerRef.current?.focus();
+    pathRef.current?.focus();
   }, []);
 
   useEffect(() => {
