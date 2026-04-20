@@ -4,7 +4,7 @@ import { useStore } from "../../../store/StoreContext";
 import type { GameScreenshot } from "./types";
 import "./index.css";
 
-type FocusRegion = "launch" | "topbar";
+type FocusRegion = "launch-actions" | "topbar";
 type TopBarCta = "manage" | "back";
 type LaunchAction = "quickstart" | "continue" | "load-rom" | "load-snapshot";
 
@@ -67,7 +67,7 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
       })
     : [];
 
-  const [focusRegion, setFocusRegion] = useState<FocusRegion>("launch");
+  const [focusRegion, setFocusRegion] = useState<FocusRegion>("launch-actions");
   const [focusedCta, setFocusedCta] = useState<TopBarCta>("manage");
   const [focusedAction, setFocusedAction] =
     useState<LaunchAction>("quickstart");
@@ -190,13 +190,22 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
   }
 
   function toggleFocusRegion(reverse = false) {
-    if (focusRegion === "launch") {
-      const cta = reverse
-        ? TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1]
-        : TOP_BAR_CTAS[0];
-      setFocusRegion("topbar");
-      setFocusedCta(cta as TopBarCta);
-      focusCtaButton(cta as TopBarCta);
+    if (focusRegion === "launch-actions") {
+      const currentIndex = LAUNCH_ACTIONS.indexOf(focusedAction);
+      const nextIndex = currentIndex + (reverse ? -1 : 1);
+      if (nextIndex >= 0 && nextIndex < LAUNCH_ACTIONS.length) {
+        setFocusedAction(LAUNCH_ACTIONS[nextIndex] as LaunchAction);
+      } else if (!reverse) {
+        const first = TOP_BAR_CTAS[0] as TopBarCta;
+        setFocusRegion("topbar");
+        setFocusedCta(first);
+        focusCtaButton(first);
+      } else {
+        const last = TOP_BAR_CTAS[TOP_BAR_CTAS.length - 1] as TopBarCta;
+        setFocusRegion("topbar");
+        setFocusedCta(last);
+        focusCtaButton(last);
+      }
     } else {
       const currentIndex = TOP_BAR_CTAS.indexOf(focusedCta);
       const nextIndex = currentIndex + (reverse ? -1 : 1);
@@ -204,8 +213,15 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
         const nextCta = TOP_BAR_CTAS[nextIndex] as TopBarCta;
         setFocusedCta(nextCta);
         focusCtaButton(nextCta);
+      } else if (!reverse) {
+        const first = LAUNCH_ACTIONS[0] as LaunchAction;
+        setFocusRegion("launch-actions");
+        setFocusedAction(first);
+        containerRef.current?.focus();
       } else {
-        setFocusRegion("launch");
+        const last = LAUNCH_ACTIONS[LAUNCH_ACTIONS.length - 1] as LaunchAction;
+        setFocusRegion("launch-actions");
+        setFocusedAction(last);
         containerRef.current?.focus();
       }
     }
@@ -336,11 +352,10 @@ export function GameDetailsScreen({ gameId }: GameDetailsScreenProps) {
             {LAUNCH_ACTIONS.map((action) => {
               const available = isActionAvailable(action);
               const focused =
-                focusRegion === "launch" && focusedAction === action;
+                focusRegion === "launch-actions" && focusedAction === action;
               let className = "launch-bar__action";
               if (focused) className += " launch-bar__action--focused";
-              else if (available) className += " launch-bar__action--available";
-              else className += " launch-bar__action--disabled";
+              else if (!available) className += " launch-bar__action--disabled";
               return (
                 <button
                   key={action}

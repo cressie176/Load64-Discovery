@@ -105,14 +105,13 @@
 }
 
 .launch-bar__action {
+  background: var(--colour-surface);
   border: 1px solid var(--colour-border);
-  color: var(--colour-text-muted);
-  cursor: none;
-  padding: 6px 14px;
-}
-
-.launch-bar__action--available {
   color: var(--colour-text);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-base);
+  padding: 2px 12px;
 }
 
 .launch-bar__action--focused {
@@ -122,5 +121,6 @@
 
 .launch-bar__action--disabled {
   color: var(--colour-text-muted);
+  cursor: default;
   opacity: 0.5;
 }
