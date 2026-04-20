@@ -11,6 +11,7 @@ type FormField =
   | "notes"
   | "apply-notes"
   | "fetch"
+  | "apply-all"
   | "save"
   | "cancel";
 
@@ -38,7 +39,8 @@ export function buildFormFields(
   if (importedValues.year !== undefined) fields.push("apply-year");
   fields.push("colourEncoding", "trueDriveEmulation", "notes");
   if (importedValues.notes !== undefined) fields.push("apply-notes");
-  fields.push("fetch");
   if (!importMode) fields.push("save", "cancel");
+  fields.push("fetch");
+  if (Object.keys(importedValues).length > 0) fields.push("apply-all");
   return fields;
 }

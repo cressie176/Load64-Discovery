@@ -15,7 +15,7 @@
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 48px 1fr;
   padding: 16px;
 }
 
@@ -149,18 +149,29 @@
   color: var(--colour-text-bright);
 }
 
-/* ── Form action buttons (Save / Cancel / Get Details) ── */
+/* ── Form action buttons (Save / Cancel / Get Details / Apply All) ── */
 
+/*
+ * display: contents makes the wrapper transparent to the parent grid,
+ * so the two child groups participate directly in the three-column layout:
+ * actions-left → col 1 (Save / Cancel), actions-right → col 3 (Get Details / Apply All).
+ */
 .game-details-edit__actions {
+  display: contents;
+}
+
+.game-details-edit__actions-left {
   display: flex;
   gap: 8px;
-  grid-column: 1 / -1;
+  grid-column: 1;
   margin-top: 4px;
 }
 
-/* [Get Details] is right-aligned within the actions row */
-.game-details-edit__action-btn--get-details {
-  margin-left: auto;
+.game-details-edit__actions-right {
+  display: flex;
+  gap: 8px;
+  grid-column: 3;
+  margin-top: 4px;
 }
 
 .game-details-edit__action-btn {

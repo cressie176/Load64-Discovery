@@ -21,6 +21,7 @@ type FormField =
   | "notes"
   | "apply-notes"
   | "fetch"
+  | "apply-all"
   | "save"
   | "cancel";
 
@@ -98,11 +99,13 @@ export function GameDetailsEditScreen({
   const notesTextareaRef = useRef<HTMLTextAreaElement>(null);
   const applyNotesRef = useRef<HTMLButtonElement>(null);
   const fetchButtonRef = useRef<HTMLButtonElement>(null);
+  const applyAllButtonRef = useRef<HTMLButtonElement>(null);
   const saveButtonRef = useRef<HTMLButtonElement>(null);
   const cancelButtonRef = useRef<HTMLButtonElement>(null);
 
   const sources = game?.sources ?? [];
   const hasCatalogues = importMode || sources.length > 0;
+  const hasImportedValues = Object.keys(importedValues).length > 0;
 
   // Build the form field order dynamically based on which imported values are present
   function buildFormFieldsForRender(): FormField[] {
@@ -312,6 +315,8 @@ export function GameDetailsEditScreen({
       applyNotesRef.current?.focus();
     } else if (field === "fetch") {
       fetchButtonRef.current?.focus();
+    } else if (field === "apply-all") {
+      applyAllButtonRef.current?.focus();
     } else if (field === "save") {
       saveButtonRef.current?.focus();
     } else if (field === "cancel") {
@@ -333,6 +338,8 @@ export function GameDetailsEditScreen({
       pop();
     } else if (activeField === "fetch") {
       openFetchMenu();
+    } else if (activeField === "apply-all") {
+      handleApplyAll();
     } else if (activeField === "apply-title") {
       applyImported("title");
     } else if (activeField === "apply-publisher") {
@@ -443,6 +450,33 @@ export function GameDetailsEditScreen({
       return next;
     });
     setActiveField(field);
+    setFocusRegion("form");
+  }
+
+  function handleApplyAll() {
+    const fields: ImportableField[] = ["title", "publisher", "year", "notes"];
+    const affected = fields.filter((f) => importedValues[f] !== undefined);
+    if (affected.length === 0) return;
+
+    if (importedValues.title !== undefined) setDraftTitle(importedValues.title);
+    if (importedValues.publisher !== undefined)
+      setDraftPublisher(importedValues.publisher);
+    if (importedValues.year !== undefined) setDraftYear(importedValues.year);
+    if (importedValues.notes !== undefined) setDraftNotes(importedValues.notes);
+
+    setImportedValues({});
+
+    const firstField = affected[0];
+    const firstRef =
+      firstField === "title"
+        ? titleInputRef
+        : firstField === "publisher"
+          ? publisherInputRef
+          : firstField === "year"
+            ? yearInputRef
+            : notesTextareaRef;
+    setTimeout(() => firstRef.current?.focus(), 0);
+    setActiveField(firstField);
     setFocusRegion("form");
   }
 
@@ -635,6 +669,12 @@ export function GameDetailsEditScreen({
             )}
           </div>
           <div className="game-details-edit__fetched-cell">
+            {fetchSource === null && (
+              <span className="game-details-edit__prompt">
+                Use "Get Details" to fetch values from popular online
+                catalogues.
+              </span>
+            )}
             {importedValues.title !== undefined && (
               <span
                 className="game-details-edit__fetched-value"
@@ -848,49 +888,67 @@ export function GameDetailsEditScreen({
             )}
           </div>
 
-          {/* Form actions — span all columns */}
+          {/* Form actions — left group in col 1, right group in col 3 */}
           <div className="game-details-edit__actions">
-            <button
-              ref={fetchButtonRef}
-              className={actionBtnClass("fetch")}
-              type="button"
-              disabled={!hasCatalogues}
-              onClick={openFetchMenu}
-              onFocus={() => {
-                setActiveField("fetch");
-                setFocusRegion("form");
-              }}
-            >
-              Get Details
-            </button>
-            {!importMode && (
-              <>
+            <div className="game-details-edit__actions-left">
+              {!importMode && (
+                <>
+                  <button
+                    ref={saveButtonRef}
+                    className={actionBtnClass("save")}
+                    type="button"
+                    onClick={handleSaveOrNext}
+                    onFocus={() => {
+                      setActiveField("save");
+                      setFocusRegion("form");
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    ref={cancelButtonRef}
+                    className={actionBtnClass("cancel")}
+                    type="button"
+                    onClick={pop}
+                    onFocus={() => {
+                      setActiveField("cancel");
+                      setFocusRegion("form");
+                    }}
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+            <div className="game-details-edit__actions-right">
+              <button
+                ref={fetchButtonRef}
+                className={actionBtnClass("fetch")}
+                type="button"
+                disabled={!hasCatalogues}
+                onClick={openFetchMenu}
+                onFocus={() => {
+                  setActiveField("fetch");
+                  setFocusRegion("form");
+                }}
+              >
+                Get Details
+              </button>
+              {hasImportedValues && (
                 <button
-                  ref={saveButtonRef}
-                  className={actionBtnClass("save")}
+                  ref={applyAllButtonRef}
+                  className={actionBtnClass("apply-all")}
                   type="button"
-                  onClick={handleSaveOrNext}
+                  onClick={handleApplyAll}
                   onFocus={() => {
-                    setActiveField("save");
+                    setActiveField("apply-all");
                     setFocusRegion("form");
                   }}
                 >
-                  Save
+                  Apply All
                 </button>
-                <button
-                  ref={cancelButtonRef}
-                  className={actionBtnClass("cancel")}
-                  type="button"
-                  onClick={pop}
-                  onFocus={() => {
-                    setActiveField("cancel");
-                    setFocusRegion("form");
-                  }}
-                >
-                  Cancel
-                </button>
-              </>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

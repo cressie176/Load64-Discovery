@@ -28,7 +28,7 @@ describe("GameDetailsEditScreen", () => {
       const fields = buildFormFields({}, false);
       eq(
         fields.join(","),
-        "title,publisher,year,colourEncoding,trueDriveEmulation,notes,fetch,save,cancel",
+        "title,publisher,year,colourEncoding,trueDriveEmulation,notes,save,cancel,fetch",
       );
     });
 
@@ -78,7 +78,7 @@ describe("GameDetailsEditScreen", () => {
       );
       eq(
         fields.join(","),
-        "title,apply-title,publisher,apply-publisher,year,apply-year,colourEncoding,trueDriveEmulation,notes,apply-notes,fetch,save,cancel",
+        "title,apply-title,publisher,apply-publisher,year,apply-year,colourEncoding,trueDriveEmulation,notes,apply-notes,save,cancel,fetch,apply-all",
       );
     });
 
@@ -87,6 +87,23 @@ describe("GameDetailsEditScreen", () => {
       eq(fields.includes("save"), false);
       eq(fields.includes("cancel"), false);
       eq(fields.includes("fetch"), true);
+    });
+
+    it("includes apply-all after fetch when at least one value is imported", () => {
+      const fields = buildFormFields({ title: "Last Ninja, The" }, false);
+      const fetchIdx = fields.indexOf("fetch");
+      eq(fields[fetchIdx + 1], "apply-all");
+    });
+
+    it("does not include apply-all when no values are imported", () => {
+      const fields = buildFormFields({}, false);
+      eq(fields.includes("apply-all"), false);
+    });
+
+    it("includes apply-all in import mode when values are imported", () => {
+      const fields = buildFormFields({ title: "Last Ninja, The" }, true);
+      eq(fields.includes("apply-all"), true);
+      eq(fields.includes("save"), false);
     });
   });
 });
