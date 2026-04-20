@@ -187,7 +187,7 @@ export function ImportCandidateScreen() {
 
   function ctaClassName(cta: TopBarCta): string {
     const focused = focusRegion === "topbar" && focusedCta === cta;
-    return `topbar-cta topbar-cta--action${focused ? " topbar-cta--focused" : ""}`;
+    return `topbar-cta topbar-cta--nav${focused ? " topbar-cta--focused" : ""}`;
   }
 
   return (
